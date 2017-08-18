@@ -13,6 +13,7 @@ SRCS_NAME = Main.cpp \
 	    Block.cpp \
 	    Chunk.cpp \
 	    Player.cpp \
+	    Frustum.cpp \
 	    SimplexNoise/SimplexNoise.cpp \
 	    SimplexNoise/SimplexNoiseOctave.cpp \
 

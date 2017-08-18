@@ -27,14 +27,14 @@ namespace voxel
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;
 		Chunk *chunkZMore;
-		World *world;
+		World &world;
 		uint32_t verticesNb;
 		int32_t x;
 		int32_t z;
 		bool mustGenerateBuffers;
 
 	public:
-		Chunk(World *world, int32_t x, int32_t z);
+		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
 		void generateGLBuffer();
 		void draw();
@@ -48,7 +48,7 @@ namespace voxel
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
 		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (this->blocks[x][y][z]);};
-		inline World *getWorld() {return (this->world);};
+		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
 

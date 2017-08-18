@@ -6,19 +6,19 @@
 namespace voxel
 {
 
-	Chunk::Chunk(World *world, int32_t x, int32_t z)
+	Chunk::Chunk(World &world, int32_t x, int32_t z)
 	: world(world)
 	, x(x)
 	, z(z)
 	, mustGenerateBuffers(true)
 	{
-		if ((this->chunkXLess = this->world->getChunk(this->x - CHUNK_WIDTH, this->z)))
+		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
 			this->chunkXLess->setChunkXMore(this);
-		if ((this->chunkXMore = this->world->getChunk(this->x + CHUNK_WIDTH, this->z)))
+		if ((this->chunkXMore = this->world.getChunk(this->x + CHUNK_WIDTH, this->z)))
 			this->chunkXMore->setChunkXLess(this);
-		if ((this->chunkZLess = this->world->getChunk(this->x, this->z - CHUNK_WIDTH)))
+		if ((this->chunkZLess = this->world.getChunk(this->x, this->z - CHUNK_WIDTH)))
 			this->chunkZLess->setChunkZMore(this);
-		if ((this->chunkZMore = this->world->getChunk(this->x, this->z + CHUNK_WIDTH)))
+		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
 		this->blocks = new Block***[CHUNK_WIDTH];
 		for (uint8_t x = 0; x < CHUNK_WIDTH; ++x)
@@ -29,7 +29,7 @@ namespace voxel
 				this->blocks[x][y] = new Block*[CHUNK_WIDTH];
 				for (uint8_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					uint32_t noiseIndex = (this->world->getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 2  + CHUNK_HEIGHT / 2;
+					uint32_t noiseIndex = (this->world.getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 2  + CHUNK_HEIGHT / 2;
 					uint8_t blockType = 1;
 					if (y < noiseIndex)
 						blockType = 1;
@@ -55,6 +55,8 @@ namespace voxel
 
 	void Chunk::draw()
 	{
+		if (!this->world.getFrustum().check(this->x, 0, this->z, this->x + CHUNK_WIDTH, CHUNK_HEIGHT, this->z + CHUNK_WIDTH))
+			return;
 		if (this->mustGenerateBuffers)
 		{
 			this->mustGenerateBuffers = false;

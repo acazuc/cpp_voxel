@@ -7,13 +7,17 @@
 namespace voxel
 {
 
+	class World;
+
 	class Player
 	{
 
 	private:
+		glm::mat4 projMat;
+		glm::mat4 viewMat;
+		World &world;
 		int32_t oldMouseX;
 		int32_t oldMouseY;
-		glm::mat4 viewMat;
 		float posX;
 		float posY;
 		float posZ;
@@ -26,8 +30,9 @@ namespace voxel
 		bool handleRotation();
 
 	public:
-		Player();
+		Player(World &world);
 		void tick();
+		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
 
 	};

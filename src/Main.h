@@ -20,7 +20,6 @@ namespace voxel
 		static ProgramLocation *vertexesLocation;
 		static ProgramLocation *colorsLocation;
 		static ProgramLocation *mvpLocation;
-		static glm::mat4 projMat;
 		static Program *glProg;
 		static Window *window;
 
@@ -30,7 +29,6 @@ namespace voxel
 		static ProgramLocation *getVertexesLocation() {return (vertexesLocation);};
 		static ProgramLocation *getColorsLocation() {return (colorsLocation);};
 		static ProgramLocation *getMvpLocation() {return (mvpLocation);};
-		static glm::mat4 &getProjMat() {return (projMat);};
 		static Window *getWindow() {return (window);};
 
 	};

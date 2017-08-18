@@ -49,7 +49,6 @@ namespace voxel
 	ProgramLocation *Main::vertexesLocation;
 	ProgramLocation *Main::colorsLocation;
 	ProgramLocation *Main::mvpLocation;
-	glm::mat4 Main::projMat;
 	Program *Main::glProg;
 	Window *Main::window;
 
@@ -68,7 +67,6 @@ namespace voxel
 		glClearColor(0, 0, 0, 1);
 		window->show();
 		window->setVSync(true);
-		projMat = glm::perspective(glm::radians(45.), 1280. / 900., .1, 1000.);
 		VertexShader *vertShad = new VertexShader(vShad);
 		FragmentShader *fragShad = new FragmentShader(fShad);
 		glProg = new Program(fragShad, vertShad);
@@ -103,8 +101,6 @@ namespace voxel
 		{
 			window->clearScreen();
 			world->tick();
-			glm::mat4 mvp = projMat * world->getPlayer().getViewMat();
-			mvpLocation->setMat4f(mvp);
 			world->draw();
 			window->pollEvents();
 			window->update();

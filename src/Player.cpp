@@ -1,6 +1,6 @@
 #include "Player.h"
+#include "World.h"
 #include "Main.h"
-#include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
 #define MOVEMENT_SPEED 0.5
@@ -8,8 +8,9 @@
 namespace voxel
 {
 
-	Player::Player()
-	: oldMouseX(0)
+	Player::Player(World &world)
+	: world(world)
+	, oldMouseX(0)
 	, oldMouseY(0)
 	, posX(0)
 	, posY(128)
@@ -18,7 +19,7 @@ namespace voxel
 	, rotY(0)
 	, rotZ(0)
 	{
-		//Empty
+		this->projMat = glm::perspective(glm::radians(45.), 1280. / 900., .1, 1000.);
 	}
 
 	bool Player::handleMovementXZ()
@@ -123,6 +124,7 @@ namespace voxel
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->posX, -this->posY, -this->posZ));
+		this->world.getFrustum().update();
 	}
 
 }

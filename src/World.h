@@ -19,6 +19,7 @@ namespace voxel
 		World();
 		void tick();
 		void draw();
+		Chunk *getChunk(int32_t x, int32_t z);
 		inline Player &getPlayer() {return (this->player);};
 
 	};

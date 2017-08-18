@@ -9,6 +9,8 @@
 namespace voxel
 {
 
+	class Chunk;
+
 	enum BlockFace
 	{
 		BLOCK_FACE_FRONT,
@@ -23,6 +25,7 @@ namespace voxel
 	{
 
 	private:
+		Chunk *chunk;
 		uint8_t type;
 		int32_t x;
 		int32_t y;
@@ -30,8 +33,9 @@ namespace voxel
 		bool isVisibleFace(enum BlockFace face);
 
 	public:
-		Block(int32_t x, int32_t y, int32_t z, uint8_t type);
+		Block(Chunk *chunk, int32_t x, int32_t y, int32_t z, uint8_t type);
 		void fillBuffers(std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
+		inline bool isTransparent() {return (true);};
 
 	};
 

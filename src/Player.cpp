@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Main.h"
+#include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
 #define MOVEMENT_SPEED 0.24
@@ -96,12 +97,13 @@ namespace voxel
 		int32_t mouseY = Main::getWindow()->getMouseY();
 		if (mouseX == this->oldMouseX && mouseY == this->oldMouseY)
 			return (false);
-		this->rotY += mouseX - this->oldMouseX / 5.;
-		this->rotX += mouseY - this->oldMouseY / 5.;
+		this->rotY += (mouseX - this->oldMouseX) / 20.;
+		this->rotX += (mouseY - this->oldMouseY) / 20.;
+		this->oldMouseX = mouseX;
+		this->oldMouseY = mouseY;
+		this->rotY = std::fmod(this->rotY, 360);
 		if (this->rotY < 0)
 			this->rotY += 360;
-		else if (this->rotY > 360)
-			this->rotY-= 360;
 		if (this->rotX > 90)
 			this->rotX = 90;
 		else if (this->rotX < -90)

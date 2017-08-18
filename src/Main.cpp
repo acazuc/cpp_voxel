@@ -55,6 +55,7 @@ namespace voxel
 
 	void Main::main()
 	{
+		glfwWindowHint(GLFW_SAMPLES, 8);
 		window = new Window("C++ Voxel", 1280, 900);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -108,6 +109,7 @@ namespace voxel
 			window->pollEvents();
 			window->update();
 		}
+		delete (world);
 		delete (window);
 	}
 

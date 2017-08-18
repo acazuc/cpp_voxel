@@ -20,14 +20,22 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world->getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
-		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		this->blocks = new Block***[CHUNK_WIDTH];
 		for (uint8_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
+			this->blocks[x] = new Block**[CHUNK_HEIGHT];
 			for (uint8_t y = 0; y < CHUNK_HEIGHT; ++y)
 			{
+				this->blocks[x][y] = new Block*[CHUNK_WIDTH];
 				for (uint8_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(this, this->x + x, y, this->z + z, 1);
+					uint32_t noiseIndex = (this->world->getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 2  + CHUNK_HEIGHT / 2;
+					uint8_t blockType = 1;
+					if (y < noiseIndex)
+						blockType = 1;
+					else
+						blockType = 0;
+					this->blocks[x][y][z] = new Block(this, this->x + x, y, this->z + z, blockType);
 				}
 			}
 		}
@@ -63,13 +71,19 @@ namespace voxel
 	{
 		std::vector<glm::vec2> texCoords;
 		std::vector<glm::vec3> vertexes;
-		std::vector<GLuint> indices;
 		std::vector<glm::vec3> colors;
-		for (uint32_t i = 0; i < CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH; ++i)
+		std::vector<GLuint> indices;
+		for (uint8_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
-			Block *block = this->blocks[i];
-			if (block)
-				block->fillBuffers(vertexes, texCoords, colors, indices);
+			for (uint8_t y = 0; y < CHUNK_HEIGHT; ++y)
+			{
+				for (uint8_t z = 0; z < CHUNK_WIDTH; ++z)
+				{
+					Block *block = this->blocks[x][y][z];
+					if (block)
+						block->fillBuffers(vertexes, texCoords, colors, indices);
+				}
+			}
 		}
 		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords.data(), texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes.data(), vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);

@@ -13,6 +13,8 @@ SRCS_NAME = Main.cpp \
 	    Block.cpp \
 	    Chunk.cpp \
 	    Player.cpp \
+	    SimplexNoise/SimplexNoise.cpp \
+	    SimplexNoise/SimplexNoiseOctave.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -36,6 +38,7 @@ $(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp
 
 odir:
 	@mkdir -p $(OBJS_PATH)
+	@mkdir -p $(OBJS_PATH)/SimplexNoise
 
 clean:
 	@echo " - Cleaning objs"

@@ -3,14 +3,16 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define MOVEMENT_SPEED 0.24
+#define MOVEMENT_SPEED 0.5
 
 namespace voxel
 {
 
 	Player::Player()
-	: posX(0)
-	, posY(0)
+	: oldMouseX(0)
+	, oldMouseY(0)
+	, posX(0)
+	, posY(128)
 	, posZ(0)
 	, rotX(0)
 	, rotY(0)
@@ -56,8 +58,8 @@ namespace voxel
 			angle += 180;
 		else if (keyD)
 			angle += 0;
-		float addX = MOVEMENT_SPEED * cos(angle / 180. * M_PI);
-		float addZ = MOVEMENT_SPEED * sin(angle / 180. * M_PI);
+		float addX = MOVEMENT_SPEED * std::cos(angle / 180. * M_PI);
+		float addZ = MOVEMENT_SPEED * std::sin(angle / 180. * M_PI);
 		//if (checkCollisionX(addX))
 		//	addX = 0;
 		//if (checkCollisionZ(addZ))

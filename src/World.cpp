@@ -4,10 +4,21 @@ namespace voxel
 {
 
 	World::World()
+	: noise(512, .5, 1338)
 	{
-		this->chunks.push_back(new Chunk(this, 0, 0));
-		this->chunks.push_back(new Chunk(this, 16, 0));
-		this->chunks.push_back(new Chunk(this, 0, 16));
+		for (uint16_t x = 0; x < 8; ++x)
+		{
+			for (uint16_t z = 0; z < 8; ++z)
+			{
+				this->chunks.push_back(new Chunk(this, x * CHUNK_WIDTH, z * CHUNK_WIDTH));
+			}
+		}
+	}
+
+	World::~World()
+	{
+		for (uint32_t i = 0; i < this->chunks.size(); ++i)
+			delete (this->chunks[i]);
 	}
 
 	void World::tick()

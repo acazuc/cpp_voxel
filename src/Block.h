@@ -6,12 +6,12 @@
 # include <cstdint>
 # include <vector>
 
-# define BLOCK_FACE_FRONT 1
-# define BLOCK_FACE_BACK 2
-# define BLOCK_FACE_LEFT 3
-# define BLOCK_FACE_RIGHT 4
-# define BLOCK_FACE_UP 5
-# define BLOCK_FACE_DOWN 6
+# define BLOCK_FACE_FRONT	0x01
+# define BLOCK_FACE_BACK	0x02
+# define BLOCK_FACE_LEFT	0x04
+# define BLOCK_FACE_RIGHT	0x08
+# define BLOCK_FACE_UP		0x10
+# define BLOCK_FACE_DOWN	0x20
 
 namespace voxel
 {

@@ -31,10 +31,14 @@ namespace voxel
 				{
 					uint32_t noiseIndex = (this->world.getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 2  + CHUNK_HEIGHT / 2;
 					uint8_t blockType = 1;
-					if (y < noiseIndex)
-						blockType = 1;
-					else
+					if (y > noiseIndex)
 						blockType = 0;
+					else if (y < CHUNK_HEIGHT * 1.5 / 4)
+						blockType = 1;
+					else if (y == CHUNK_HEIGHT * 1.5 / 4)
+						blockType = 2;
+					else
+						blockType = 3;
 					this->blocks[x][y][z] = new Block(this, this->x + x, y, this->z + z, blockType);
 				}
 			}

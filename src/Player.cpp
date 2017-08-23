@@ -1,25 +1,32 @@
 #include "Player.h"
+#include "Utils/System.h"
 #include "World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-#define MOVEMENT_SPEED 5
+#define MOVEMENT_SPEED .25
+#define JUMP_FORCE .4
+#define GRAVITY 2
 
 namespace voxel
 {
 
 	Player::Player(World &world)
 	: world(world)
+	, fallStarted(0)
 	, oldMouseX(0)
 	, oldMouseY(0)
+	, gravity(0)
 	, posX(0)
 	, posY(128)
 	, posZ(0)
 	, rotX(0)
 	, rotY(0)
 	, rotZ(0)
+	, isOnFloor(true)
 	{
+		this->fallStarted = System::nanotime();
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
@@ -73,7 +80,7 @@ namespace voxel
 
 	bool Player::handleMovementY()
 	{
-		bool keyLShift = Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT);
+		/*bool keyLShift = Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT);
 		bool keySpace = Main::getWindow()->isKeyDown(GLFW_KEY_SPACE);
 		if (keyLShift == keySpace)
 			return (false);
@@ -84,6 +91,37 @@ namespace voxel
 			addY = MOVEMENT_SPEED;
 		if (checkCollisionY(addY))
 			addY = 0;
+		this->posY += addY;*/
+		if (this->isOnFloor && !checkCollisionY(-0.0001))
+		{
+			this->fallStarted = System::nanotime();
+			this->isOnFloor = false;
+			this->hasJumped = false;
+		}
+		if (this->isOnFloor)
+		{
+			if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
+			{
+				this->isOnFloor = false;
+				this->fallStarted = System::nanotime();
+				this->gravity = -JUMP_FORCE;
+				this->hasJumped = true;
+			}
+		}
+		else
+		{
+			this->gravity = GRAVITY * ((System::nanotime() - this->fallStarted) / 1000000000.);
+			if (this->hasJumped)
+				this->gravity -= JUMP_FORCE;
+		}
+		if (!this->gravity)
+			return (false);
+		float addY = -this->gravity;
+		if (checkCollisionY(addY))
+		{
+			this->isOnFloor = true;
+			addY = 0;
+		}
 		this->posY += addY;
 		return (true);
 	}
@@ -119,7 +157,7 @@ namespace voxel
 	{
 		bool move = handleMovement();
 		bool rot = handleRotation();
-		if (!move && !rot)
+		if (!move && !rot && false)
 			return;
 		this->viewMat = glm::mat4(1.);
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));

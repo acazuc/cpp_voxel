@@ -16,14 +16,18 @@ namespace voxel
 		glm::mat4 projMat;
 		glm::mat4 viewMat;
 		World &world;
+		int64_t fallStarted;
 		int32_t oldMouseX;
 		int32_t oldMouseY;
+		float gravity;
 		float posX;
 		float posY;
 		float posZ;
 		float rotX;
 		float rotY;
 		float rotZ;
+		bool isOnFloor;
+		bool hasJumped;
 		bool handleMovementXZ();
 		bool handleMovementY();
 		bool handleMovement();

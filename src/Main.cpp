@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
 #include <cstring>
@@ -42,6 +43,8 @@ void main()\n\
 	gl_FragColor = texCol * vec4(color, 1);\n\
 }\n\
 "};
+
+int64_t nanotime;
 
 namespace voxel
 {
@@ -100,6 +103,7 @@ namespace voxel
 		World *world = new World();
 		while (!window->closeRequested())
 		{
+			nanotime = System::nanotime();
 			window->clearScreen();
 			world->tick();
 			world->draw();

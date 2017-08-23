@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "Utils/System.h"
 #include "World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -7,7 +6,9 @@
 
 #define MOVEMENT_SPEED .10
 #define JUMP_FORCE .25
-#define GRAVITY 1.5
+#define GRAVITY 1.25
+
+extern int64_t nanotime;
 
 namespace voxel
 {
@@ -26,7 +27,7 @@ namespace voxel
 	, rotZ(0)
 	, isOnFloor(true)
 	{
-		this->fallStarted = System::nanotime();
+		this->fallStarted = nanotime;
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
@@ -80,21 +81,9 @@ namespace voxel
 
 	bool Player::handleMovementY()
 	{
-		/*bool keyLShift = Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT);
-		bool keySpace = Main::getWindow()->isKeyDown(GLFW_KEY_SPACE);
-		if (keyLShift == keySpace)
-			return (false);
-		float addY = 0;
-		if (keyLShift)
-			addY = -MOVEMENT_SPEED;
-		else if (keySpace)
-			addY = MOVEMENT_SPEED;
-		if (checkCollisionY(addY))
-			addY = 0;
-		this->posY += addY;*/
 		if (this->isOnFloor && !checkCollisionY(-0.0001))
 		{
-			this->fallStarted = System::nanotime();
+			this->fallStarted = nanotime;
 			this->isOnFloor = false;
 			this->hasJumped = false;
 		}
@@ -103,14 +92,14 @@ namespace voxel
 			if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
 			{
 				this->isOnFloor = false;
-				this->fallStarted = System::nanotime();
+				this->fallStarted = nanotime;
 				this->gravity = -JUMP_FORCE;
 				this->hasJumped = true;
 			}
 		}
 		else
 		{
-			this->gravity = GRAVITY * ((System::nanotime() - this->fallStarted) / 1000000000.);
+			this->gravity = GRAVITY * ((nanotime - this->fallStarted) / 1000000000.);
 			if (this->hasJumped)
 				this->gravity -= JUMP_FORCE;
 		}
@@ -279,13 +268,13 @@ namespace voxel
 
 	bool Player::checkCollideBlock(float x, float y, float z)
 	{
-		y = round(y + this->posY);
+		y = std::round(y + this->posY);
 		if (y >= 0 && y < CHUNK_HEIGHT)
 		{
 			x = round(x + this->posX);
 			z = round(z + this->posZ);
-			int32_t chunkX = floor(x / CHUNK_WIDTH) * CHUNK_WIDTH;
-			int32_t chunkZ = floor(z / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t chunkX = std::floor(x / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t chunkZ = std::floor(z / CHUNK_WIDTH) * CHUNK_WIDTH;
 			Chunk *chunk = this->world.getChunk(chunkX, chunkZ);
 			if (!chunk)
 				return (false);

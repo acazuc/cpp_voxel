@@ -21,7 +21,9 @@ namespace voxel
 
 	void World::tick()
 	{
+		this->chunksMutex.lock();
 		this->player.tick();
+		this->chunksMutex.unlock();
 	}
 
 	void World::draw()

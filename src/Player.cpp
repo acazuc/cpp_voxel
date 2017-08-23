@@ -5,7 +5,7 @@
 #include <iostream>
 
 #define MOVEMENT_SPEED .10
-#define JUMP_FORCE .25
+#define JUMP_FORCE .225
 #define GRAVITY 1.25
 
 extern int64_t nanotime;

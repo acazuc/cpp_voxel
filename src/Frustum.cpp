@@ -11,10 +11,18 @@ namespace voxel
 		//Empty
 	}
 
+	static inline void part(float *part)
+	{
+		float t = sqrt(part[0] * part[0] + part[1] * part[1] + part[2] * part[2]);
+		part[0] /= t;
+		part[1] /= t;
+		part[2] /= t;
+		part[3] /= t;
+	}
+
 	void Frustum::update()
 	{
 		float clip[16];
-		float t;
 		const float *proj = glm::value_ptr(this->world.getPlayer().getProjMat());
 		const float *modl = glm::value_ptr(this->world.getPlayer().getViewMat());
 		clip[ 0] = modl[ 0] * proj[ 0] + modl[ 1] * proj[ 4] + modl[ 2] * proj[ 8] + modl[ 3] * proj[12];
@@ -38,61 +46,37 @@ namespace voxel
 		this->data[0][1] = clip[7] - clip[4];
 		this->data[0][2] = clip[11] - clip[8];
 		this->data[0][3] = clip[15] - clip[12];
-		t = sqrt(this->data[0][0] * this->data[0][0] + this->data[0][1] * this->data[0][1] + this->data[0][2] * this->data[0][2]);
-		this->data[0][0] /= t;
-		this->data[0][1] /= t;
-		this->data[0][2] /= t;
-		this->data[0][3] /= t;
+		part(this->data[0]);
 		//Left
 		this->data[1][0] = clip[3] + clip[0];
 		this->data[1][1] = clip[7] + clip[4];
 		this->data[1][2] = clip[11] + clip[8];
 		this->data[1][3] = clip[15] + clip[12];
-		t = sqrt(this->data[1][0] * this->data[1][0] + this->data[1][1] * this->data[1][1] + this->data[1][2] * this->data[1][2]);
-		this->data[1][0] /= t;
-		this->data[1][1] /= t;
-		this->data[1][2] /= t;
-		this->data[1][3] /= t;
+		part(this->data[1]);
 		//Bottom
 		this->data[2][0] = clip[3] + clip[1];
 		this->data[2][1] = clip[7] + clip[5];
 		this->data[2][2] = clip[11] + clip[9];
 		this->data[2][3] = clip[15] + clip[13];
-		t = sqrt(this->data[2][0] * this->data[2][0] + this->data[2][1] * this->data[2][1] + this->data[2][2] * this->data[2][2]);
-		this->data[2][0] /= t;
-		this->data[2][1] /= t;
-		this->data[2][2] /= t;
-		this->data[2][3] /= t;
+		part(this->data[2]);
 		//Top
 		this->data[3][0] = clip[3] - clip[1];
 		this->data[3][1] = clip[7] - clip[5];
 		this->data[3][2] = clip[11] - clip[ 9];
 		this->data[3][3] = clip[15] - clip[13];
-		t = sqrt(this->data[3][0] * this->data[3][0] + this->data[3][1] * this->data[3][1] + this->data[3][2] * this->data[3][2]);
-		this->data[3][0] /= t;
-		this->data[3][1] /= t;
-		this->data[3][2] /= t;
-		this->data[3][3] /= t;
+		part(this->data[3]);
 		//Back
 		this->data[4][0] = clip[3] - clip[2];
 		this->data[4][1] = clip[7] - clip[6];
 		this->data[4][2] = clip[11] - clip[10];
 		this->data[4][3] = clip[15] - clip[14];
-		t = sqrt(this->data[4][0] * this->data[4][0] + this->data[4][1] * this->data[4][1] + this->data[4][2] * this->data[4][2]);
-		this->data[4][0] /= t;
-		this->data[4][1] /= t;
-		this->data[4][2] /= t;
-		this->data[4][3] /= t;
+		part(this->data[4]);
 		//Front
 		this->data[5][0] = clip[3] + clip[2];
 		this->data[5][1] = clip[7] + clip[6];
 		this->data[5][2] = clip[11] + clip[10];
 		this->data[5][3] = clip[15] + clip[14];
-		t = sqrt(this->data[5][0] * this->data[5][0] + this->data[5][1] * this->data[5][1] + this->data[5][2] * this->data[5][2]);
-		this->data[5][0] /= t;
-		this->data[5][1] /= t;
-		this->data[5][2] /= t;
-		this->data[5][3] /= t;
+		part(this->data[5]);
 	}
 
 	bool Frustum::check(float x1, float y1, float z1, float x2, float y2, float z2)

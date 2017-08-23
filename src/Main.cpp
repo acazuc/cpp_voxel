@@ -19,6 +19,7 @@ attribute vec2 vertexUV;\n\
 \n\
 varying vec2 UV;\n\
 varying vec3 color;\n\
+varying vec3 position;\n\
 \n\
 uniform mat4 MVP;\n\
 \n\
@@ -27,6 +28,7 @@ void main()\n\
 	gl_Position = MVP * vec4(vertexPosition, 1);\n\
 	UV = vertexUV;\n\
 	color = vertexColor;\n\
+	position = gl_Position.xyz;\n\
 }\n\
 "};
 
@@ -34,13 +36,16 @@ static char fShad[] = {"#version 120\n\
 \n\
 varying vec2 UV;\n\
 varying vec3 color;\n\
+varying vec3 position;\n\
 \n\
 uniform sampler2D tex;\n\
 \n\
 void main()\n\
 {\n\
 	vec4 texCol = texture2D(tex, UV);\n\
-	gl_FragColor = texCol * vec4(color, 1);\n\
+	vec4 color = texCol * vec4(color, 1);\n\
+	float fog = clamp((position.z - 200) * 0.1, 0, 1);\n\
+	gl_FragColor = mix(color, vec4(.5, .5, 1, 1), fog);\n\
 }\n\
 "};
 
@@ -59,6 +64,7 @@ namespace voxel
 
 	void Main::main()
 	{
+		glfwWindowHint(GLFW_SAMPLES, 16);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -96,6 +102,7 @@ namespace voxel
 		terrain->bind();
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 		GLint osef = 0;

@@ -25,12 +25,14 @@ namespace voxel
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
 		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
-		for (uint32_t x = 0; x < CHUNK_WIDTH; ++x)
+		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
-			for (uint32_t z = 0; z < CHUNK_WIDTH; ++z)
+			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				uint32_t noiseIndex = (this->world.getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 3  + CHUNK_HEIGHT / 3;
-				for (uint32_t y = 0; y < CHUNK_HEIGHT; ++y)
+				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 3 + CHUNK_HEIGHT / 2;
+				noiseIndex = std::round(noiseIndex);
+				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
 					if (y > noiseIndex)
 					{

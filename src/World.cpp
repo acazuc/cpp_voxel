@@ -6,7 +6,7 @@ namespace voxel
 
 	World::World()
 	: chunkLoader(this)
-	, noise(512, .5, 1338)
+	, noise(512, .5, 1337)
 	, frustum(*this)
 	, player(*this)
 	{

@@ -2,6 +2,7 @@
 #include "World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #define MOVEMENT_SPEED 5
 
@@ -19,7 +20,7 @@ namespace voxel
 	, rotY(0)
 	, rotZ(0)
 	{
-		this->projMat = glm::perspective(glm::radians(60.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
+		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
 	bool Player::handleMovementXZ()
@@ -61,10 +62,10 @@ namespace voxel
 			angle += 0;
 		float addX = MOVEMENT_SPEED * std::cos(angle / 180. * M_PI);
 		float addZ = MOVEMENT_SPEED * std::sin(angle / 180. * M_PI);
-		//if (checkCollisionX(addX))
-		//	addX = 0;
-		//if (checkCollisionZ(addZ))
-		//	addZ = 0;
+		if (checkCollisionX(addX))
+			addX = 0;
+		if (checkCollisionZ(addZ))
+			addZ = 0;
 		this->posX += addX;
 		this->posZ += addZ;
 		return (true);
@@ -81,8 +82,8 @@ namespace voxel
 			addY = -MOVEMENT_SPEED;
 		else if (keySpace)
 			addY = MOVEMENT_SPEED;
-		//if (checkCollisionY(addY))
-		//	return;
+		if (checkCollisionY(addY))
+			addY = 0;
 		this->posY += addY;
 		return (true);
 	}
@@ -125,6 +126,137 @@ namespace voxel
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->posX, -this->posY, -this->posZ));
 		this->world.getFrustum().update();
+	}
+
+	bool Player::checkCollisionX(float addX)
+	{
+		if (addX > 0)
+		{
+			for (int32_t i = 0; i < addX; ++i)
+			{
+				if (checkCollideBlock(i + .2, .19f, 0) || checkCollideBlock(i + .2f, -1.69f, 0))
+				{
+					this->posX = round(this->posX + i + .2f) - .7f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(addX + .2, .19f, 0) || checkCollideBlock(addX + .2f, -1.69f, 0))
+			{
+				this->posX = round(this->posX + addX + .2f) - .7f;
+				return (true);
+			}
+		}
+		else if (addX < 0)
+		{
+			for (int32_t i = 0; i > addX; --i)
+			{
+				if (checkCollideBlock(i - .2f, .19f, 0) || checkCollideBlock(i - .2f, -1.69f, 0))
+				{
+					this->posX = round(this->posX + i - .2f) + .7f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(addX - .2f, .19f, 0) || checkCollideBlock(addX - .2f, -1.69f, 0))
+			{
+				this->posX = round(this->posX + addX - .2f) + .7f;
+				return (true);
+			}
+		}
+		return (false);
+	}
+
+	bool Player::checkCollisionY(float addY)
+	{
+		if (addY > 0)
+		{
+			for (int32_t i = 0; i < addY; ++i)
+			{
+				if (checkCollideBlock(0, i + .2f, 0))
+				{
+					this->posY = round(this->posY + i + .2f) - .7f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(0, addY + .2f, 0))
+			{
+				this->posY = round(this->posY + addY + .2f) - .7f;
+				return (true);
+			}
+		}
+		else if (addY < 0)
+		{
+			for (int32_t i = 0; i > addY; --i)
+			{
+				if (checkCollideBlock(0, i - 1.7f, 0))
+				{
+					this->posY = round(this->posY + i - 1.7f) + 2.2f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(0, addY - 1.7f, 0))
+			{
+				this->posY = round(this->posY + addY - 1.7f) + 2.2f;
+				return (true);
+			}
+		}
+		return (false);
+	}
+
+	bool Player::checkCollisionZ(float addZ)
+	{
+		if (addZ > 0)
+		{
+			for (int32_t i = 0; i < addZ; ++i)
+			{
+				if (checkCollideBlock(0, .19f, i + .2f) || checkCollideBlock(0, -1.69f, i + .2f))
+				{
+					this->posZ = round(this->posZ + i + .2f) - .7f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(0, .19f, addZ + .2f) || checkCollideBlock(0, -1.69f, addZ + .2f))
+			{
+				this->posZ = round(this->posZ + addZ + .2f) - .7f;
+				return (true);
+			}
+		}
+		else if (addZ < 0)
+		{
+			for (int32_t i = 0; i > addZ; --i)
+			{
+				if (checkCollideBlock(0, .19f, i - .2f) || checkCollideBlock(0, -1.69f, i - .2f))
+				{
+					this->posZ = round(this->posZ + i - .2f) + .7f;
+					return (true);
+				}
+			}
+			if (checkCollideBlock(0, .19f, addZ - .2f) || checkCollideBlock(0, -1.69f, addZ - .2f))
+			{
+				this->posZ = round(this->posZ + addZ - .2f) + .7f;
+				return (true);
+			}
+		}
+		return (false);
+	}
+
+	bool Player::checkCollideBlock(float x, float y, float z)
+	{
+		y = round(y + this->posY);
+		if (y >= 0 && y < CHUNK_HEIGHT)
+		{
+			x = round(x + this->posX);
+			z = round(z + this->posZ);
+			int32_t chunkX = floor(x / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t chunkZ = floor(z / CHUNK_WIDTH) * CHUNK_WIDTH;
+			Chunk *chunk = this->world.getChunk(chunkX, chunkZ);
+			if (!chunk)
+				return (false);
+			Block *block = chunk->getBlockAt(x - chunkX, y, z - chunkZ);
+			if (!block)
+				return (false);
+			return (true);
+		}
+		return (false);
 	}
 
 }

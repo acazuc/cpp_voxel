@@ -52,7 +52,7 @@ namespace voxel
 
 	Chunk::~Chunk()
 	{
-		for (uint32_t i = 0; i < CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH; ++x)
+		for (uint32_t i = 0; i < CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH; ++i)
 			delete[] (this->blocks[i]);
 		delete[] (this->blocks);
 		delete (this->texCoordsBuffer);

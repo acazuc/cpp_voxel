@@ -2,7 +2,7 @@
 #include "World.h"
 #include <ctime>
 
-# define LOAD_DISTANCE 14
+# define LOAD_DISTANCE 4
 
 namespace voxel
 {

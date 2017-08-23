@@ -28,6 +28,10 @@ namespace voxel
 		bool handleMovementY();
 		bool handleMovement();
 		bool handleRotation();
+		bool checkCollisionX(float addX);
+		bool checkCollisionY(float addY);
+		bool checkCollisionZ(float addZ);
+		bool checkCollideBlock(float x, float y, float z);
 
 	public:
 		Player(World &world);

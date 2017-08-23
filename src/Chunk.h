@@ -7,7 +7,7 @@
 using librender::DataBuffer;
 
 # define CHUNK_WIDTH 16
-# define CHUNK_HEIGHT 128
+# define CHUNK_HEIGHT 256
 
 namespace voxel
 {
@@ -18,11 +18,11 @@ namespace voxel
 	{
 
 	private:
-		DataBuffer texCoordsBuffer;
-		DataBuffer vertexesBuffer;
-		DataBuffer indicesBuffer;
-		DataBuffer colorsBuffer;
-		Block ****blocks;
+		DataBuffer *texCoordsBuffer;
+		DataBuffer *vertexesBuffer;
+		DataBuffer *indicesBuffer;
+		DataBuffer *colorsBuffer;
+		Block **blocks;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;
@@ -38,7 +38,7 @@ namespace voxel
 		~Chunk();
 		void generateGLBuffer();
 		void draw();
-		inline Block ****getBlocks() {return (this->blocks);};
+		inline Block **getBlocks() {return (this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
 		inline void setChunkXMore(Chunk *chunk);
@@ -47,7 +47,7 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (this->blocks[x][y][z]);};
+		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);};
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};

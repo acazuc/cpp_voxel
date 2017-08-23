@@ -18,38 +18,39 @@ namespace voxel
 
 	class Chunk;
 
+	struct BlockLights
+	{
+		uint8_t f1p1 : 4;
+		uint8_t f1p2 : 4;
+		uint8_t f1p3 : 4;
+		uint8_t f1p4 : 4;
+		uint8_t f2p1 : 4;
+		uint8_t f2p2 : 4;
+		uint8_t f2p3 : 4;
+		uint8_t f2p4 : 4;
+		uint8_t f3p1 : 4;
+		uint8_t f3p2 : 4;
+		uint8_t f3p3 : 4;
+		uint8_t f3p4 : 4;
+		uint8_t f4p1 : 4;
+		uint8_t f4p2 : 4;
+		uint8_t f4p3 : 4;
+		uint8_t f4p4 : 4;
+		uint8_t f5p1 : 4;
+		uint8_t f5p2 : 4;
+		uint8_t f5p3 : 4;
+		uint8_t f5p4 : 4;
+		uint8_t f6p1 : 4;
+		uint8_t f6p2 : 4;
+		uint8_t f6p3 : 4;
+		uint8_t f6p4 : 4;
+	};
+
 	class Block
 	{
 
 	private:
 		Chunk *chunk;
-		struct
-		{
-			uint8_t f1p1 : 4;
-			uint8_t f1p2 : 4;
-			uint8_t f1p3 : 4;
-			uint8_t f1p4 : 4;
-			uint8_t f2p1 : 4;
-			uint8_t f2p2 : 4;
-			uint8_t f2p3 : 4;
-			uint8_t f2p4 : 4;
-			uint8_t f3p1 : 4;
-			uint8_t f3p2 : 4;
-			uint8_t f3p3 : 4;
-			uint8_t f3p4 : 4;
-			uint8_t f4p1 : 4;
-			uint8_t f4p2 : 4;
-			uint8_t f4p3 : 4;
-			uint8_t f4p4 : 4;
-			uint8_t f5p1 : 4;
-			uint8_t f5p2 : 4;
-			uint8_t f5p3 : 4;
-			uint8_t f5p4 : 4;
-			uint8_t f6p1 : 4;
-			uint8_t f6p2 : 4;
-			uint8_t f6p3 : 4;
-			uint8_t f6p4 : 4;
-		} lights;
 		uint8_t visibleFaces;
 		uint8_t type;
 		int32_t x;
@@ -58,7 +59,7 @@ namespace voxel
 		bool calcLightsIsTransparentSameChunk(int8_t addX, int8_t addY, int8_t addZ);
 		bool calcLightsIsTransparentOtherChunk(Chunk *chunk, int32_t newBlockX, int32_t newBlockY, int32_t newBlockZ);
 		bool calcLightsIsTransparent(int8_t x, int8_t y, int8_t z);
-		void calcLights();
+		void calcLights(BlockLights &lights);
 		void calcVisibleFaces();
 
 	public:

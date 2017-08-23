@@ -3,7 +3,7 @@
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-#define MOVEMENT_SPEED 0.5
+#define MOVEMENT_SPEED 5
 
 namespace voxel
 {
@@ -19,7 +19,7 @@ namespace voxel
 	, rotY(0)
 	, rotZ(0)
 	{
-		this->projMat = glm::perspective(glm::radians(45.), 1280. / 900., .1, 1000.);
+		this->projMat = glm::perspective(glm::radians(60.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
 	bool Player::handleMovementXZ()

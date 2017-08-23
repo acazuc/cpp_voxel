@@ -55,13 +55,13 @@ namespace voxel
 	void Main::main()
 	{
 		glfwWindowHint(GLFW_SAMPLES, 8);
-		window = new Window("C++ Voxel", 1280, 900);
+		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
 		glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
-		//glEnable(GL_CULL_FACE);
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(0, 0, 0, 1);
@@ -69,7 +69,10 @@ namespace voxel
 		window->setVSync(true);
 		VertexShader *vertShad = new VertexShader(vShad);
 		FragmentShader *fragShad = new FragmentShader(fShad);
-		glProg = new Program(fragShad, vertShad);
+		glProg = new Program();
+		glProg->attachShader(vertShad);
+		glProg->attachShader(fragShad);
+		glProg->link();
 		glProg->use();
 		texCoordsLocation = glProg->getAttribLocation("vertexUV");
 		texCoordsLocation->setVertexAttribArray(true);

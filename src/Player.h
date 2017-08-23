@@ -34,6 +34,9 @@ namespace voxel
 		void tick();
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
+		inline float getPosX() {return (this->posX);};
+		inline float getPosY() {return (this->posY);};
+		inline float getPosZ() {return (this->posZ);};
 
 	};
 

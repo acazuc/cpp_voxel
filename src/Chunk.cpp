@@ -38,7 +38,9 @@ namespace voxel
 						continue;
 					}
 					uint8_t blockType = 1;
-					if (y == noiseIndex)
+					if (y == 0)
+						blockType = 18;
+					else if (y == noiseIndex)
 						blockType = 1;
 					else if (y > noiseIndex - 3)
 						blockType = 3;

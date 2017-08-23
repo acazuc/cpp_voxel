@@ -5,9 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-#define MOVEMENT_SPEED .25
-#define JUMP_FORCE .4
-#define GRAVITY 2
+#define MOVEMENT_SPEED .10
+#define JUMP_FORCE .25
+#define GRAVITY 1.5
 
 namespace voxel
 {

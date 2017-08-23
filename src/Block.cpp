@@ -25,27 +25,7 @@ namespace voxel
 		calcVisibleFaces();
 		BlockLights lights;
 		calcLights(lights);
-		float red;
-		float green;
-		float blue;
-		if (this->type == 1)
-		{
-			red = 44 / 255.;
-			green = 130 / 255.;
-			blue = 201 / 255.;
-		}
-		else if (this->type == 2)
-		{
-			red = 247 / 255.;
-			green = 218 / 255.;
-			blue = 100 / 255.;
-		}
-		else
-		{
-			red = 65 / 255.;
-			green = 168 / 255.;
-			blue = 95 / 255.;
-		}
+		glm::vec3 color(1, 1, 1);
 		float f1p1 = lights.f1p1 / 16.;
 		float f1p2 = lights.f1p2 / 16.;
 		float f1p3 = lights.f1p3 / 16.;
@@ -70,21 +50,28 @@ namespace voxel
 		float f6p2 = lights.f6p2 / 16.;
 		float f6p3 = lights.f6p3 / 16.;
 		float f6p4 = lights.f6p4 / 16.;
+		float texX = ((this->type - 1) % 16) / 16.;
+		float texY = ((this->type - 1) / 16) / 16.;
+		if (this->type == 1)
+		{
+			texX = 3 / 16.;
+			texY = 0 / 16.;
+		}
 		if (this->visibleFaces & BLOCK_FACE_FRONT)
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f1p1 * red, f1p1 * green, f1p1 * blue));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
+			colors.push_back(glm::vec3(f1p1 * color.x, f1p1 * color.y, f1p1 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f1p2 * red, f1p2 * green, f1p2 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f1p2 * color.x, f1p2 * color.y, f1p2 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f1p3 * red, f1p3 * green, f1p3 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f1p3 * color.x, f1p3 * color.y, f1p3 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f1p4 * red, f1p4 * green, f1p4 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f1p4 * color.x, f1p4 * color.y, f1p4 * color.z));
 			if (lights.f1p2 + lights.f1p4 > lights.f1p1 + lights.f1p3)
 			{
 				indices.push_back(currentIndice + 1); //1
@@ -108,17 +95,17 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f2p1 * red, f2p1 * green, f2p1 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f2p1 * color.x, f2p1 * color.y, f2p1 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f2p2 * red, f2p2 * green, f2p2 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f2p2 * color.x, f2p2 * color.y, f2p2 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f2p3 * red, f2p3 * green, f2p3 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f2p3 * color.x, f2p3 * color.y, f2p3 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f2p4 * red, f2p4 * green, f2p4 * blue));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
+			colors.push_back(glm::vec3(f2p4 * color.x, f2p4 * color.y, f2p4 * color.z));
 			if (lights.f2p2 + lights.f2p4 <= lights.f2p1 + lights.f2p3)
 			{
 				indices.push_back(currentIndice + 2); //1
@@ -142,17 +129,17 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f3p1 * red, f3p1 * green, f3p1 * blue));
+			colors.push_back(glm::vec3(f3p1 * color.x, f3p1 * color.y, f3p1 * color.z));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f3p2 * red, f3p2 * green, f3p2 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f3p2 * color.x, f3p2 * color.y, f3p2 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f3p3 * red, f3p3 * green, f3p3 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f3p3 * color.x, f3p3 * color.y, f3p3 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f3p4 * red, f3p4 * green, f3p4 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f3p4 * color.x, f3p4 * color.y, f3p4 * color.z));
 			if (lights.f3p2 + lights.f3p4 > lights.f3p1 + lights.f3p3)
 			{
 				indices.push_back(currentIndice + 1); //1
@@ -176,17 +163,17 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f4p1 * red, f4p1 * green, f4p1 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f4p1 * color.x, f4p1 * color.y, f4p1 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f4p2 * red, f4p2 * green, f4p2 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f4p2 * color.x, f4p2 * color.y, f4p2 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f4p3 * red, f4p3 * green, f4p3 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f4p3 * color.x, f4p3 * color.y, f4p3 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f4p4 * red, f4p4 * green, f4p4 * blue));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
+			colors.push_back(glm::vec3(f4p4 * color.x, f4p4 * color.y, f4p4 * color.z));
 			if (lights.f4p2 + lights.f4p4 < lights.f4p1 + lights.f4p3)
 			{
 				indices.push_back(currentIndice + 2); //1
@@ -208,19 +195,26 @@ namespace voxel
 		}
 		if (this->visibleFaces & BLOCK_FACE_UP)
 		{
+			float oldTexX = texX;
+			float oldTexY = texY;
+			if (this->type == 1)
+			{
+				texX = 0;
+				texY = 0;
+			}
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f5p1 * red, f5p1 * green, f5p1 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f5p1 * color.x, f5p1 * color.y, f5p1 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f5p2 * red, f5p2 * green, f5p2 * blue));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
+			colors.push_back(glm::vec3(f5p2 * color.x, f5p2 * color.y, f5p2 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f5p3 * red, f5p3 * green, f5p3 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f5p3 * color.x, f5p3 * color.y, f5p3 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f5p4 * red, f5p4 * green, f5p4 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f5p4 * color.x, f5p4 * color.y, f5p4 * color.z));
 			if (lights.f5p2 + lights.f5p4 > lights.f5p1 + lights.f5p3)
 			{
 				indices.push_back(currentIndice + 1); //1
@@ -239,22 +233,27 @@ namespace voxel
 				indices.push_back(currentIndice + 1); //3
 				indices.push_back(currentIndice + 0);
 			}
+			if (this->type == 1)
+			{
+				texX = oldTexX;
+				texY = oldTexY;
+			}
 		}
 		if (this->visibleFaces & BLOCK_FACE_DOWN)
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 0));
-			colors.push_back(glm::vec3(f6p1 * red, f6p1 * green, f6p1 * blue));
+			texCoords.push_back(glm::vec2(texX, texY));
+			colors.push_back(glm::vec3(f6p1 * color.x, f6p1 * color.y, f6p1 * color.z));
 			vertexes.push_back(glm::vec3(x - BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(0, 1));
-			colors.push_back(glm::vec3(f6p2 * red, f6p2 * green, f6p2 * blue));
+			texCoords.push_back(glm::vec2(texX, texY + 1. / 16));
+			colors.push_back(glm::vec3(f6p2 * color.x, f6p2 * color.y, f6p2 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 1));
-			colors.push_back(glm::vec3(f6p3 * red, f6p3 * green, f6p3 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY + 1. / 16));
+			colors.push_back(glm::vec3(f6p3 * color.x, f6p3 * color.y, f6p3 * color.z));
 			vertexes.push_back(glm::vec3(x + BLOCK_SIZE, y - BLOCK_SIZE, z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(1, 0));
-			colors.push_back(glm::vec3(f6p4 * red, f6p4 * green, f6p4 * blue));
+			texCoords.push_back(glm::vec2(texX + 1. / 16, texY));
+			colors.push_back(glm::vec3(f6p4 * color.x, f6p4 * color.y, f6p4 * color.z));
 			if (lights.f6p2 + lights.f6p4 < lights.f6p1 + lights.f6p3)
 			{
 				indices.push_back(currentIndice + 0); //1

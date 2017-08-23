@@ -27,23 +27,23 @@ namespace voxel
 		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		for (uint32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
-			for (uint32_t y = 0; y < CHUNK_HEIGHT; ++y)
+			for (uint32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				for (uint32_t z = 0; z < CHUNK_WIDTH; ++z)
+				uint32_t noiseIndex = (this->world.getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 3  + CHUNK_HEIGHT / 3;
+				for (uint32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
-					uint32_t noiseIndex = (this->world.getNoise().get2(this->x + x, this->z + z)) * CHUNK_HEIGHT / 3  + CHUNK_HEIGHT / 3;
 					if (y > noiseIndex)
 					{
 						this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
 						continue;
 					}
 					uint8_t blockType = 1;
-					if (y < CHUNK_HEIGHT * 1 / 4)
+					if (y == noiseIndex)
 						blockType = 1;
-					else if (y == CHUNK_HEIGHT * 1 / 4)
-						blockType = 2;
-					else
+					else if (y > noiseIndex - 3)
 						blockType = 3;
+					else
+						blockType = 2;
 					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(this, this->x + x, y, this->z + z, blockType);
 				}
 			}

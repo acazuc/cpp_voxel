@@ -4,9 +4,11 @@
 # include <librender/Shader/ProgramLocation.h>
 # include <librender/Shader/Program.h>
 # include <librender/Window/Window.h>
+# include <librender/Texture.h>
 
 using librender::ProgramLocation;
 using librender::Program;
+using librender::Texture;
 using librender::Window;
 
 namespace voxel
@@ -20,6 +22,7 @@ namespace voxel
 		static ProgramLocation *vertexesLocation;
 		static ProgramLocation *colorsLocation;
 		static ProgramLocation *mvpLocation;
+		static Texture *terrain;
 		static Program *glProg;
 		static Window *window;
 

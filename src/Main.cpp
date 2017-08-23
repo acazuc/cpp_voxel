@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <librender/Shader/VertexShader.h>
 #include <librender/Shader/FragmentShader.h>
+#include <libformat/PNG.h>
 
 using librender::VertexShader;
 using librender::FragmentShader;
@@ -38,7 +39,7 @@ uniform sampler2D tex;\n\
 void main()\n\
 {\n\
 	vec4 texCol = texture2D(tex, UV);\n\
-	gl_FragColor = vec4(texCol.xyz * color, texCol.w);\n\
+	gl_FragColor = texCol * vec4(color, 1);\n\
 }\n\
 "};
 
@@ -49,12 +50,12 @@ namespace voxel
 	ProgramLocation *Main::vertexesLocation;
 	ProgramLocation *Main::colorsLocation;
 	ProgramLocation *Main::mvpLocation;
+	Texture *Main::terrain;
 	Program *Main::glProg;
 	Window *Main::window;
 
 	void Main::main()
 	{
-		glfwWindowHint(GLFW_SAMPLES, 8);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -82,21 +83,18 @@ namespace voxel
 		colorsLocation->setVertexAttribArray(true);
 		mvpLocation = glProg->getUniformLocation("MVP");
 		ProgramLocation *texLocation = glProg->getAttribLocation("tex");
-		char *datas = new char[4];
-		std::memset(datas, 0xff, 4);
-		int width = 1;
-		int height = 1;
-		GLuint texId;
-		glGenTextures(1, &texId);
-		glBindTexture(GL_TEXTURE_2D, texId);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, datas);
+		char *datas;
+		uint32_t width;
+		uint32_t height;
+		if (!libformat::PNG::read("terrain.png", datas, width, height))
+			ERROR("Failed to read terrain.png");
+		terrain = new Texture(datas, width, height);
 		delete[] (datas);
+		terrain->bind();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texId);
+		glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 		GLint osef = 0;
 		texLocation->setVec1i(osef);
 		World *world = new World();

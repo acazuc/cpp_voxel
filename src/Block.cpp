@@ -287,7 +287,7 @@ namespace voxel
 			else
 			{
 				Block *block = this->chunk->getChunkZMore()->getBlockAt(this->x - this->chunk->getX(), this->y, 0);
-				if (!block || block->isTransparent())
+				if (!block || (block->isTransparent() && block->getType() != this->type))
 					this->visibleFaces |= BLOCK_FACE_FRONT;
 			}
 		}
@@ -306,7 +306,7 @@ namespace voxel
 			else
 			{
 				Block *block = this->chunk->getChunkZLess()->getBlockAt(this->x - this->chunk->getX(), this->y, CHUNK_WIDTH - 1);
-				if (!block || block->isTransparent())
+				if (!block || (block->isTransparent() && block->getType() != this->type))
 					this->visibleFaces |= BLOCK_FACE_BACK;
 			}
 		}
@@ -325,7 +325,7 @@ namespace voxel
 			else
 			{
 				Block *block = this->chunk->getChunkXLess()->getBlockAt(CHUNK_WIDTH - 1, this->y, this->z - this->chunk->getZ());
-				if (!block || block->isTransparent())
+				if (!block || (block->isTransparent() && block->getType() != this->type))
 					this->visibleFaces |= BLOCK_FACE_LEFT;
 			}
 		}
@@ -344,14 +344,14 @@ namespace voxel
 			else
 			{
 				Block *block = this->chunk->getChunkXMore()->getBlockAt(0, this->y, this->z - this->chunk->getZ());
-				if (!block || block->isTransparent())
+				if (!block || (block->isTransparent() && block->getType() != this->type))
 					this->visibleFaces |= BLOCK_FACE_RIGHT;
 			}
 		}
 		else
 		{
 			Block *block = this->chunk->getBlockAt(this->x - this->chunk->getX() + 1, this->y, this->z - this->chunk->getZ());
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_RIGHT;
 		}
 		if (this->y == CHUNK_HEIGHT - 1)
@@ -361,7 +361,7 @@ namespace voxel
 		else
 		{
 			Block *block = this->chunk->getBlockAt(this->x - this->chunk->getX(), this->y + 1, this->z - this->chunk->getZ());
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_UP;
 		}
 		if (this->y == 0)
@@ -371,7 +371,7 @@ namespace voxel
 		else
 		{
 			Block * block = this->chunk->getBlockAt(this->x - this->chunk->getX(), this->y - 1, this->z - this->chunk->getZ());
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_DOWN;
 		}
 	}

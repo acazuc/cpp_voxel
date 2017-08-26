@@ -1,8 +1,11 @@
 #ifndef PLAYER_H
 # define PLAYER_H
 
+# include <librender/Shader/DataBuffer.h>
 # include <glm/glm.hpp>
 # include <cstdint>
+
+using librender::DataBuffer;
 
 namespace voxel
 {
@@ -13,6 +16,8 @@ namespace voxel
 	{
 
 	private:
+		DataBuffer selectedBlockColors;
+		DataBuffer selectedBlockVertex;
 		glm::mat4 projMat;
 		glm::mat4 viewMat;
 		World &world;
@@ -36,6 +41,7 @@ namespace voxel
 		bool checkCollisionY(float addY);
 		bool checkCollisionZ(float addZ);
 		bool checkCollideBlock(float x, float y, float z);
+		void raycast();
 
 	public:
 		Player(World &world);

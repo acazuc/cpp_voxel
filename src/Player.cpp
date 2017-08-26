@@ -33,6 +33,92 @@ namespace voxel
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
+	static float signum(float val)
+	{
+		if (val < 0)
+			return (-1);
+		if (val > 0)
+			return (1);
+		return (0);
+	}
+
+	static float intbound(float pos, float dir)
+	{
+		if (dir < 0)
+			return (intbound(-pos, -dir));
+		pos = ((int)pos % 1 + 1) % 1;
+		return ((1 - pos) / dir);
+	}
+
+	void Player::raycast()
+	{
+		glm::vec3 pos(std::floor(this->posX), std::floor(this->posY), std::floor(this->posZ));
+		glm::mat4 rotMat = glm::mat4(1.);
+		rotMat = glm::rotate(rotMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
+		rotMat = glm::rotate(rotMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
+		glm::vec4 dir(0, 0, -1, 1);
+		dir = rotMat * dir;
+		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
+		glm::vec3 max(intbound(pos.x, dir.x), intbound(pos.y, dir.y), intbound(pos.z, dir.z));
+		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
+		float radius = 5;
+		uint8_t face;
+		while (true)
+		{
+			int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+			Chunk *chunk = this->world.getChunk(chunkX, chunkZ);
+			if (chunk)
+			{
+				Block *block = chunk->getBlockAt(pos.x - chunkX, pos.y, pos.z - chunkZ);
+				if (block)
+				{
+					//Set block
+					return;
+				}
+			}
+			if (max.x < max.y)
+			{
+				if (max.x < max.z)
+				{
+					if (max.x > radius)
+						break;
+					pos.x += step.x;
+					max.x += delta.x;
+					face = step.x < 0 ? BLOCK_FACE_LEFT : BLOCK_FACE_RIGHT;
+				}
+				else
+				{
+					if (max.z > radius)
+						break;
+					pos.z += step.z;
+					max.z += delta.z;
+					face = step.z < 0 ? BLOCK_FACE_BACK : BLOCK_FACE_FRONT;
+				}
+			}
+			else
+			{
+				if (max.y < max.z)
+				{
+					if (max.y > radius)
+						break;
+					pos.y += step.y;
+					max.y += delta.y;
+					face = step.y < 0 ? BLOCK_FACE_DOWN : BLOCK_FACE_UP;
+				}
+				else
+				{
+					if (max.z > radius)
+						break;
+					pos.z += step.z;
+					max.z += delta.z;
+					face = step.z < 0 ? BLOCK_FACE_BACK : BLOCK_FACE_FRONT;
+				}
+			}
+		}
+		(void)face;
+	}
+
 	bool Player::handleMovementXZ()
 	{
 		bool keyW = Main::getWindow()->isKeyDown(GLFW_KEY_W);
@@ -158,6 +244,7 @@ namespace voxel
 	{
 		bool move = handleMovement();
 		bool rot = handleRotation();
+		raycast();
 		if (!move && !rot && false)
 			return;
 		this->viewMat = glm::mat4(1.);

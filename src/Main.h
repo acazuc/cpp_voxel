@@ -18,6 +18,7 @@ namespace voxel
 	{
 
 	private:
+		static ProgramLocation *fogDistanceLocation;
 		static ProgramLocation *texCoordsLocation;
 		static ProgramLocation *vertexesLocation;
 		static ProgramLocation *colorsLocation;
@@ -30,6 +31,7 @@ namespace voxel
 
 	public:
 		static void main();
+		static ProgramLocation *getFogDistanceLocation() {return (fogDistanceLocation);};
 		static ProgramLocation *getTexCoordsLocation() {return (texCoordsLocation);};
 		static ProgramLocation *getVertexesLocation() {return (vertexesLocation);};
 		static ProgramLocation *getColorsLocation() {return (colorsLocation);};

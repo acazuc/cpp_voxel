@@ -24,13 +24,17 @@ centroid varying vec4 viewSpace;\n\
 uniform mat4 MVP;\n\
 uniform mat4 M;\n\
 uniform mat4 V;\n\
+uniform float timeFactor;\n\
 \n\
 void main()\n\
 {\n\
-	gl_Position = MVP * vec4(vertexPosition, 1);\n\
+	vec3 newVertex = vertexPosition;\n\
+	//newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;\n\
+	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;\n\
+	gl_Position = MVP * vec4(newVertex, 1);\n\
 	UV = vertexUV;\n\
 	color = vertexColor;\n\
-	viewSpace = M * V * vec4(vertexPosition, 1);\n\
+	viewSpace = M * V * vec4(newVertex, 1);\n\
 }\n\
 "};
 
@@ -41,13 +45,14 @@ centroid varying vec3 color;\n\
 centroid varying vec4 viewSpace;\n\
 \n\
 uniform sampler2D tex;\n\
+uniform float fogDistance;\n\
 \n\
 void main()\n\
 {\n\
 	vec4 texCol = texture2D(tex, UV);\n\
-	vec4 color = texCol * vec4(color, 1);\n\
+	vec4 color = vec4(texCol.xyz * color, texCol.w);\n\
 	float dist = length(viewSpace);\n\
-	float fog = clamp(1 / exp(pow(max(0, dist - 12 * 16), 2) * 0.001), 0, 1);\n\
+	float fog = clamp(1 / exp(pow(max(0, dist - fogDistance), 2) * 0.01), 0, 1);\n\
 	gl_FragColor = mix(color, vec4(.5, .6, .7, 1), 1 - fog);\n\
 }\n\
 "};
@@ -58,6 +63,7 @@ int64_t nanotime;
 namespace voxel
 {
 
+	ProgramLocation *Main::fogDistanceLocation;
 	ProgramLocation *Main::texCoordsLocation;
 	ProgramLocation *Main::vertexesLocation;
 	ProgramLocation *Main::colorsLocation;
@@ -80,7 +86,8 @@ namespace voxel
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(.5, .6, .7, 1);
 		window->show();
 		window->setVSync(true);
@@ -91,6 +98,7 @@ namespace voxel
 		glProg->attachShader(fragShad);
 		glProg->link();
 		glProg->use();
+		fogDistanceLocation = glProg->getUniformLocation("fogDistance");
 		texCoordsLocation = glProg->getAttribLocation("vertexUV");
 		texCoordsLocation->setVertexAttribArray(true);
 		vertexesLocation = glProg->getAttribLocation("vertexPosition");
@@ -121,12 +129,15 @@ namespace voxel
 		GLint osef = 0;
 		texLocation->setVec1i(osef);
 		World *world = new World();
+		ProgramLocation *timeFactorLocation = glProg->getUniformLocation("timeFactor");
+		fogDistanceLocation->setVec1f(16 * 6);
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
+			timeFactorLocation->setVec1f(nanotime / 1000000000.);
 			window->clearScreen();
 			world->tick();
 			world->draw();

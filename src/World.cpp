@@ -44,6 +44,7 @@ namespace voxel
 			chunk->draw();
 		}
 		this->chunksMutex.unlock();
+		this->clouds.draw();
 	}
 
 	Chunk *World::getChunk(int32_t x, int32_t z)

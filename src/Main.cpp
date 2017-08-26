@@ -30,6 +30,7 @@ void main()\n\
 {\n\
 	vec3 newVertex = vertexPosition;\n\
 	//newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;\n\
+	//newVertex.y += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 3) * .033;\n\
 	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;\n\
 	gl_Position = MVP * vec4(newVertex, 1);\n\
 	UV = vertexUV;\n\
@@ -47,13 +48,16 @@ centroid varying vec4 viewSpace;\n\
 uniform sampler2D tex;\n\
 uniform float fogDistance;\n\
 \n\
+vec4 dayFogColor = vec4(.5, .6, .7, 1);\n\
+vec4 nightFogColor = vec4(.01, .02, .025, 1);\n\
+\n\
 void main()\n\
 {\n\
 	vec4 texCol = texture2D(tex, UV);\n\
-	vec4 color = vec4(texCol.xyz * color, texCol.w);\n\
+	vec4 col = texCol * vec4(color, 1);\n\
 	float dist = length(viewSpace);\n\
 	float fog = clamp(1 / exp(pow(max(0, dist - fogDistance), 2) * 0.01), 0, 1);\n\
-	gl_FragColor = mix(color, vec4(.5, .6, .7, 1), 1 - fog);\n\
+	gl_FragColor = mix(col, dayFogColor, 1 - fog);\n\
 }\n\
 "};
 
@@ -89,6 +93,7 @@ namespace voxel
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(.5, .6, .7, 1);
+		//glClearColor(.01, .02, .025, 1);
 		window->show();
 		window->setVSync(true);
 		VertexShader *vertShad = new VertexShader(vShad);
@@ -121,9 +126,10 @@ namespace voxel
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
 		terrain->bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); 
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 		GLint osef = 0;

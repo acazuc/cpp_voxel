@@ -16,8 +16,6 @@ namespace voxel
 	{
 
 	private:
-		DataBuffer selectedBlockColors;
-		DataBuffer selectedBlockVertex;
 		glm::mat4 projMat;
 		glm::mat4 viewMat;
 		World &world;
@@ -33,6 +31,7 @@ namespace voxel
 		float rotZ;
 		bool isOnFloor;
 		bool hasJumped;
+		bool flying;
 		bool handleMovementXZ();
 		bool handleMovementY();
 		bool handleMovement();

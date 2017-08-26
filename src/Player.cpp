@@ -8,6 +8,7 @@
 #define RUN_SPEED 5.6
 #define JUMP_FORCE .225
 #define GRAVITY 1.25
+#define FLY_SPEED 100
 
 extern int64_t frameDelta;
 extern int64_t nanotime;
@@ -28,9 +29,10 @@ namespace voxel
 	, rotY(0)
 	, rotZ(0)
 	, isOnFloor(true)
+	, flying(true)
 	{
 		this->fallStarted = nanotime;
-		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
+		this->projMat = glm::perspective(glm::radians(65.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
 	static float signum(float val)
@@ -63,6 +65,8 @@ namespace voxel
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
 		float radius = 5;
 		uint8_t face;
+		//glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+		//glBlendEquation(GL_FUNC_ADD);
 		while (true)
 		{
 			int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
@@ -73,7 +77,7 @@ namespace voxel
 				Block *block = chunk->getBlockAt(pos.x - chunkX, pos.y, pos.z - chunkZ);
 				if (block)
 				{
-					//Set block
+					//
 					return;
 				}
 			}
@@ -158,7 +162,12 @@ namespace voxel
 			angle += 0;
 		float addX = frameDelta / 1000000000. * std::cos(angle / 180. * M_PI);
 		float addZ = frameDelta / 1000000000. * std::sin(angle / 180. * M_PI);
-		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
+		if (this->flying)
+		{
+			addX *= FLY_SPEED;
+			addZ *= FLY_SPEED;
+		}
+		else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
 		{
 			addX *= RUN_SPEED;
 			addZ *= RUN_SPEED;
@@ -179,38 +188,53 @@ namespace voxel
 
 	bool Player::handleMovementY()
 	{
-		if (this->isOnFloor && !checkCollisionY(-0.0001))
+		if (this->flying)
 		{
-			this->fallStarted = nanotime;
-			this->isOnFloor = false;
-			this->hasJumped = false;
-		}
-		if (this->isOnFloor)
-		{
+			float addY = 0;
 			if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
-			{
-				this->isOnFloor = false;
-				this->fallStarted = nanotime;
-				this->gravity = -JUMP_FORCE;
-				this->hasJumped = true;
-			}
+				addY += frameDelta / 1000000000. * FLY_SPEED;
+			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
+				addY -= frameDelta / 1000000000. * FLY_SPEED;
+			if (checkCollisionY(addY))
+				addY = 0;
+			this->posY += addY;
+			return (true);
 		}
 		else
 		{
-			this->gravity = GRAVITY * ((nanotime - this->fallStarted) / 1000000000.);
-			if (this->hasJumped)
-				this->gravity -= JUMP_FORCE;
+			if (this->isOnFloor && !checkCollisionY(-0.0001))
+			{
+				this->fallStarted = nanotime;
+				this->isOnFloor = false;
+				this->hasJumped = false;
+			}
+			if (this->isOnFloor)
+			{
+				if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
+				{
+					this->isOnFloor = false;
+					this->fallStarted = nanotime;
+					this->gravity = -JUMP_FORCE;
+					this->hasJumped = true;
+				}
+			}
+			else
+			{
+				this->gravity = GRAVITY * ((nanotime - this->fallStarted) / 1000000000.);
+				if (this->hasJumped)
+					this->gravity -= JUMP_FORCE;
+				}
+			if (!this->gravity)
+				return (false);
+			float addY = -this->gravity;
+			if (checkCollisionY(addY))
+			{
+				this->isOnFloor = true;
+				addY = 0;
+			}
+			this->posY += addY;
+			return (true);
 		}
-		if (!this->gravity)
-			return (false);
-		float addY = -this->gravity;
-		if (checkCollisionY(addY))
-		{
-			this->isOnFloor = true;
-			addY = 0;
-		}
-		this->posY += addY;
-		return (true);
 	}
 
 	bool Player::handleMovement()
@@ -245,7 +269,7 @@ namespace voxel
 		bool move = handleMovement();
 		bool rot = handleRotation();
 		raycast();
-		if (!move && !rot && false)
+		if (!move && !rot)
 			return;
 		this->viewMat = glm::mat4(1.);
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));

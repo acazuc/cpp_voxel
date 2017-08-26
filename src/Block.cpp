@@ -4,9 +4,13 @@
 #include <cstring>
 
 #define BLOCK_SIZE .5
+#define LIGHT_MIN .125
+#define LIGHT_RANGE .5
 
 namespace voxel
 {
+
+	static float lightsLevels[] = {0.03518, 0.04398, 0.05497, 0.06871, 0.08589, 0.10737, 0.13421, 0.16777, 0.20971, .26214, .32768, .4096, .512, .64, .8, 1};
 
 	Block::Block(Chunk *chunk, int32_t x, int32_t y, int32_t z, uint8_t type)
 	: chunk(chunk)
@@ -26,30 +30,30 @@ namespace voxel
 		BlockLights lights;
 		calcLights(lights);
 		glm::vec3 color(1, 1, 1);
-		float f1p1 = lights.f1p1 / 16. * .5 + .25;
-		float f1p2 = lights.f1p2 / 16. * .5 + .25;
-		float f1p3 = lights.f1p3 / 16. * .5 + .25;
-		float f1p4 = lights.f1p4 / 16. * .5 + .25;
-		float f2p1 = lights.f2p1 / 16. * .5 + .25;
-		float f2p2 = lights.f2p2 / 16. * .5 + .25;
-		float f2p3 = lights.f2p3 / 16. * .5 + .25;
-		float f2p4 = lights.f2p4 / 16. * .5 + .25;
-		float f3p1 = lights.f3p1 / 16. * .5 + .25;
-		float f3p2 = lights.f3p2 / 16. * .5 + .25;
-		float f3p3 = lights.f3p3 / 16. * .5 + .25;
-		float f3p4 = lights.f3p4 / 16. * .5 + .25;
-		float f4p1 = lights.f4p1 / 16. * .5 + .25;
-		float f4p2 = lights.f4p2 / 16. * .5 + .25;
-		float f4p3 = lights.f4p3 / 16. * .5 + .25;
-		float f4p4 = lights.f4p4 / 16. * .5 + .25;
-		float f5p1 = lights.f5p1 / 16. * .5 + .25;
-		float f5p2 = lights.f5p2 / 16. * .5 + .25;
-		float f5p3 = lights.f5p3 / 16. * .5 + .25;
-		float f5p4 = lights.f5p4 / 16. * .5 + .25;
-		float f6p1 = lights.f6p1 / 16. * .5 + .25;
-		float f6p2 = lights.f6p2 / 16. * .5 + .25;
-		float f6p3 = lights.f6p3 / 16. * .5 + .25;
-		float f6p4 = lights.f6p4 / 16. * .5 + .25;
+		float f1p1 = lightsLevels[lights.f1p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f1p2 = lightsLevels[lights.f1p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f1p3 = lightsLevels[lights.f1p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f1p4 = lightsLevels[lights.f1p4] * LIGHT_RANGE + LIGHT_MIN;
+		float f2p1 = lightsLevels[lights.f2p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f2p2 = lightsLevels[lights.f2p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f2p3 = lightsLevels[lights.f2p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f2p4 = lightsLevels[lights.f2p4] * LIGHT_RANGE + LIGHT_MIN;
+		float f3p1 = lightsLevels[lights.f3p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f3p2 = lightsLevels[lights.f3p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f3p3 = lightsLevels[lights.f3p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f3p4 = lightsLevels[lights.f3p4] * LIGHT_RANGE + LIGHT_MIN;
+		float f4p1 = lightsLevels[lights.f4p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f4p2 = lightsLevels[lights.f4p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f4p3 = lightsLevels[lights.f4p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f4p4 = lightsLevels[lights.f4p4] * LIGHT_RANGE + LIGHT_MIN;
+		float f5p1 = lightsLevels[lights.f5p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f5p2 = lightsLevels[lights.f5p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f5p3 = lightsLevels[lights.f5p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f5p4 = lightsLevels[lights.f5p4] * LIGHT_RANGE + LIGHT_MIN;
+		float f6p1 = lightsLevels[lights.f6p1] * LIGHT_RANGE + LIGHT_MIN;
+		float f6p2 = lightsLevels[lights.f6p2] * LIGHT_RANGE + LIGHT_MIN;
+		float f6p3 = lightsLevels[lights.f6p3] * LIGHT_RANGE + LIGHT_MIN;
+		float f6p4 = lightsLevels[lights.f6p4] * LIGHT_RANGE + LIGHT_MIN;
 		float texX = ((this->type - 1) % 16) / 16.;
 		float texY = ((this->type - 1) / 16) / 16.;
 		if (this->type == 1)
@@ -294,7 +298,7 @@ namespace voxel
 		else
 		{
 			Block *block = this->chunk->getBlockAt(this->x - this->chunk->getX(), this->y, this->z - this->chunk->getZ() + 1);
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_FRONT;
 		}
 		if (this->z - this->chunk->getZ() == 0)
@@ -313,7 +317,7 @@ namespace voxel
 		else
 		{
 			Block *block = this->chunk->getBlockAt(this->x - this->chunk->getX(), this->y, this->z - this->chunk->getZ() - 1);
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_BACK;
 		}
 		if (this->x - this->chunk->getX() == 0)
@@ -332,7 +336,7 @@ namespace voxel
 		else
 		{
 			Block *block = this->chunk->getBlockAt(this->x - this->chunk->getX() - 1, this->y, this->z - this->chunk->getZ());
-			if (!block || block->isTransparent())
+			if (!block || (block->isTransparent() && block->getType() != this->type))
 				this->visibleFaces |= BLOCK_FACE_LEFT;
 		}
 		if (this->x - this->chunk->getX() == CHUNK_WIDTH - 1)

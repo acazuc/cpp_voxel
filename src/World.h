@@ -5,6 +5,7 @@
 # include "ChunkLoader.h"
 # include "Frustum.h"
 # include "Player.h"
+# include "Clouds.h"
 # include "Chunk.h"
 # include <vector>
 # include <mutex>
@@ -22,6 +23,7 @@ namespace voxel
 		SimplexNoise noise;
 		Frustum frustum;
 		Player player;
+		Clouds clouds;
 
 	public:
 		World();

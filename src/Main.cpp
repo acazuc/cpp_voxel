@@ -17,9 +17,9 @@ attribute vec3 vertexPosition;\n\
 attribute vec3 vertexColor;\n\
 attribute vec2 vertexUV;\n\
 \n\
-varying vec2 UV;\n\
-varying vec3 color;\n\
-varying vec4 viewSpace;\n\
+centroid varying vec2 UV;\n\
+centroid varying vec3 color;\n\
+centroid varying vec4 viewSpace;\n\
 \n\
 uniform mat4 MVP;\n\
 uniform mat4 M;\n\
@@ -36,9 +36,9 @@ void main()\n\
 
 static char fShad[] = {"#version 120\n\
 \n\
-varying vec2 UV;\n\
-varying vec3 color;\n\
-varying vec4 viewSpace;\n\
+centroid varying vec2 UV;\n\
+centroid varying vec3 color;\n\
+centroid varying vec4 viewSpace;\n\
 \n\
 uniform sampler2D tex;\n\
 \n\

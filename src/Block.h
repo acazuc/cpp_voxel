@@ -66,6 +66,9 @@ namespace voxel
 		Block(Chunk *chunk, int32_t x, int32_t y, int32_t z, uint8_t type);
 		void fillBuffers(std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
 		inline bool isTransparent() {return (this->type == 0);};
+		inline int32_t getX() {return (this->x);};
+		inline int32_t getY() {return (this->y);};
+		inline int32_t getZ() {return (this->z);};
 
 	};
 

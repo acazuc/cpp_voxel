@@ -4,10 +4,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 
-#define MOVEMENT_SPEED .10
+#define WALK_SPEED 4.3
+#define RUN_SPEED 5.6
 #define JUMP_FORCE .225
 #define GRAVITY 1.25
 
+extern int64_t frameDelta;
 extern int64_t nanotime;
 
 namespace voxel
@@ -20,7 +22,7 @@ namespace voxel
 	, oldMouseY(0)
 	, gravity(0)
 	, posX(0)
-	, posY(128)
+	, posY(256)
 	, posZ(0)
 	, rotX(0)
 	, rotY(0)
@@ -68,8 +70,18 @@ namespace voxel
 			angle += 180;
 		else if (keyD)
 			angle += 0;
-		float addX = MOVEMENT_SPEED * std::cos(angle / 180. * M_PI);
-		float addZ = MOVEMENT_SPEED * std::sin(angle / 180. * M_PI);
+		float addX = frameDelta / 1000000000. * std::cos(angle / 180. * M_PI);
+		float addZ = frameDelta / 1000000000. * std::sin(angle / 180. * M_PI);
+		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
+		{
+			addX *= RUN_SPEED;
+			addZ *= RUN_SPEED;
+		}
+		else
+		{
+			addX *= WALK_SPEED;
+			addZ *= WALK_SPEED;
+		}
 		if (checkCollisionX(addX))
 			addX = 0;
 		if (checkCollisionZ(addZ))
@@ -152,6 +164,7 @@ namespace voxel
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->posX, -this->posY, -this->posZ));
+		Main::getVLocation()->setMat4f(this->viewMat);
 		this->world.getFrustum().update();
 	}
 

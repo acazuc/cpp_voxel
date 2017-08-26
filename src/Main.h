@@ -22,6 +22,8 @@ namespace voxel
 		static ProgramLocation *vertexesLocation;
 		static ProgramLocation *colorsLocation;
 		static ProgramLocation *mvpLocation;
+		static ProgramLocation *mLocation;
+		static ProgramLocation *vLocation;
 		static Texture *terrain;
 		static Program *glProg;
 		static Window *window;
@@ -32,6 +34,8 @@ namespace voxel
 		static ProgramLocation *getVertexesLocation() {return (vertexesLocation);};
 		static ProgramLocation *getColorsLocation() {return (colorsLocation);};
 		static ProgramLocation *getMvpLocation() {return (mvpLocation);};
+		static ProgramLocation *getMLocation() {return (mLocation);};
+		static ProgramLocation *getVLocation() {return (vLocation);};
 		static Window *getWindow() {return (window);};
 
 	};

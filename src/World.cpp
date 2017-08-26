@@ -31,8 +31,18 @@ namespace voxel
 		this->chunksMutex.lock();
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
 		Main::getMvpLocation()->setMat4f(mvp);
-		for (uint32_t i = 0; i < this->chunks.size(); ++i)
-			this->chunks[i]->draw();
+		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		{
+			Chunk *chunk = *iter;
+			if (chunk->isDeleted())
+			{
+				delete (chunk);
+				--iter;
+				this->chunks.erase(iter + 1);
+				continue;
+			}
+			chunk->draw();
+		}
 		this->chunksMutex.unlock();
 	}
 

@@ -19,16 +19,18 @@ attribute vec2 vertexUV;\n\
 \n\
 varying vec2 UV;\n\
 varying vec3 color;\n\
-varying vec3 position;\n\
+varying vec4 viewSpace;\n\
 \n\
 uniform mat4 MVP;\n\
+uniform mat4 M;\n\
+uniform mat4 V;\n\
 \n\
 void main()\n\
 {\n\
 	gl_Position = MVP * vec4(vertexPosition, 1);\n\
 	UV = vertexUV;\n\
 	color = vertexColor;\n\
-	position = gl_Position.xyz;\n\
+	viewSpace = M * V * vec4(vertexPosition, 1);\n\
 }\n\
 "};
 
@@ -36,7 +38,7 @@ static char fShad[] = {"#version 120\n\
 \n\
 varying vec2 UV;\n\
 varying vec3 color;\n\
-varying vec3 position;\n\
+varying vec4 viewSpace;\n\
 \n\
 uniform sampler2D tex;\n\
 \n\
@@ -44,11 +46,13 @@ void main()\n\
 {\n\
 	vec4 texCol = texture2D(tex, UV);\n\
 	vec4 color = texCol * vec4(color, 1);\n\
-	float fog = clamp((position.z - 200) * 0.1, 0, 1);\n\
-	gl_FragColor = mix(color, vec4(.5, .5, 1, 1), fog);\n\
+	float dist = length(viewSpace);\n\
+	float fog = clamp(1 / exp(pow(max(0, dist - 12 * 16), 2) * 0.001), 0, 1);\n\
+	gl_FragColor = mix(color, vec4(.5, .6, .7, 1), 1 - fog);\n\
 }\n\
 "};
 
+int64_t frameDelta;
 int64_t nanotime;
 
 namespace voxel
@@ -58,6 +62,8 @@ namespace voxel
 	ProgramLocation *Main::vertexesLocation;
 	ProgramLocation *Main::colorsLocation;
 	ProgramLocation *Main::mvpLocation;
+	ProgramLocation *Main::mLocation;
+	ProgramLocation *Main::vLocation;
 	Texture *Main::terrain;
 	Program *Main::glProg;
 	Window *Main::window;
@@ -69,12 +75,13 @@ namespace voxel
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
 		glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glDisable(GL_POLYGON_SMOOTH);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-		glClearColor(0, 0, 0, 1);
+		glClearColor(.5, .6, .7, 1);
 		window->show();
 		window->setVSync(true);
 		VertexShader *vertShad = new VertexShader(vShad);
@@ -91,6 +98,12 @@ namespace voxel
 		colorsLocation = glProg->getAttribLocation("vertexColor");
 		colorsLocation->setVertexAttribArray(true);
 		mvpLocation = glProg->getUniformLocation("MVP");
+		mLocation = glProg->getUniformLocation("M");
+		{
+			glm::mat4 osef(1);
+			mLocation->setMat4f(osef);
+		}
+		vLocation = glProg->getUniformLocation("V");
 		ProgramLocation *texLocation = glProg->getAttribLocation("tex");
 		char *datas;
 		uint32_t width;
@@ -108,9 +121,12 @@ namespace voxel
 		GLint osef = 0;
 		texLocation->setVec1i(osef);
 		World *world = new World();
+		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
+			frameDelta = nanotime - lastFrame;
+			lastFrame = nanotime;
 			window->clearScreen();
 			world->tick();
 			world->draw();

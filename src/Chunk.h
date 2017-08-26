@@ -32,6 +32,7 @@ namespace voxel
 		int32_t x;
 		int32_t z;
 		bool mustGenerateBuffers;
+		bool deleted;
 
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
@@ -51,6 +52,8 @@ namespace voxel
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
+		inline void setDeleted(bool deleted) {this->deleted = deleted;};
+		inline bool isDeleted() {return (this->deleted);};
 
 	};
 

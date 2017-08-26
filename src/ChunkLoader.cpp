@@ -59,11 +59,7 @@ namespace voxel
 				double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
 				int distance = sqrt(part1 * part1 + part2 * part2);
 				if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
-				{
-					chunks.erase(chunks.begin() + i);
-					delete (chunk);
-					i--;
-				}
+					chunk->setDeleted(true);
 			}
 			world.getChunksMutex().unlock();
 			if (checkChunk(world, playerChunkX, playerChunkZ))

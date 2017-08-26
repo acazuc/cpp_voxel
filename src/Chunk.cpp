@@ -15,6 +15,7 @@ namespace voxel
 	, x(x)
 	, z(z)
 	, mustGenerateBuffers(true)
+	, deleted(false)
 	{
 		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
 			this->chunkXLess->setChunkXMore(this);

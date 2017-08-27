@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "Utils/readfile.h"
 #include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
@@ -11,72 +12,66 @@
 using librender::VertexShader;
 using librender::FragmentShader;
 
-static char vShad[] = {"#version 120\n\
-\n\
-attribute vec3 vertexPosition;\n\
-attribute vec3 vertexColor;\n\
-attribute vec2 vertexUV;\n\
-\n\
-centroid varying vec2 UV;\n\
-centroid varying vec3 color;\n\
-centroid varying vec4 viewSpace;\n\
-\n\
-uniform mat4 MVP;\n\
-uniform mat4 M;\n\
-uniform mat4 V;\n\
-uniform float timeFactor;\n\
-\n\
-void main()\n\
-{\n\
-	vec3 newVertex = vertexPosition;\n\
-	//newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;\n\
-	//newVertex.y += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 3) * .033;\n\
-	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;\n\
-	gl_Position = MVP * vec4(newVertex, 1);\n\
-	UV = vertexUV;\n\
-	color = vertexColor;\n\
-	viewSpace = M * V * vec4(newVertex, 1);\n\
-}\n\
-"};
-
-static char fShad[] = {"#version 120\n\
-\n\
-centroid varying vec2 UV;\n\
-centroid varying vec3 color;\n\
-centroid varying vec4 viewSpace;\n\
-\n\
-uniform sampler2D tex;\n\
-uniform float fogDistance;\n\
-\n\
-vec4 dayFogColor = vec4(.5, .6, .7, 1);\n\
-vec4 nightFogColor = vec4(.01, .02, .025, 1);\n\
-\n\
-void main()\n\
-{\n\
-	vec4 texCol = texture2D(tex, UV);\n\
-	vec4 col = texCol * vec4(color, 1);\n\
-	float dist = length(viewSpace);\n\
-	float fog = clamp(1 / exp(pow(max(0, dist - fogDistance), 2) * 0.01), 0, 1);\n\
-	gl_FragColor = mix(col, dayFogColor, 1 - fog);\n\
-}\n\
-"};
-
 int64_t frameDelta;
 int64_t nanotime;
 
 namespace voxel
 {
 
-	ProgramLocation *Main::fogDistanceLocation;
-	ProgramLocation *Main::texCoordsLocation;
-	ProgramLocation *Main::vertexesLocation;
-	ProgramLocation *Main::colorsLocation;
-	ProgramLocation *Main::mvpLocation;
-	ProgramLocation *Main::mLocation;
-	ProgramLocation *Main::vLocation;
+	BlocksShader Main::blocksShader;
+	CloudsShader Main::cloudsShader;
 	Texture *Main::terrain;
-	Program *Main::glProg;
 	Window *Main::window;
+
+	void Main::buildBlocksShader()
+	{
+		std::string vShad = readfile("data/shaders/blocks.vs");
+		LOG("building blocks vertex shader");
+		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		LOG("building blocks fragment shader");
+		std::string fShad = readfile("data/shaders/blocks.fs");
+		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		blocksShader.program = new Program();
+		blocksShader.program->attachShader(vertShad);
+		blocksShader.program->attachShader(fragShad);
+		blocksShader.program->link();
+		blocksShader.fogDistanceLocation = blocksShader.program->getUniformLocation("fogDistance");
+		blocksShader.timeFactorLocation = blocksShader.program->getUniformLocation("timeFactor");
+		blocksShader.texCoordsLocation = blocksShader.program->getAttribLocation("vertexUV");
+		blocksShader.texCoordsLocation->setVertexAttribArray(true);
+		blocksShader.vertexesLocation = blocksShader.program->getAttribLocation("vertexPosition");
+		blocksShader.vertexesLocation->setVertexAttribArray(true);
+		blocksShader.fogColorLocation = blocksShader.program->getUniformLocation("fogColor");
+		blocksShader.colorsLocation = blocksShader.program->getAttribLocation("vertexColor");
+		blocksShader.colorsLocation->setVertexAttribArray(true);
+		blocksShader.mvpLocation = blocksShader.program->getUniformLocation("MVP");
+		blocksShader.texLocation = blocksShader.program->getAttribLocation("tex");
+		blocksShader.mLocation = blocksShader.program->getUniformLocation("M");
+		blocksShader.vLocation = blocksShader.program->getUniformLocation("V");
+	}
+
+	void Main::buildCloudsShader()
+	{
+		std::string vShad = readfile("data/shaders/clouds.vs");
+		LOG("building clouds vertex shader");
+		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		std::string fShad = readfile("data/shaders/clouds.fs");
+		LOG("building clouds fragment shader");
+		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		cloudsShader.program = new Program();
+		cloudsShader.program->attachShader(vertShad);
+		cloudsShader.program->attachShader(fragShad);
+		cloudsShader.program->link();
+		cloudsShader.fogDistanceLocation = cloudsShader.program->getUniformLocation("fogDistance");
+		cloudsShader.vertexesLocation = cloudsShader.program->getAttribLocation("vertexPosition");
+		cloudsShader.vertexesLocation->setVertexAttribArray(true);
+		cloudsShader.fogColorLocation = cloudsShader.program->getUniformLocation("fogColor");
+		cloudsShader.colorsLocation = cloudsShader.program->getAttribLocation("vertexColor");
+		cloudsShader.colorsLocation->setVertexAttribArray(true);
+		cloudsShader.mvpLocation = cloudsShader.program->getUniformLocation("MVP");
+		cloudsShader.mLocation = cloudsShader.program->getUniformLocation("M");
+		cloudsShader.vLocation = cloudsShader.program->getUniformLocation("V");
+	}
 
 	void Main::main()
 	{
@@ -96,32 +91,24 @@ namespace voxel
 		//glClearColor(.01, .02, .025, 1);
 		window->show();
 		window->setVSync(true);
-		VertexShader *vertShad = new VertexShader(vShad);
-		FragmentShader *fragShad = new FragmentShader(fShad);
-		glProg = new Program();
-		glProg->attachShader(vertShad);
-		glProg->attachShader(fragShad);
-		glProg->link();
-		glProg->use();
-		fogDistanceLocation = glProg->getUniformLocation("fogDistance");
-		texCoordsLocation = glProg->getAttribLocation("vertexUV");
-		texCoordsLocation->setVertexAttribArray(true);
-		vertexesLocation = glProg->getAttribLocation("vertexPosition");
-		vertexesLocation->setVertexAttribArray(true);
-		colorsLocation = glProg->getAttribLocation("vertexColor");
-		colorsLocation->setVertexAttribArray(true);
-		mvpLocation = glProg->getUniformLocation("MVP");
-		mLocation = glProg->getUniformLocation("M");
+		buildBlocksShader();
+		buildCloudsShader();
 		{
 			glm::mat4 osef(1);
-			mLocation->setMat4f(osef);
+			blocksShader.program->use();
+			blocksShader.mLocation->setMat4f(osef);
+			blocksShader.texLocation->setVec1i(0);
+			blocksShader.fogColorLocation->setVec4f(.5, .6, .7, 1);
+			blocksShader.fogDistanceLocation->setVec1f(16 * 6);
+			cloudsShader.program->use();
+			cloudsShader.mLocation->setMat4f(osef);
+			cloudsShader.fogColorLocation->setVec4f(.5, .6, .7, 1);
+			cloudsShader.fogDistanceLocation->setVec1f(16 * 600);
 		}
-		vLocation = glProg->getUniformLocation("V");
-		ProgramLocation *texLocation = glProg->getAttribLocation("tex");
 		char *datas;
 		uint32_t width;
 		uint32_t height;
-		if (!libformat::PNG::read("terrain.png", datas, width, height))
+		if (!libformat::PNG::read("data/textures/terrain.png", datas, width, height))
 			ERROR("Failed to read terrain.png");
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
@@ -132,18 +119,13 @@ namespace voxel
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
-		GLint osef = 0;
-		texLocation->setVec1i(osef);
 		World *world = new World();
-		ProgramLocation *timeFactorLocation = glProg->getUniformLocation("timeFactor");
-		fogDistanceLocation->setVec1f(16 * 6);
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
-			timeFactorLocation->setVec1f(nanotime / 1000000000.);
 			window->clearScreen();
 			world->tick();
 			world->draw();

@@ -31,7 +31,7 @@ namespace voxel
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
 				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 3 + CHUNK_HEIGHT / 2;
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
@@ -83,9 +83,9 @@ namespace voxel
 			this->mustGenerateBuffers = false;
 			generateGLBuffer();
 		}
-		Main::getTexCoordsLocation()->setDataBuffer(*this->texCoordsBuffer);
-		Main::getVertexesLocation()->setDataBuffer(*this->vertexesBuffer);
-		Main::getColorsLocation()->setDataBuffer(*this->colorsBuffer);
+		Main::getBlocksShader().texCoordsLocation->setDataBuffer(*this->texCoordsBuffer);
+		Main::getBlocksShader().vertexesLocation->setDataBuffer(*this->vertexesBuffer);
+		Main::getBlocksShader().colorsLocation->setDataBuffer(*this->colorsBuffer);
 		this->indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 	}

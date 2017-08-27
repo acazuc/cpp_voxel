@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 # define MAIN_H
 
+# include "Shaders/BlocksShader.h"
+# include "Shaders/CloudsShader.h"
 # include <librender/Shader/ProgramLocation.h>
 # include <librender/Shader/Program.h>
 # include <librender/Window/Window.h>
@@ -18,26 +20,17 @@ namespace voxel
 	{
 
 	private:
-		static ProgramLocation *fogDistanceLocation;
-		static ProgramLocation *texCoordsLocation;
-		static ProgramLocation *vertexesLocation;
-		static ProgramLocation *colorsLocation;
-		static ProgramLocation *mvpLocation;
-		static ProgramLocation *mLocation;
-		static ProgramLocation *vLocation;
+		static BlocksShader blocksShader;
+		static CloudsShader cloudsShader;
 		static Texture *terrain;
-		static Program *glProg;
 		static Window *window;
+		static void buildBlocksShader();
+		static void buildCloudsShader();
 
 	public:
 		static void main();
-		static ProgramLocation *getFogDistanceLocation() {return (fogDistanceLocation);};
-		static ProgramLocation *getTexCoordsLocation() {return (texCoordsLocation);};
-		static ProgramLocation *getVertexesLocation() {return (vertexesLocation);};
-		static ProgramLocation *getColorsLocation() {return (colorsLocation);};
-		static ProgramLocation *getMvpLocation() {return (mvpLocation);};
-		static ProgramLocation *getMLocation() {return (mLocation);};
-		static ProgramLocation *getVLocation() {return (vLocation);};
+		static BlocksShader &getBlocksShader() {return (blocksShader);};
+		static CloudsShader &getCloudsShader() {return (cloudsShader);};
 		static Window *getWindow() {return (window);};
 
 	};

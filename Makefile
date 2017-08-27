@@ -18,6 +18,7 @@ SRCS_NAME = Main.cpp \
 	    Clouds.cpp \
 	    SimplexNoise/SimplexNoise.cpp \
 	    SimplexNoise/SimplexNoiseOctave.cpp \
+	    Utils/readfile.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -42,6 +43,7 @@ $(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp
 odir:
 	@mkdir -p $(OBJS_PATH)
 	@mkdir -p $(OBJS_PATH)/SimplexNoise
+	@mkdir -p $(OBJS_PATH)/Utils
 
 clean:
 	@echo " - Cleaning objs"

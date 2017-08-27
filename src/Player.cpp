@@ -275,7 +275,7 @@ namespace voxel
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->posX, -this->posY, -this->posZ));
-		Main::getVLocation()->setMat4f(this->viewMat);
+		Main::getBlocksShader().vLocation->setMat4f(this->viewMat);
 		this->world.getFrustum().update();
 	}
 

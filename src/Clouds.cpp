@@ -9,7 +9,7 @@
 #define CLOUD_Y 128
 #define CLOUD_WIDTH 12
 #define CLOUD_HEIGHT 4
-#define DISPLAY_DISTANCE 16 * 16
+#define DISPLAY_DISTANCE 16 * 32
 
 extern int64_t nanotime;
 
@@ -66,8 +66,8 @@ namespace voxel
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
 		this->verticesNb = 0;
-		int32_t baseX = this->world.getPlayer().getPosX() - DISPLAY_DISTANCE;
-		int32_t endX = this->world.getPlayer().getPosX() + DISPLAY_DISTANCE;
+		int32_t baseX = this->world.getPlayer().getPosX() - DISPLAY_DISTANCE + nanotime / 1000000000.;
+		int32_t endX = this->world.getPlayer().getPosX() + DISPLAY_DISTANCE + nanotime / 1000000000.;
 		int32_t baseY = this->world.getPlayer().getPosZ() - DISPLAY_DISTANCE;
 		int32_t endY = this->world.getPlayer().getPosZ() + DISPLAY_DISTANCE;
 		baseX -= baseX % CLOUD_WIDTH;

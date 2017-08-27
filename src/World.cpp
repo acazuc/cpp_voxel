@@ -38,6 +38,7 @@ namespace voxel
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
+		Main::getBlocksShader().fogColorLocation->setVec3f(Main::getSkyColor());
 		glBindTexture(GL_TEXTURE_2D, Main::getTerrain()->getTextureID());
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{

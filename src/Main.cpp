@@ -21,6 +21,7 @@ namespace voxel
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
 	SkyboxShader Main::skyboxShader;
+	glm::vec3 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
 
@@ -110,8 +111,6 @@ namespace voxel
 		glEnable(GL_BLEND);
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glClearColor(.662, .796, 1, 1);
-		//glClearColor(0, 0, .0125, 1);
 		window->show();
 		window->setVSync(true);
 		buildBlocksShader();
@@ -122,11 +121,9 @@ namespace voxel
 			blocksShader.program->use();
 			blocksShader.mLocation->setMat4f(osef);
 			blocksShader.texLocation->setVec1i(0);
-			blocksShader.fogColorLocation->setVec4f(.662, .796, 1, 1);
 			blocksShader.fogDistanceLocation->setVec1f(16 * 13);
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
-			cloudsShader.fogColorLocation->setVec4f(.662, .796, 1, 1);
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 13);
 			skyboxShader.program->use();
 			skyboxShader.texLocation->setVec1i(0);
@@ -142,13 +139,15 @@ namespace voxel
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 		glActiveTexture(GL_TEXTURE0);
 		World *world = new World();
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
+			float bgFactor = std::abs(cos(-nanotime / 1000000000. / 60 / 20 * M_PI + M_PI / 4));
+			skyColor = glm::vec3(.662 * bgFactor, .796 * bgFactor, .0125 + .875 * bgFactor);
+			glClearColor(skyColor.x, skyColor.y, skyColor.z, 1);
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
 			window->clearScreen();

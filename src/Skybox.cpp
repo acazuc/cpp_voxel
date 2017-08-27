@@ -73,7 +73,7 @@ namespace voxel
 		Main::getSkyboxShader().program->use();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(this->world.getPlayer().getPosX(), this->world.getPlayer().getPosY(), this->world.getPlayer().getPosZ()));
-		model = glm::rotate(model, glm::vec2(-nanotime / 1000000000. / 60 / 20, 0).x, glm::vec3(1, 0, 0));
+		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
 		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
 		glBindTexture(GL_TEXTURE_2D, sun->getTextureID());

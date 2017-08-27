@@ -13,6 +13,7 @@ using librender::ProgramLocation;
 using librender::Program;
 using librender::Texture;
 using librender::Window;
+using librender::Color;
 
 namespace voxel
 {
@@ -24,6 +25,7 @@ namespace voxel
 		static BlocksShader blocksShader;
 		static CloudsShader cloudsShader;
 		static SkyboxShader skyboxShader;
+		static glm::vec3 skyColor;
 		static Texture *terrain;
 		static Window *window;
 		static void buildBlocksShader();
@@ -35,6 +37,7 @@ namespace voxel
 		static BlocksShader &getBlocksShader() {return (blocksShader);};
 		static CloudsShader &getCloudsShader() {return (cloudsShader);};
 		static SkyboxShader &getSkyboxShader() {return (skyboxShader);};
+		static glm::vec3 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
 		static Window *getWindow() {return (window);};
 

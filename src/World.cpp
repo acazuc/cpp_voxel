@@ -14,7 +14,7 @@ namespace voxel
 	, clouds(*this)
 	, skybox(*this)
 	{
-		//Empty
+		this->chunks.reserve(16 * 16);
 	}
 
 	World::~World()

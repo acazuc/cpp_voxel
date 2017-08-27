@@ -121,7 +121,7 @@ namespace voxel
 			blocksShader.program->use();
 			blocksShader.mLocation->setMat4f(osef);
 			blocksShader.texLocation->setVec1i(0);
-			blocksShader.fogDistanceLocation->setVec1f(16 * 13);
+			blocksShader.fogDistanceLocation->setVec1f(16 * 14);
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);

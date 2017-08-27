@@ -50,26 +50,17 @@ namespace voxel
 	{
 
 	private:
-		Chunk *chunk;
-		uint8_t visibleFaces;
 		uint8_t type;
-		int32_t x;
-		int32_t y;
-		int32_t z;
-		bool calcLightsIsTransparentSameChunk(int8_t addX, int8_t addY, int8_t addZ);
-		bool calcLightsIsTransparentOtherChunk(Chunk *chunk, int32_t newBlockX, int32_t newBlockY, int32_t newBlockZ);
-		bool calcLightsIsTransparent(int8_t x, int8_t y, int8_t z);
-		void calcLights(BlockLights &lights);
-		void calcVisibleFaces();
+		bool calcLightsIsTransparentChunk(Chunk *chunk, int32_t x, int32_t y, int32_t z);
+		bool calcLightsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
+		void calcLights(Chunk *chunk, glm::vec3 &pos, BlockLights &lights, uint8_t visibleFaces);
+		void calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces);
 
 	public:
-		Block(Chunk *chunk, int32_t x, int32_t y, int32_t z, uint8_t type);
-		void fillBuffers(std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
+		Block(uint8_t type);
+		void fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
 		inline bool isTransparent() {return (this->type == 0 || this->type == 16 * 13 + 15);};
 		inline uint8_t getType() {return (this->type);};
-		inline int32_t getX() {return (this->x);};
-		inline int32_t getY() {return (this->y);};
-		inline int32_t getZ() {return (this->z);};
 
 	};
 

@@ -22,6 +22,7 @@ namespace voxel
 		DataBuffer *vertexesBuffer;
 		DataBuffer *indicesBuffer;
 		DataBuffer *colorsBuffer;
+		glm::mat4 modelMat;
 		Block **blocks;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;

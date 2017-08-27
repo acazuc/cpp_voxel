@@ -1,7 +1,6 @@
 #include "Chunk.h"
 #include "World.h"
 #include "Main.h"
-#include <iostream>
 
 namespace voxel
 {
@@ -49,7 +48,7 @@ namespace voxel
 						blockType = 3;
 					else
 						blockType = 2;
-					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(this, this->x + x, y, this->z + z, blockType);
+					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(blockType);
 				}
 			}
 		}
@@ -96,11 +95,23 @@ namespace voxel
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
 		std::vector<GLuint> indices;
-		for (uint32_t i = 0; i < CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH; ++i)
+		glm::vec3 pos(1);
+		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
-			Block *block = this->blocks[i];
-			if (block)
-				block->fillBuffers(vertexes, texCoords, colors, indices);
+			for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
+			{
+				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
+				{
+					Block *block = this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z];
+					if (block)
+					{
+						pos.x = this->x + x;
+						pos.y = y;
+						pos.z = this->z + z;
+						block->fillBuffers(this, pos, vertexes, texCoords, colors, indices);
+					}
+				}
+			}
 		}
 		if (!this->texCoordsBuffer)
 			this->texCoordsBuffer = new DataBuffer();

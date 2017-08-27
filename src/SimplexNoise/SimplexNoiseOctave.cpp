@@ -3,10 +3,10 @@
 
 #define NUMBEROFSWAPS 4000
 
-#define F2 0.36602540378443864676;//0.5 * (sqrt(3.0) - 1.0);
-#define G2 0.21132486540518711775;//(3.0 - sqrt(3.0)) / 6.0;
-#define F3 0.33333333333333333333;//1.0 / 3.0;
-#define G3 0.16666666666666666667;//1.0 / 6.0;
+#define F2 0.36602540378443864676//0.5 * (sqrt(3.0) - 1.0);
+#define G2 0.21132486540518711775//(3.0 - sqrt(3.0)) / 6.0;
+#define F3 0.33333333333333333333//1.0 / 3.0;
+#define G3 0.16666666666666666667//1.0 / 6.0;
 
 static uint8_t p_supply[] = {151,160,137,91,90,15,
 	131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
@@ -27,7 +27,6 @@ namespace voxel
 
 	static SimplexNoiseGrad grads[] = {{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}
 		, {1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}};
-
 
 	void SimplexNoiseOctave::init(uint32_t seed)
 	{
@@ -82,44 +81,44 @@ namespace voxel
 		}
 		double x1 = x0 - i1 + G2;
 		double y1 = y0 - j1 + G2;
-		double x2 = x0 - 1.0 + 2.0 * G2;
-		double y2 = y0 - 1.0 + 2.0 * G2;
-		uint8_t ii = i & 255;
-		uint8_t jj = j & 255;
+		double x2 = x0 - 1 + 2 * G2;
+		double y2 = y0 - 1 + 2 * G2;
+		uint8_t ii = i & 0xff;
+		uint8_t jj = j & 0xff;
 		uint8_t gi0 = this->permMod12[ii + this->perm[jj]];
 		uint8_t gi1 = this->permMod12[ii + i1 + this->perm[jj + j1]];
 		uint8_t gi2 = this->permMod12[ii + 1 + this->perm[jj + 1]];
-		double t0 = 0.5 - x0 * x0 - y0 * y0;
+		double t0 = .5 - x0 * x0 - y0 * y0;
 		if (t0 < 0)
 		{
-			n0 = 0.0;
+			n0 = 0;
 		}
 		else
 		{
 			t0 *= t0;
 			n0 = t0 * t0 * dot2(&grads[gi0], x0, y0);
 		}
-		double t1 = 0.5 - x1 * x1 - y1 * y1;
+		double t1 = .5 - x1 * x1 - y1 * y1;
 		if (t1 < 0)
 		{
-			n1 = 0.0;
+			n1 = 0;
 		}
 		else
 		{
 			t1 *= t1;
 			n1 = t1 * t1 * dot2(&grads[gi1], x1, y1);
 		}
-		double t2 = 0.5 - x2 * x2 - y2 * y2;
+		double t2 = .5 - x2 * x2 - y2 * y2;
 		if (t2 < 0)
 		{
-			n2 = 0.0;
+			n2 = 0;
 		}
 		else
 		{
 			t2 *= t2;
 			n2 = t2 * t2 * dot2(&grads[gi2], x2, y2);
 		}
-		return (70.0 * (n0 + n1 + n2));
+		return (70 * (n0 + n1 + n2));
 	}
 
 
@@ -209,23 +208,23 @@ namespace voxel
 		double x1 = x0 - i1 + G3;
 		double y1 = y0 - j1 + G3;
 		double z1 = z0 - k1 + G3;
-		double x2 = x0 - i2 + 2.0 * G3;
-		double y2 = y0 - j2 + 2.0 * G3;
-		double z2 = z0 - k2 + 2.0 * G3;
-		double x3 = x0 - 1.0 + 3.0 * G3;
-		double y3 = y0 - 1.0 + 3.0 * G3;
-		double z3 = z0 - 1.0 + 3.0 * G3;
-		uint8_t ii = i & 255;
-		uint8_t jj = j & 255;
-		uint8_t kk = k & 255;
+		double x2 = x0 - i2 + 2 * G3;
+		double y2 = y0 - j2 + 2 * G3;
+		double z2 = z0 - k2 + 2 * G3;
+		double x3 = x0 - 1 + 3 * G3;
+		double y3 = y0 - 1 + 3 * G3;
+		double z3 = z0 - 1 + 3 * G3;
+		uint8_t ii = i & 0xff;
+		uint8_t jj = j & 0xff;
+		uint8_t kk = k & 0xff;
 		uint8_t gi0 = this->permMod12[ii + this->perm[jj + this->perm[kk]]];
 		uint8_t gi1 = this->permMod12[ii + i1 + this->perm[jj + j1 + this->perm[kk + k1]]];
 		uint8_t gi2 = this->permMod12[ii + i2 + this->perm[jj + j2 + this->perm[kk + k2]]];
 		uint8_t gi3 = this->permMod12[ii + 1 + this->perm[jj + 1 + this->perm[kk + 1]]];
-		double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
+		double t0 = .6 - x0 * x0 - y0 * y0 - z0 * z0;
 		if (t0 < 0)
 		{
-			n0 = 0.0;
+			n0 = 0;
 		}
 		else
 		{
@@ -235,34 +234,34 @@ namespace voxel
 		double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
 		if (t1 < 0)
 		{
-			n1 = 0.0;
+			n1 = 0;
 		}
 		else
 		{
 			t1 *= t1;
 			n1 = t1 * t1 * dot3(&grads[gi1], x1, y1, z1);
 		}
-		double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
+		double t2 = .6 - x2 * x2 - y2 * y2 - z2 * z2;
 		if (t2 < 0)
 		{
-			n2 = 0.0;
+			n2 = 0;
 		}
 		else
 		{
 			t2 *= t2;
 			n2 = t2 * t2 * dot3(&grads[gi2], x2, y2, z2);
 		}
-		double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
+		double t3 = .6 - x3 * x3 - y3 * y3 - z3 * z3;
 		if (t3 < 0)
 		{
-			n3 = 0.0;
+			n3 = 0;
 		}
 		else
 		{
 			t3 *= t3;
 			n3 = t3 * t3 * dot3(&grads[gi3], x3, y3, z3);
 		}
-		return (32.0 * (n0 + n1 + n2 + n3));
+		return (32 * (n0 + n1 + n2 + n3));
 	}
 
 	double SimplexNoiseOctave::dot2(SimplexNoiseGrad *g, double x, double y)

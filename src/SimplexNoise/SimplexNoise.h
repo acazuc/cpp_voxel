@@ -12,11 +12,11 @@ namespace voxel
 
 	private:
 		SimplexNoiseOctave *octaves;
+		uint32_t largestFeature;
+		uint32_t octavesNumber;
 		double *frequencies;
 		double *amplitudes;
 		double persistence;
-		uint32_t largestFeature;
-		uint32_t octavesNumber;
 		int32_t seed;
 
 	public:

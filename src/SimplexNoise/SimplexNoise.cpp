@@ -1,15 +1,14 @@
 #include "SimplexNoise.h"
 #include <cmath>
 
-
 namespace voxel
 {
 
 	SimplexNoise::SimplexNoise(uint32_t largestFeature, double persistence, int32_t seed)
+	: largestFeature(largestFeature)
+	, persistence(persistence)
+	, seed(seed)
 	{
-		this->largestFeature = largestFeature;
-		this->persistence = persistence;
-		this->seed = seed;
 		this->octavesNumber = std::ceil(std::log10(this->largestFeature) / std::log10(2));
 		this->octaves = new SimplexNoiseOctave[this->octavesNumber];
 		this->frequencies = new double[this->octavesNumber];
@@ -41,11 +40,7 @@ namespace voxel
 	{
 		double result = 0;
 		for (uint32_t i = 0 ; i < this->octavesNumber; ++i)
-		{
-			double frequency = pow(2, i);
-			double amplitude = pow(this->persistence, this->octavesNumber - i);
-			result += this->octaves[i].get3(x / frequency, y / frequency, z / frequency) * amplitude;
-		}
+			result += this->octaves[i].get3(x / this->frequencies[i], y / this->frequencies[i], z / this->frequencies[i]) * this->amplitudes[i];
 		return (result);
 	}
 

@@ -22,5 +22,5 @@ void main()
 	gl_Position = MVP * newVertex;
 	UV = vertexUV;
 	color = vertexColor;
-	viewSpace = M * V * newVertex;
+	viewSpace = V * M * newVertex;
 }

@@ -15,5 +15,5 @@ void main()
 	vec4 newVertex = vec4(vertexPosition, 1);
 	gl_Position = MVP * newVertex;
 	color = vertexColor;
-	viewSpace = M * V * newVertex;
+	viewSpace = V * M * newVertex;
 }

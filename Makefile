@@ -16,6 +16,7 @@ SRCS_NAME = Main.cpp \
 	    Frustum.cpp \
 	    ChunkLoader.cpp \
 	    Clouds.cpp \
+	    Skybox.cpp \
 	    SimplexNoise/SimplexNoise.cpp \
 	    SimplexNoise/SimplexNoiseOctave.cpp \
 	    Utils/readfile.cpp \

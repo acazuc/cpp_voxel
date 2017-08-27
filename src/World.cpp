@@ -12,6 +12,7 @@ namespace voxel
 	, frustum(*this)
 	, player(*this)
 	, clouds(*this)
+	, skybox(*this)
 	{
 		//Empty
 	}
@@ -37,6 +38,7 @@ namespace voxel
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
+		glBindTexture(GL_TEXTURE_2D, Main::getTerrain()->getTextureID());
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
 			Chunk *chunk = *iter;
@@ -51,6 +53,7 @@ namespace voxel
 		}
 		this->chunksMutex.unlock();
 		this->clouds.draw();
+		this->skybox.draw();
 	}
 
 	Chunk *World::getChunk(int32_t x, int32_t z)

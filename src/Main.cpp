@@ -20,6 +20,7 @@ namespace voxel
 
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
+	SkyboxShader Main::skyboxShader;
 	Texture *Main::terrain;
 	Window *Main::window;
 
@@ -73,6 +74,28 @@ namespace voxel
 		cloudsShader.vLocation = cloudsShader.program->getUniformLocation("V");
 	}
 
+	void Main::buildSkyboxShader()
+	{
+		std::string vShad = readfile("data/shaders/skybox.vs");
+		LOG("building skybox vertex shader");
+		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		LOG("building skybox fragment shader");
+		std::string fShad = readfile("data/shaders/skybox.fs");
+		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		skyboxShader.program = new Program();
+		skyboxShader.program->attachShader(vertShad);
+		skyboxShader.program->attachShader(fragShad);
+		skyboxShader.program->link();
+		skyboxShader.texCoordsLocation = skyboxShader.program->getAttribLocation("vertexUV");
+		skyboxShader.texCoordsLocation->setVertexAttribArray(true);
+		skyboxShader.vertexesLocation = skyboxShader.program->getAttribLocation("vertexPosition");
+		skyboxShader.vertexesLocation->setVertexAttribArray(true);
+		skyboxShader.colorsLocation = skyboxShader.program->getAttribLocation("vertexColor");
+		skyboxShader.colorsLocation->setVertexAttribArray(true);
+		skyboxShader.mvpLocation = skyboxShader.program->getUniformLocation("MVP");
+		skyboxShader.texLocation = skyboxShader.program->getAttribLocation("tex");
+	}
+
 	void Main::main()
 	{
 		glfwWindowHint(GLFW_SAMPLES, 16);
@@ -88,10 +111,12 @@ namespace voxel
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glClearColor(.662, .796, 1, 1);
+		//glClearColor(0, 0, .0125, 1);
 		window->show();
 		window->setVSync(true);
 		buildBlocksShader();
 		buildCloudsShader();
+		buildSkyboxShader();
 		{
 			glm::mat4 osef(1);
 			blocksShader.program->use();
@@ -103,6 +128,8 @@ namespace voxel
 			cloudsShader.mLocation->setMat4f(osef);
 			cloudsShader.fogColorLocation->setVec4f(.662, .796, 1, 1);
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 13);
+			skyboxShader.program->use();
+			skyboxShader.texLocation->setVec1i(0);
 		}
 		char *datas;
 		uint32_t width;
@@ -117,7 +144,6 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, terrain->getTextureID());
 		World *world = new World();
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())

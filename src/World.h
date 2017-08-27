@@ -6,6 +6,7 @@
 # include "Frustum.h"
 # include "Player.h"
 # include "Clouds.h"
+# include "Skybox.h"
 # include "Chunk.h"
 # include <vector>
 # include <mutex>
@@ -24,6 +25,7 @@ namespace voxel
 		Frustum frustum;
 		Player player;
 		Clouds clouds;
+		Skybox skybox;
 
 	public:
 		World();

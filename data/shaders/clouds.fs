@@ -1,6 +1,5 @@
 #version 120
 
-centroid varying vec2 UV;
 centroid varying vec3 color;
 centroid varying vec4 viewSpace;
 

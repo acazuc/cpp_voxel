@@ -5,7 +5,7 @@
 
 #define BLOCK_SIZE .5
 #define LIGHT_MIN .125
-#define LIGHT_RANGE .5
+#define LIGHT_RANGE .75
 
 namespace voxel
 {

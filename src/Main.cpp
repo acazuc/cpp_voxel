@@ -87,8 +87,7 @@ namespace voxel
 		glEnable(GL_BLEND);
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glClearColor(.5, .6, .7, 1);
-		//glClearColor(.01, .02, .025, 1);
+		glClearColor(.662, .796, 1, 1);
 		window->show();
 		window->setVSync(true);
 		buildBlocksShader();
@@ -98,12 +97,12 @@ namespace voxel
 			blocksShader.program->use();
 			blocksShader.mLocation->setMat4f(osef);
 			blocksShader.texLocation->setVec1i(0);
-			blocksShader.fogColorLocation->setVec4f(.5, .6, .7, 1);
-			blocksShader.fogDistanceLocation->setVec1f(16 * 6);
+			blocksShader.fogColorLocation->setVec4f(.662, .796, 1, 1);
+			blocksShader.fogDistanceLocation->setVec1f(16 * 13);
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
-			cloudsShader.fogColorLocation->setVec4f(.5, .6, .7, 1);
-			cloudsShader.fogDistanceLocation->setVec1f(16 * 600);
+			cloudsShader.fogColorLocation->setVec4f(.662, .796, 1, 1);
+			cloudsShader.fogDistanceLocation->setVec1f(16 * 13);
 		}
 		char *datas;
 		uint32_t width;

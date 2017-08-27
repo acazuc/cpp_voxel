@@ -12,7 +12,8 @@ uniform mat4 V;
 
 void main()
 {
-	gl_Position = MVP * vec4(vertexPosition, 1);
+	vec4 newVertex = vec4(vertexPosition, 1);
+	gl_Position = MVP * newVertex;
 	color = vertexColor;
-	viewSpace = M * V * vec4(vertexPosition, 1);
+	viewSpace = M * V * newVertex;
 }

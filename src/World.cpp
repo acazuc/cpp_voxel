@@ -34,6 +34,7 @@ namespace voxel
 		this->chunksMutex.lock();
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
 		Main::getBlocksShader().program->use();
+		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)

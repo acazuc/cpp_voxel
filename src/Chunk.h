@@ -40,6 +40,7 @@ namespace voxel
 		~Chunk();
 		void generateGLBuffer();
 		void draw();
+		void destroyBlock(int32_t x, int32_t y, int32_t z);
 		inline Block **getBlocks() {return (this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
@@ -53,6 +54,7 @@ namespace voxel
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
+		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
 

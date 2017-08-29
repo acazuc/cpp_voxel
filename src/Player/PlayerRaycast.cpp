@@ -116,6 +116,11 @@ namespace voxel
 					Block *block = chunk->getBlockAt(pos.x - chunkX, pos.y, pos.z - chunkZ);
 					if (block)
 					{
+						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+						{
+							chunk->destroyBlock(pos.x - chunkX, pos.y, pos.z - chunkZ);
+							return;
+						}
 						this->found = true;
 						this->face = face;
 						this->x = pos.x;

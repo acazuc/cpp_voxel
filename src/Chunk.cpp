@@ -128,6 +128,33 @@ namespace voxel
 		this->verticesNb = indices.size();
 	}
 
+	void Chunk::destroyBlock(int32_t x, int32_t y, int32_t z)
+	{
+		if (x == 0)
+		{
+			if (this->chunkXLess)
+				this->chunkXLess->regenerateBuffers();
+		}
+		else if (x == CHUNK_WIDTH - 1)
+		{
+			if (this->chunkXMore)
+				this->chunkXMore->regenerateBuffers();
+		}
+		if (z == 0)
+		{
+			if (this->chunkZLess)
+				this->chunkZLess->regenerateBuffers();
+		}
+		else if (z == CHUNK_WIDTH - 1)
+		{
+			if (this->chunkZMore)
+				this->chunkZMore->regenerateBuffers();
+		}
+		delete (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);
+		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
+		this->mustGenerateBuffers = true;
+	}
+
 	void Chunk::setChunkXLess(Chunk *chunk)
 	{
 		this->chunkXLess = chunk;

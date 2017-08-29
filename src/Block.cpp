@@ -591,7 +591,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_DOWN)
 		{
-			if (pos.y < 0)
+			if (pos.y > 0)
 			{
 				if (!calcLightsIsTransparent(chunk, pos, -1, -1, 1))
 					lights.f6p1 -= SSAO_FACTOR;

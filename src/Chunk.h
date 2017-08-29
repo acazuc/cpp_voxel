@@ -7,7 +7,7 @@
 using librender::DataBuffer;
 
 # define CHUNK_WIDTH 16
-# define CHUNK_HEIGHT 256
+# define CHUNK_HEIGHT 128
 
 namespace voxel
 {
@@ -44,6 +44,7 @@ namespace voxel
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
 		void draw();
+		void addBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
 		void destroyBlock(int32_t x, int32_t y, int32_t z);
 		inline Block **getBlocks() {return (this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);

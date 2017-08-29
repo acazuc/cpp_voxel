@@ -121,6 +121,57 @@ namespace voxel
 							chunk->destroyBlock(pos.x - chunkX, pos.y, pos.z - chunkZ);
 							return;
 						}
+						else if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
+						{
+							int32_t newX = pos.x - chunkX;
+							int32_t newY = pos.y;
+							int32_t newZ = pos.z - chunkZ;
+							if (face == BLOCK_FACE_LEFT)
+								newX -= 1;
+							else if (face == BLOCK_FACE_RIGHT)
+								newX += 1;
+							else if (face == BLOCK_FACE_FRONT)
+								newZ += 1;
+							else if (face == BLOCK_FACE_BACK)
+								newZ -= 1;
+							else if (face == BLOCK_FACE_UP)
+								newY += 1;
+							else if (face == BLOCK_FACE_DOWN)
+								newY -= 1;
+							Chunk *newChunk = chunk;
+							if (newX < 0)
+							{
+								newChunk = chunk->getChunkXLess();
+								newX = CHUNK_WIDTH - 1;
+							}
+							else if (newX >= CHUNK_WIDTH)
+							{
+								newChunk = chunk->getChunkXMore();
+								newX = 0;
+							}
+							else if (newY < 0)
+							{
+								return;
+							}
+							else if (newY >= CHUNK_HEIGHT)
+							{
+								return;
+							}
+							else if (newZ < 0)
+							{
+								newChunk = chunk->getChunkZLess();
+								newZ = CHUNK_WIDTH - 1;
+							}
+							else if (newZ >= CHUNK_WIDTH)
+							{
+								newChunk = chunk->getChunkZMore();
+								newZ = 0;
+							}
+							if (newChunk->getBlockAt(newX, newY, newZ))
+								return;
+							newChunk->addBlock(newX, newY, newZ, 2);
+							return;
+						}
 						this->found = true;
 						this->face = face;
 						this->x = pos.x;
@@ -146,7 +197,7 @@ namespace voxel
 						break;
 					pos.z += step.z;
 					max.z += delta.z;
-					face = step.z < 0 ? BLOCK_FACE_BACK : BLOCK_FACE_FRONT;
+					face = step.z < 0 ? BLOCK_FACE_FRONT : BLOCK_FACE_BACK;
 				}
 			}
 			else
@@ -165,7 +216,7 @@ namespace voxel
 						break;
 					pos.z += step.z;
 					max.z += delta.z;
-					face = step.z < 0 ? BLOCK_FACE_BACK : BLOCK_FACE_FRONT;
+					face = step.z < 0 ? BLOCK_FACE_FRONT : BLOCK_FACE_BACK;
 				}
 			}
 		}

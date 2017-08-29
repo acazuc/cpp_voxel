@@ -23,7 +23,7 @@ namespace voxel
 	, oldMouseY(0)
 	, gravity(0)
 	, posX(0)
-	, posY(256)
+	, posY(128)
 	, posZ(0)
 	, rotX(0)
 	, rotY(0)

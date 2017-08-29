@@ -28,13 +28,15 @@ namespace voxel
 		this->topBlocks = new uint16_t[CHUNK_WIDTH * CHUNK_WIDTH];
 		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
 				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 3 + CHUNK_HEIGHT / 2;
 				noiseIndex = std::round(noiseIndex);
+				this->topBlocks[x * CHUNK_WIDTH + z] = noiseIndex;
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
 					if (y > noiseIndex)
@@ -53,11 +55,6 @@ namespace voxel
 					else
 						blockType = 2;
 					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(blockType);
-					this->topBlocks[x * CHUNK_WIDTH + z] = noiseIndex;
-					if (y == noiseIndex)
-						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0xf;
-					else
-						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0;
 				}
 			}
 		}
@@ -189,6 +186,34 @@ namespace voxel
 		this->verticesNb = indices.size();
 	}
 
+	void Chunk::addBlock(int32_t x, int32_t y, int32_t z, uint8_t type)
+	{
+		if (x == 0)
+		{
+			if (this->chunkXLess)
+				this->chunkXLess->regenerateBuffers();
+		}
+		else if (x == CHUNK_WIDTH - 1)
+		{
+			if (this->chunkXMore)
+				this->chunkXMore->regenerateBuffers();
+		}
+		if (z == 0)
+		{
+			if (this->chunkZLess)
+				this->chunkZLess->regenerateBuffers();
+		}
+		else if (z == CHUNK_WIDTH - 1)
+		{
+			if (this->chunkZMore)
+				this->chunkZMore->regenerateBuffers();
+		}
+		if (y > this->topBlocks[x * CHUNK_WIDTH + z])
+			this->topBlocks[x * CHUNK_WIDTH + z] = y;
+		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(type);
+		regenerateBuffers();
+	}
+
 	void Chunk::destroyBlock(int32_t x, int32_t y, int32_t z)
 	{
 		if (x == 0)
@@ -226,31 +251,31 @@ namespace voxel
 		}
 		delete (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);
 		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
-		this->mustGenerateBuffers = true;
+		regenerateBuffers();
 	}
 
 	void Chunk::setChunkXLess(Chunk *chunk)
 	{
 		this->chunkXLess = chunk;
-		this->mustGenerateBuffers = true;
+		regenerateBuffers();
 	}
 
 	void Chunk::setChunkXMore(Chunk *chunk)
 	{
 		this->chunkXMore = chunk;
-		this->mustGenerateBuffers = true;
+		regenerateBuffers();
 	}
 
 	void Chunk::setChunkZLess(Chunk *chunk)
 	{
 		this->chunkZLess = chunk;
-		this->mustGenerateBuffers = true;
+		regenerateBuffers();
 	}
 
 	void Chunk::setChunkZMore(Chunk *chunk)
 	{
 		this->chunkZMore = chunk;
-		this->mustGenerateBuffers = true;
+		regenerateBuffers();
 	}
 
 }

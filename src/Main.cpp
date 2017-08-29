@@ -18,12 +18,36 @@ int64_t nanotime;
 namespace voxel
 {
 
+	FocusedShader Main::focusedShader;
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
 	SkyboxShader Main::skyboxShader;
-	glm::vec3 Main::skyColor;
+	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
+
+	void Main::buildFocusedShader()
+	{
+		std::string vShad = readfile("data/shaders/focused.vs");
+		LOG("building focused vertex shader");
+		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		std::string fShad = readfile("data/shaders/focused.fs");
+		LOG("building focused fragment shader");
+		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		focusedShader.program = new Program();
+		focusedShader.program->attachShader(vertShad);
+		focusedShader.program->attachShader(fragShad);
+		focusedShader.program->link();
+		focusedShader.fogDistanceLocation = focusedShader.program->getUniformLocation("fogDistance");
+		focusedShader.vertexesLocation = focusedShader.program->getAttribLocation("vertexPosition");
+		focusedShader.vertexesLocation->setVertexAttribArray(true);
+		focusedShader.fogColorLocation = focusedShader.program->getUniformLocation("fogColor");
+		focusedShader.colorsLocation = focusedShader.program->getAttribLocation("vertexColor");
+		focusedShader.colorsLocation->setVertexAttribArray(true);
+		focusedShader.mvpLocation = focusedShader.program->getUniformLocation("MVP");
+		focusedShader.mLocation = focusedShader.program->getUniformLocation("M");
+		focusedShader.vLocation = focusedShader.program->getUniformLocation("V");
+	}
 
 	void Main::buildBlocksShader()
 	{
@@ -113,6 +137,7 @@ namespace voxel
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->show();
 		window->setVSync(true);
+		buildFocusedShader();
 		buildBlocksShader();
 		buildCloudsShader();
 		buildSkyboxShader();
@@ -127,6 +152,8 @@ namespace voxel
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);
 			skyboxShader.program->use();
 			skyboxShader.texLocation->setVec1i(0);
+			focusedShader.program->use();
+			focusedShader.fogDistanceLocation->setVec1f(16 * 30);
 		}
 		char *datas;
 		uint32_t width;
@@ -146,8 +173,8 @@ namespace voxel
 		{
 			nanotime = System::nanotime();
 			float bgFactor = std::abs(cos(-nanotime / 1000000000. / 60 / 20 * M_PI + M_PI / 4));
-			skyColor = glm::vec3(.662 * bgFactor, .796 * bgFactor, .0125 + .875 * bgFactor);
-			glClearColor(skyColor.x, skyColor.y, skyColor.z, 1);
+			skyColor = glm::vec4(.662 * bgFactor, .796 * bgFactor, .0125 + .875 * bgFactor, 1);
+			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
 			window->clearScreen();
@@ -160,33 +187,43 @@ namespace voxel
 		delete (window);
 	}
 
+	void Main::glErrors(std::string err)
+	{
+		GLenum glErr;
+		while ((glErr = glGetError()) != GL_NO_ERROR)
+		{
+			std::cout << err << ": ";
+			if (glErr == GL_INVALID_ENUM)
+				std::cout << "GL_INVALID_ENUM" << std::endl;
+			else if (glErr == GL_INVALID_VALUE)
+				std::cout << "GL_INVALID_VALUE" << std::endl;
+			else if (glErr == GL_INVALID_OPERATION)
+				std::cout << "GL_INVALID_OPERATION" << std::endl;
+			else if (glErr == GL_STACK_OVERFLOW)
+				std::cout << "GL_STACK_OVERFLOW" << std::endl;
+			else if (glErr == GL_STACK_UNDERFLOW)
+				std::cout << "GL_STACK_UNDERFLOW" << std::endl;
+			else if (glErr == GL_OUT_OF_MEMORY)
+				std::cout << "GL_OUT_OF_MEMORY" << std::endl;
+		}
+	}
 }
 
-int main()
+int main(int ac, char **av)
 {
+	if (ac < 1)
+		ERROR("Error while receiving relative path");
+	char sep = '/';
+#ifdef PLATFORM_WINDOWS
+	sep = '\\';
+#endif
+	char *lastSlash = std::strrchr(av[0], sep);
+	if (lastSlash)
+		*lastSlash = '\0';
+	if (chdir(av[0]))
+		ERROR("Failed to change relative path");
 	if (!glfwInit())
 		ERROR("Failed to init glfw");
 	voxel::Main::main();
 	exit(EXIT_SUCCESS);
 }
-/*static void GLErrors(std::string err)
-{
-	GLenum glErr;
-	while ((glErr = glGetError()) != GL_NO_ERROR)
-	{
-		std::cout << err << ": ";
-		if (glErr == GL_INVALID_ENUM)
-			std::cout << "GL_INVALID_ENUM" << std::endl;
-		else if (glErr == GL_INVALID_VALUE)
-			std::cout << "GL_INVALID_VALUE" << std::endl;
-		else if (glErr == GL_INVALID_OPERATION)
-			std::cout << "GL_INVALID_OPERATION" << std::endl;
-		else if (glErr == GL_STACK_OVERFLOW)
-			std::cout << "GL_STACK_OVERFLOW" << std::endl;
-		else if (glErr == GL_STACK_UNDERFLOW)
-			std::cout << "GL_STACK_UNDERFLOW" << std::endl;
-		else if (glErr == GL_OUT_OF_MEMORY)
-			std::cout << "GL_OUT_OF_MEMORY" << std::endl;
-	}
-}*/
-

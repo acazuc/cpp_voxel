@@ -19,8 +19,8 @@ void main()
 	//newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;
 	//newVertex.y += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 3) * .033;
 	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;
-	gl_Position = MVP * newVertex;
 	UV = vertexUV;
 	color = vertexColor;
 	viewSpace = V * M * newVertex;
+	gl_Position = MVP * newVertex;
 }

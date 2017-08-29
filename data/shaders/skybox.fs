@@ -2,7 +2,6 @@
 
 centroid varying vec2 UV;
 centroid varying vec3 color;
-centroid varying vec4 viewSpace;
 
 uniform sampler2D tex;
 

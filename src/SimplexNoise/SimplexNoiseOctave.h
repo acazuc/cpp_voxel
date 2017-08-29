@@ -11,6 +11,7 @@ namespace voxel
 		double x;
 		double y;
 		double z;
+		//double w;
 	};
 
 	class SimplexNoiseOctave
@@ -21,12 +22,14 @@ namespace voxel
 		uint8_t permMod12[512];
 		double dot2(SimplexNoiseGrad *grad, double x, double y);
 		double dot3(SimplexNoiseGrad *grad, double x, double y, double z);
+		double dot4(SimplexNoiseGrad *grad, double x, double y, double z, double w);
 		int32_t fastFloor(double val);
 
 	public:
 		void init(uint32_t seed);
-		double get2(double xin, double yin);
-		double get3(double xin, double yin, double zin);
+		double get2(double x, double y);
+		double get3(double x, double y, double z);
+		double get4(double x, double y, double z, double w);
 
 	};
 

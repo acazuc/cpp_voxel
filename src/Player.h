@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 # define PLAYER_H
 
+# include "./Player/PlayerRaycast.h"
 # include <librender/Shader/DataBuffer.h>
 # include <glm/glm.hpp>
 # include <cstdint>
@@ -16,6 +17,7 @@ namespace voxel
 	{
 
 	private:
+		PlayerRaycast raycast;
 		glm::mat4 projMat;
 		glm::mat4 viewMat;
 		World &world;
@@ -40,16 +42,20 @@ namespace voxel
 		bool checkCollisionY(float addY);
 		bool checkCollisionZ(float addZ);
 		bool checkCollideBlock(float x, float y, float z);
-		void raycast();
 
 	public:
 		Player(World &world);
 		void tick();
+		void draw();
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
+		inline World &getWorld() {return (this->world);};
 		inline float getPosX() {return (this->posX);};
 		inline float getPosY() {return (this->posY);};
 		inline float getPosZ() {return (this->posZ);};
+		inline float getRotX() {return (this->rotX);};
+		inline float getRotY() {return (this->rotY);};
+		inline float getRotZ() {return (this->rotZ);};
 
 	};
 

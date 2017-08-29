@@ -52,7 +52,7 @@ namespace voxel
 		Main::getCloudsShader().mvpLocation->setMat4f(mvp);
 		Main::getCloudsShader().mLocation->setMat4f(model);
 		Main::getCloudsShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		Main::getCloudsShader().fogColorLocation->setVec3f(Main::getSkyColor());
+		Main::getCloudsShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getCloudsShader().vertexesLocation->setDataBuffer(this->vertexesBuffer);
 		Main::getCloudsShader().colorsLocation->setDataBuffer(this->colorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, this->verticesNb);

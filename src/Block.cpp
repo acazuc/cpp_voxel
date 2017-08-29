@@ -4,7 +4,8 @@
 
 #define BLOCK_SIZE .5
 #define LIGHT_MIN .125
-#define LIGHT_RANGE .75
+#define LIGHT_RANGE .6
+#define SSAO_FACTOR 2
 
 namespace voxel
 {
@@ -430,129 +431,128 @@ namespace voxel
 	void Block::calcLights(Chunk *chunk, glm::vec3 &pos, BlockLights &lights, uint8_t visibleFaces)
 	{
 		std::memset(&lights, 0xff, sizeof(lights));
-#define LESS 1
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			if (!calcLightsIsTransparent(chunk, pos, 1, -1, 1))
-				lights.f1p4 -= LESS;
+				lights.f1p4 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 0, -1, 1))
 			{
-				lights.f1p4 -= LESS;
-				lights.f1p1 -= LESS;
+				lights.f1p4 -= SSAO_FACTOR;
+				lights.f1p1 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, -1, 1))
-				lights.f1p1 -= LESS;
+				lights.f1p1 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, 1, 1))
-				lights.f1p2 -= LESS;
+				lights.f1p2 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 0, 1, 1))
 			{
-				lights.f1p2 -= LESS;
-				lights.f1p3 -= LESS;
+				lights.f1p2 -= SSAO_FACTOR;
+				lights.f1p3 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, 1, 1, 1))
-				lights.f1p3 -= LESS;
+				lights.f1p3 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, 0, 1))
 			{
-				lights.f1p3 -= LESS;
-				lights.f1p4 -= LESS;
+				lights.f1p3 -= SSAO_FACTOR;
+				lights.f1p4 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, 0, 1))
 			{
-				lights.f1p1 -= LESS;
-				lights.f1p2 -= LESS;
+				lights.f1p1 -= SSAO_FACTOR;
+				lights.f1p2 -= SSAO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
 			if (!calcLightsIsTransparent(chunk, pos, 1, -1, -1))
-				lights.f2p4 -= LESS;
+				lights.f2p4 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 0, -1, -1))
 			{
-				lights.f2p4 -= LESS;
-				lights.f2p1 -= LESS;
+				lights.f2p4 -= SSAO_FACTOR;
+				lights.f2p1 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, -1, -1))
-				lights.f2p1 -= LESS;
+				lights.f2p1 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, 1, -1))
-				lights.f2p2 -= LESS;
+				lights.f2p2 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 0, 1, -1))
 			{
-				lights.f2p2 -= LESS;
-				lights.f2p3 -= LESS;
+				lights.f2p2 -= SSAO_FACTOR;
+				lights.f2p3 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, 1, 1, -1))
-				lights.f2p3 -= LESS;
+				lights.f2p3 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, 0, -1))
 			{
-				lights.f2p3 -= LESS;
-				lights.f2p4 -= LESS;
+				lights.f2p3 -= SSAO_FACTOR;
+				lights.f2p4 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, 0, -1))
 			{
-				lights.f2p1 -= LESS;
-				lights.f2p2 -= LESS;
+				lights.f2p1 -= SSAO_FACTOR;
+				lights.f2p2 -= SSAO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
 			if (!calcLightsIsTransparent(chunk, pos, -1, -1, 1))
-				lights.f3p4 -= LESS;
+				lights.f3p4 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, -1, 0))
 			{
-				lights.f3p4 -= LESS;
-				lights.f3p1 -= LESS;
+				lights.f3p4 -= SSAO_FACTOR;
+				lights.f3p1 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, -1, -1))
-				lights.f3p1 -= LESS;
+				lights.f3p1 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, 1, -1))
-				lights.f3p2 -= LESS;
+				lights.f3p2 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, 1, 0))
 			{
-				lights.f3p2 -= LESS;
-				lights.f3p3 -= LESS;
+				lights.f3p2 -= SSAO_FACTOR;
+				lights.f3p3 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, 1, 1))
-				lights.f3p3 -= LESS;
+				lights.f3p3 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, -1, 0, 1))
 			{
-				lights.f3p3 -= LESS;
-				lights.f3p4 -= LESS;
+				lights.f3p3 -= SSAO_FACTOR;
+				lights.f3p4 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, -1, 0, -1))
 			{
-				lights.f3p1 -= LESS;
-				lights.f3p2 -= LESS;
+				lights.f3p1 -= SSAO_FACTOR;
+				lights.f3p2 -= SSAO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
 			if (!calcLightsIsTransparent(chunk, pos, 1, -1, 1))
-				lights.f4p4 -= LESS;
+				lights.f4p4 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, -1, 0))
 			{
-				lights.f4p4 -= LESS;
-				lights.f4p1 -= LESS;
+				lights.f4p4 -= SSAO_FACTOR;
+				lights.f4p1 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, 1, -1, -1))
-				lights.f4p1 -= LESS;
+				lights.f4p1 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, 1, -1))
-				lights.f4p2 -= LESS;
+				lights.f4p2 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, 1, 0))
 			{
-				lights.f4p2 -= LESS;
-				lights.f4p3 -= LESS;
+				lights.f4p2 -= SSAO_FACTOR;
+				lights.f4p3 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, 1, 1, 1))
-				lights.f4p3 -= LESS;
+				lights.f4p3 -= SSAO_FACTOR;
 			if (!calcLightsIsTransparent(chunk, pos, 1, 0, 1))
 			{
-				lights.f4p3 -= LESS;
-				lights.f4p4 -= LESS;
+				lights.f4p3 -= SSAO_FACTOR;
+				lights.f4p4 -= SSAO_FACTOR;
 			}
 			if (!calcLightsIsTransparent(chunk, pos, 1, 0, -1))
 			{
-				lights.f4p1 -= LESS;
-				lights.f4p2 -= LESS;
+				lights.f4p1 -= SSAO_FACTOR;
+				lights.f4p2 -= SSAO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_UP)
@@ -560,32 +560,32 @@ namespace voxel
 			if (pos.y < CHUNK_HEIGHT - 1)
 			{
 				if (!calcLightsIsTransparent(chunk, pos, -1, 1, -1))
-					lights.f5p2 -= LESS;
+					lights.f5p2 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, -1, 1, 0))
 				{
-					lights.f5p1 -= LESS;
-					lights.f5p2 -= LESS;
+					lights.f5p1 -= SSAO_FACTOR;
+					lights.f5p2 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, -1, 1, 1))
-					lights.f5p1 -= LESS;
+					lights.f5p1 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 1, 1, -1))
-					lights.f5p3 -= LESS;
+					lights.f5p3 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 1, 1, 0))
 				{
-					lights.f5p3 -= LESS;
-					lights.f5p4 -= LESS;
+					lights.f5p3 -= SSAO_FACTOR;
+					lights.f5p4 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, 1, 1, 1))
-					lights.f5p4 -= LESS;
+					lights.f5p4 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 0, 1, -1))
 				{
-					lights.f5p2 -= LESS;
-					lights.f5p3 -= LESS;
+					lights.f5p2 -= SSAO_FACTOR;
+					lights.f5p3 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, 0, 1, 1))
 				{
-					lights.f5p4 -= LESS;
-					lights.f5p1 -= LESS;
+					lights.f5p4 -= SSAO_FACTOR;
+					lights.f5p1 -= SSAO_FACTOR;
 				}
 			}
 		}
@@ -594,32 +594,32 @@ namespace voxel
 			if (pos.y < 0)
 			{
 				if (!calcLightsIsTransparent(chunk, pos, -1, -1, 1))
-					lights.f6p1 -= LESS;
+					lights.f6p1 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, -1, -1, 0))
 				{
-					lights.f6p1 -= LESS;
-					lights.f6p2 -= LESS;
+					lights.f6p1 -= SSAO_FACTOR;
+					lights.f6p2 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, -1, -1, -1))
-					lights.f6p2 -= LESS;
+					lights.f6p2 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 1, -1, -1))
-					lights.f6p3 -= LESS;
+					lights.f6p3 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 1, -1, 0))
 				{
-					lights.f6p3 -= LESS;
-					lights.f6p4 -= LESS;
+					lights.f6p3 -= SSAO_FACTOR;
+					lights.f6p4 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, 1, -1, 1))
-					lights.f6p4 -= LESS;
+					lights.f6p4 -= SSAO_FACTOR;
 				if (!calcLightsIsTransparent(chunk, pos, 0, -1, -1))
 				{
-					lights.f6p2 -= LESS;
-					lights.f6p3 -= LESS;
+					lights.f6p2 -= SSAO_FACTOR;
+					lights.f6p3 -= SSAO_FACTOR;
 				}
 				if (!calcLightsIsTransparent(chunk, pos, 0, -1, 1))
 				{
-					lights.f6p4 -= LESS;
-					lights.f6p1 -= LESS;
+					lights.f6p4 -= SSAO_FACTOR;
+					lights.f6p1 -= SSAO_FACTOR;
 				}
 			}
 		}

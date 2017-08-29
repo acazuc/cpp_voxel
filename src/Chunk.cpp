@@ -100,6 +100,14 @@ namespace voxel
 
 	void Chunk::setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
+		if (x > 0 && y > this->topBlocks[(x - 1) * CHUNK_WIDTH + z])
+			light = std::max(light, uint8_t(0xe));
+		if (x < CHUNK_WIDTH - 1 && y > this->topBlocks[(x + 1) * CHUNK_WIDTH + z])
+			light = std::max(light, uint8_t(0xe));
+		if (z > 0 && y > this->topBlocks[x * CHUNK_WIDTH + z - 1])
+			light = std::max(light, uint8_t(0xe));
+		if (z < CHUNK_WIDTH - 1 && y > this->topBlocks[x * CHUNK_WIDTH + z + 1])
+			light = std::max(light, uint8_t(0xe));
 		uint8_t curLvl = this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z];
 		if (curLvl >= light)
 			return;
@@ -109,7 +117,7 @@ namespace voxel
 		if (x > 0)
 			setBlockLightRec(x - 1, y, z, light - 1);
 		else if (this->chunkXLess)
-			this->chunkXLess->setBlockLightRec(CHUNK_WIDTH, y, z, light - 1);
+			this->chunkXLess->setBlockLightRec(CHUNK_WIDTH - 1, y, z, light - 1);
 		if (x < CHUNK_WIDTH - 1)
 			setBlockLightRec(x + 1, y, z, light - 1);
 		else if (this->chunkXMore)
@@ -121,7 +129,7 @@ namespace voxel
 		if (z > 0)
 			setBlockLightRec(x, y, z - 1, light - 1);
 		else if (this->chunkZLess)
-			this->chunkZLess->setBlockLightRec(x, y, CHUNK_WIDTH, light - 1);
+			this->chunkZLess->setBlockLightRec(x, y, CHUNK_WIDTH - 1, light - 1);
 		if (z < CHUNK_WIDTH - 1)
 			setBlockLightRec(x, y, z + 1, light - 1);
 		else if (this->chunkZMore)

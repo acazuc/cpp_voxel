@@ -1,6 +1,7 @@
 #include "Chunk.h"
 #include "World.h"
 #include "Main.h"
+#include <cstring>
 
 namespace voxel
 {
@@ -24,7 +25,9 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
+		this->topBlocks = new uint16_t[CHUNK_WIDTH * CHUNK_WIDTH];
 		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
@@ -37,6 +40,7 @@ namespace voxel
 					if (y > noiseIndex)
 					{
 						this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
+						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0xf;
 						continue;
 					}
 					uint8_t blockType = 1;
@@ -49,6 +53,11 @@ namespace voxel
 					else
 						blockType = 2;
 					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(blockType);
+					this->topBlocks[x * CHUNK_WIDTH + z] = noiseIndex;
+					if (y == noiseIndex)
+						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0xf;
+					else
+						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0;
 				}
 			}
 		}
@@ -89,8 +98,52 @@ namespace voxel
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 	}
 
+	void Chunk::setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light)
+	{
+		uint8_t curLvl = this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z];
+		if (curLvl >= light)
+			return;
+		this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = light;
+		if (light <= 1)
+			return;
+		if (x > 0)
+			setBlockLightRec(x - 1, y, z, light - 1);
+		else if (this->chunkXLess)
+			this->chunkXLess->setBlockLightRec(CHUNK_WIDTH, y, z, light - 1);
+		if (x < CHUNK_WIDTH - 1)
+			setBlockLightRec(x + 1, y, z, light - 1);
+		else if (this->chunkXMore)
+			this->chunkXMore->setBlockLightRec(0, y, z, light - 1);
+		if (y > 0)
+			setBlockLightRec(x, y - 1, z, light - 1);
+		if (y < CHUNK_HEIGHT - 1)
+			setBlockLightRec(x, y + 1, z, light - 1);
+		if (z > 0)
+			setBlockLightRec(x, y, z - 1, light - 1);
+		else if (this->chunkZLess)
+			this->chunkZLess->setBlockLightRec(x, y, CHUNK_WIDTH, light - 1);
+		if (z < CHUNK_WIDTH - 1)
+			setBlockLightRec(x, y, z + 1, light - 1);
+		else if (this->chunkZMore)
+			this->chunkZMore->setBlockLightRec(x, y, 0, light - 1);
+	}
+
+	void Chunk::generateLightMap()
+	{
+		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH * sizeof(*this->lightMap));
+		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
+		{
+			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
+			{
+				int16_t topBlock = this->topBlocks[x * CHUNK_WIDTH + z];
+				setBlockLightRec(x, topBlock, z, 0xf);
+			}
+		}
+	}
+
 	void Chunk::generateGLBuffer()
 	{
+		generateLightMap();
 		std::vector<glm::vec2> texCoords;
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
@@ -149,6 +202,19 @@ namespace voxel
 		{
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateBuffers();
+		}
+		if (y == this->topBlocks[x * CHUNK_WIDTH + z])
+		{
+			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
+			{
+				if (getBlockAt(x, i, z))
+				{
+					if (i == y)
+						continue;
+					this->topBlocks[x * CHUNK_WIDTH + z] = i;
+					break;
+				}
+			}
 		}
 		delete (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);
 		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;

@@ -28,7 +28,7 @@ namespace voxel
 		delete[] (this->amplitudes);
 	}
 
-	double SimplexNoise::get2(int32_t x, int32_t y)
+	double SimplexNoise::get2(double x, double y)
 	{
 		double result = 0;
 		for (uint32_t i = 0; i < this->octavesNumber; ++i)
@@ -36,7 +36,7 @@ namespace voxel
 		return (result);
 	}
 
-	double SimplexNoise::get3(int32_t x, int32_t y, int32_t z)
+	double SimplexNoise::get3(double x, double y, double z)
 	{
 		double result = 0;
 		for (uint32_t i = 0 ; i < this->octavesNumber; ++i)
@@ -44,7 +44,7 @@ namespace voxel
 		return (result);
 	}
 
-	double SimplexNoise::get4(int32_t x, int32_t y, int32_t z, int32_t w)
+	double SimplexNoise::get4(double x, double y, double z, double w)
 	{
 		double result = 0;
 		for (uint32_t i = 0; i < this->octavesNumber; ++i)

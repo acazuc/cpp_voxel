@@ -22,9 +22,9 @@ namespace voxel
 	public:
 		SimplexNoise(uint32_t largestFeature, double persistance, int32_t seed);
 		~SimplexNoise();
-		double get2(int32_t x, int32_t y);
-		double get3(int32_t x, int32_t y, int32_t z);
-		double get4(int32_t x, int32_t y, int32_t z, int32_t w);
+		double get2(double x, double y);
+		double get3(double x, double y, double z);
+		double get4(double x, double y, double z, double w);
 
 	};
 

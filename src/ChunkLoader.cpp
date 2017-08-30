@@ -30,9 +30,9 @@ namespace voxel
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
-		std::lock_guard<std::mutex> lock_guard(world.getChunksMutex());
 		if (world.getChunk(chunkX, chunkZ))
 			return (false);
+		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		Chunk *chunk = new Chunk(world, chunkX, chunkZ);
 		world.addChunk(chunk);
 		return (true);
@@ -50,7 +50,6 @@ namespace voxel
 			int32_t playerChunkX = playerX - (int32_t)playerX % CHUNK_WIDTH;
 			int32_t playerChunkZ = playerZ - (int32_t)playerZ % CHUNK_WIDTH;
 			{
-				std::lock_guard<std::mutex> lock(world.getChunksMutex());
 				std::vector<Chunk*> &chunks = world.getChunks();
 				for (uint32_t i = 0; i < chunks.size(); ++i)
 				{
@@ -59,45 +58,60 @@ namespace voxel
 					double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
 					int distance = sqrt(part1 * part1 + part2 * part2);
 					if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
-						chunk->setDeleted(true);
+					{
+						{
+							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+							chunks.erase(chunks.begin() + i);
+						}
+						world.getBuffersToDelete().push_back(chunk->getTexCoordsBuffer());
+						world.getBuffersToDelete().push_back(chunk->getVertexesBuffer());
+						world.getBuffersToDelete().push_back(chunk->getIndicesBuffer());
+						world.getBuffersToDelete().push_back(chunk->getColorsBuffer());
+						chunk->setTexCoordsBuffer(NULL);
+						chunk->setVertexesBuffer(NULL);
+						chunk->setIndicesBuffer(NULL);
+						chunk->setColorsBuffer(NULL);
+						delete (chunk);
+						i--;
+					}
 				}
 			}
 			if (checkChunk(world, playerChunkX, playerChunkZ))
-				goto end;
+			{};//	goto end;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
 			{
 				int32_t chunkX = playerChunkX - i * CHUNK_WIDTH;
 				int32_t chunkZ = playerChunkZ - i * CHUNK_WIDTH;
 				if (checkChunk(world, chunkX, chunkZ))
-					goto end;
+				{};//	goto end;
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+					{};//	goto end;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkZ += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+					{};//	goto end;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+					{};//	goto end;
 				}
 				for (int32_t j = 0; j <= i * 2 - 1; ++j)
 				{
 					chunkZ -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+					{};//	goto end;
 				}
 			}
 			ts.tv_nsec = 100000000;
 			nanosleep(&ts, NULL);
-		end:
+		//end:
 			continue;
 			ts.tv_nsec = 100000000;
 			nanosleep(&ts, NULL);

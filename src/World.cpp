@@ -25,13 +25,16 @@ namespace voxel
 
 	void World::tick()
 	{
-		std::lock_guard<std::mutex> lock(this->chunksMutex);
+		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		this->player.tick();
 	}
 
 	void World::draw()
 	{
-		std::lock_guard<std::mutex> lock(this->chunksMutex);
+		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
+			delete (this->buffersToDelete[i]);
+		this->buffersToDelete.clear();
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
 		Main::getBlocksShader().program->use();
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
@@ -42,13 +45,6 @@ namespace voxel
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
 			Chunk *chunk = *iter;
-			if (chunk->isDeleted())
-			{
-				delete (chunk);
-				--iter;
-				this->chunks.erase(iter + 1);
-				continue;
-			}
 			chunk->draw();
 		}
 		this->clouds.draw();
@@ -58,6 +54,7 @@ namespace voxel
 
 	Chunk *World::getChunk(int32_t x, int32_t z)
 	{
+		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		for (uint32_t i = 0; i < this->chunks.size(); ++i)
 		{
 			Chunk *chunk = this->chunks[i];

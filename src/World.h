@@ -18,9 +18,10 @@ namespace voxel
 	{
 
 	private:
+		std::vector<DataBuffer*> buffersToDelete;
+		std::recursive_mutex chunksMutex;
 		std::vector<Chunk*> chunks;
 		ChunkLoader chunkLoader;
-		std::mutex chunksMutex;
 		SimplexNoise noise;
 		Frustum frustum;
 		Player player;
@@ -34,8 +35,9 @@ namespace voxel
 		void draw();
 		Chunk *getChunk(int32_t x, int32_t z);
 		void addChunk(Chunk *chunk);
+		inline std::vector<DataBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
+		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Chunk*> &getChunks() {return (this->chunks);};
-		inline std::mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline SimplexNoise &getNoise() {return (this->noise);};
 		inline Frustum &getFrustum() {return (this->frustum);};
 		inline Player &getPlayer() {return (this->player);};

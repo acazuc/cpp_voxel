@@ -36,6 +36,7 @@ namespace voxel
 			{
 				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
+				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 2;
 				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
@@ -65,6 +66,8 @@ namespace voxel
 
 	Chunk::~Chunk()
 	{
+		delete[] (this->topBlocks);
+		delete[] (this->lightMap);
 		delete[] (this->blocks);
 		delete (this->texCoordsBuffer);
 		delete (this->vertexesBuffer);
@@ -178,25 +181,21 @@ namespace voxel
 		this->lightMap[getXYZId(x, y, z)] = light;
 		if (light <= 1)
 			return;
-		if (!this->blocks[getXYZId(x, y, z)].isTransparent())
-			return;
+		//if (!this->blocks[getXYZId(x, y, z)].isTransparent())
+		//	return;
 		if (x > 0)
-		{
 			setBlockLightRec(x - 1, y, z, light - 1);
-		}
 		/*else if (this->chunkXLess)
 		{
-			uint8_t nearLight = this->chunkXLess->getLightAt(0, y, z);
+			uint8_t nearLight = this->chunkXLess->getLightAt(CHUNK_WIDTH - 1, y, z);
 			if (light > nearLight + 1)
 				this->chunkXLess->regenerateBuffers();
 		}*/
 		if (x < CHUNK_WIDTH - 1)
-		{
 			setBlockLightRec(x + 1, y, z, light - 1);
-		}
 		/*else if (this->chunkXMore)
 		{
-			uint8_t nearLight = this->chunkXMore->getLightAt(CHUNK_WIDTH - 1, y, z);
+			uint8_t nearLight = this->chunkXMore->getLightAt(0, y, z);
 			if (light > nearLight + 1)
 				this->chunkXMore->regenerateBuffers();
 		}*/
@@ -205,9 +204,7 @@ namespace voxel
 		if (y < CHUNK_HEIGHT - 1 && y < this->topBlocks[x * CHUNK_WIDTH + z])
 			setBlockLightRec(x, y + 1, z, light - 1);
 		if (z > 0)
-		{
 			setBlockLightRec(x, y, z - 1, light - 1);
-		}
 		/*else if (this->chunkZLess)
 		{
 			uint8_t nearLight = this->chunkZLess->getLightAt(x, y, CHUNK_WIDTH - 1);
@@ -215,9 +212,7 @@ namespace voxel
 				this->chunkZLess->regenerateBuffers();
 		}*/
 		if (z < CHUNK_WIDTH - 1)
-		{
 			setBlockLightRec(x, y, z + 1, light - 1);
-		}
 		/*else if (this->chunkZMore)
 		{
 			uint8_t nearLight = this->chunkZMore->getLightAt(x, y, 0);

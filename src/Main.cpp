@@ -153,7 +153,7 @@ namespace voxel
 			skyboxShader.program->use();
 			skyboxShader.texLocation->setVec1i(0);
 			focusedShader.program->use();
-			focusedShader.fogDistanceLocation->setVec1f(16 * 30);
+			focusedShader.fogDistanceLocation->setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;

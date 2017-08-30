@@ -64,6 +64,14 @@ namespace voxel
 		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
+		inline void setTexCoordsBuffer(DataBuffer *texCoordsBuffer) {this->texCoordsBuffer = texCoordsBuffer;};
+		inline DataBuffer *getTexCoordsBuffer() {return (this->texCoordsBuffer);};
+		inline void setVertexesBuffer(DataBuffer *vertexesBuffer) {this->vertexesBuffer = vertexesBuffer;};
+		inline DataBuffer *getVertexesBuffer() {return (this->vertexesBuffer);};
+		inline void setIndicesBuffer(DataBuffer *indicesBuffer) {this->indicesBuffer = indicesBuffer;};
+		inline DataBuffer *getIndicesBuffer() {return (this->indicesBuffer);};
+		inline void setColorsBuffer(DataBuffer *colorsBuffer) {this->colorsBuffer = colorsBuffer;};
+		inline DataBuffer *getColorsBuffer() {return (this->colorsBuffer);};
 		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 

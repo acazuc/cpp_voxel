@@ -25,14 +25,13 @@ namespace voxel
 
 	void World::tick()
 	{
-		this->chunksMutex.lock();
+		std::lock_guard<std::mutex> lock(this->chunksMutex);
 		this->player.tick();
-		this->chunksMutex.unlock();
 	}
 
 	void World::draw()
 	{
-		this->chunksMutex.lock();
+		std::lock_guard<std::mutex> lock(this->chunksMutex);
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
 		Main::getBlocksShader().program->use();
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
@@ -52,7 +51,6 @@ namespace voxel
 			}
 			chunk->draw();
 		}
-		this->chunksMutex.unlock();
 		this->clouds.draw();
 		this->skybox.draw();
 		this->player.draw();

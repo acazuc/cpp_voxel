@@ -25,17 +25,16 @@ namespace voxel
 	{
 		if (!running)
 			return (true);
-		double part1 = (world.getPlayer().getPosZ() - ((int)world.getPlayer().getPosZ() % CHUNK_WIDTH)) - chunkZ;
-		double part2 = (world.getPlayer().getPosX() - ((int)world.getPlayer().getPosX() % CHUNK_WIDTH)) - chunkX;
+		double part1 = (world.getPlayer().getPosZ() - ((int32_t)world.getPlayer().getPosZ() % CHUNK_WIDTH)) - chunkZ;
+		double part2 = (world.getPlayer().getPosX() - ((int32_t)world.getPlayer().getPosX() % CHUNK_WIDTH)) - chunkX;
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
+		std::lock_guard<std::mutex> lock_guard(world.getChunksMutex());
 		if (world.getChunk(chunkX, chunkZ))
 			return (false);
-		world.getChunksMutex().lock();
 		Chunk *chunk = new Chunk(world, chunkX, chunkZ);
 		world.addChunk(chunk);
-		world.getChunksMutex().unlock();
 		return (true);
 	}
 
@@ -48,20 +47,21 @@ namespace voxel
 		{
 			float playerX = world.getPlayer().getPosX();
 			float playerZ = world.getPlayer().getPosZ();
-			int playerChunkX = playerX - (int)playerX % CHUNK_WIDTH;
-			int playerChunkZ = playerZ - (int)playerZ % CHUNK_WIDTH;
-			world.getChunksMutex().lock();
-			std::vector<Chunk*> &chunks = world.getChunks();
-			for (uint32_t i = 0; i < chunks.size(); ++i)
+			int32_t playerChunkX = playerX - (int32_t)playerX % CHUNK_WIDTH;
+			int32_t playerChunkZ = playerZ - (int32_t)playerZ % CHUNK_WIDTH;
 			{
-				Chunk *chunk = chunks[i];
-				double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
-				double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
-				int distance = sqrt(part1 * part1 + part2 * part2);
-				if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
-					chunk->setDeleted(true);
+				std::lock_guard<std::mutex> lock(world.getChunksMutex());
+				std::vector<Chunk*> &chunks = world.getChunks();
+				for (uint32_t i = 0; i < chunks.size(); ++i)
+				{
+					Chunk *chunk = chunks[i];
+					double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
+					double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
+					int distance = sqrt(part1 * part1 + part2 * part2);
+					if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
+						chunk->setDeleted(true);
+				}
 			}
-			world.getChunksMutex().unlock();
 			if (checkChunk(world, playerChunkX, playerChunkZ))
 				goto end;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
@@ -99,7 +99,7 @@ namespace voxel
 			nanosleep(&ts, NULL);
 		end:
 			continue;
-			ts.tv_nsec = 10000000;
+			ts.tv_nsec = 100000000;
 			nanosleep(&ts, NULL);
 		}
 	}

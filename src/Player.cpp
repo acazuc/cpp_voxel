@@ -7,7 +7,7 @@
 #define RUN_SPEED 5.6
 #define JUMP_FORCE .225
 #define GRAVITY 1.25
-#define FLY_SPEED 10
+#define FLY_SPEED 100
 
 extern int64_t frameDelta;
 extern int64_t nanotime;
@@ -32,7 +32,7 @@ namespace voxel
 	, flying(true)
 	{
 		this->fallStarted = nanotime;
-		this->projMat = glm::perspective(glm::radians(65.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
+		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .1, 1000.);
 	}
 
 	bool Player::handleMovementXZ()
@@ -104,9 +104,9 @@ namespace voxel
 		{
 			float addY = 0;
 			if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
-				addY += frameDelta / 1000000000. * FLY_SPEED * 5;
+				addY += frameDelta / 1000000000. * FLY_SPEED;
 			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
-				addY -= frameDelta / 1000000000. * FLY_SPEED * 5;
+				addY -= frameDelta / 1000000000. * FLY_SPEED;
 			if (checkCollisionY(addY))
 				addY = 0;
 			this->posY += addY;
@@ -181,9 +181,10 @@ namespace voxel
 		bool move = handleMovement();
 		bool rot = handleRotation();
 		if (!move && !rot)
-			return;
+		{};//	return;
 		this->raycast.tick();
 		this->viewMat = glm::mat4(1.);
+		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 2000000000. * M_PI * 2) * 2, 2) / 4 * 0.007, 0).x, glm::vec3(0, 0, 1));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rotY / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->posX, -this->posY, -this->posZ));
@@ -319,7 +320,7 @@ namespace voxel
 			if (!chunk)
 				return (false);
 			Block *block = chunk->getBlockAt(x - chunkX, y, z - chunkZ);
-			if (!block)
+			if (!block || !block->getType())
 				return (false);
 			return (true);
 		}

@@ -1,7 +1,7 @@
 #ifndef WORLD_H
 # define WORLD_H
 
-# include "SimplexNoise/SimplexNoise.h"
+# include "Noise/SimplexNoise.h"
 # include "ChunkLoader.h"
 # include "Frustum.h"
 # include "Player.h"

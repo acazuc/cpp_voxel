@@ -7,7 +7,7 @@
 using librender::DataBuffer;
 
 # define CHUNK_WIDTH 16
-# define CHUNK_HEIGHT 128
+# define CHUNK_HEIGHT 255
 
 namespace voxel
 {
@@ -23,14 +23,14 @@ namespace voxel
 		DataBuffer *indicesBuffer;
 		DataBuffer *colorsBuffer;
 		glm::mat4 modelMat;
-		Block **blocks;
+		Block *blocks;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;
 		Chunk *chunkZMore;
 		World &world;
-		uint16_t *topBlocks;
 		uint32_t verticesNb;
+		uint8_t *topBlocks;
 		uint8_t *lightMap;
 		int32_t x;
 		int32_t z;
@@ -46,7 +46,7 @@ namespace voxel
 		void draw();
 		void addBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
 		void destroyBlock(int32_t x, int32_t y, int32_t z);
-		inline Block **getBlocks() {return (this->blocks);};
+		inline Block **getBlocks() {return (&this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
 		inline void setChunkXMore(Chunk *chunk);
@@ -55,14 +55,17 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);};
-		inline uint8_t getLightAt(int32_t x, int32_t y, int32_t z) {return (this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);};
+		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (&this->blocks[getXYZId(x, y, z)]);};
+		inline uint8_t getLightAt(int32_t x, int32_t y, int32_t z) {return (this->lightMap[getXYZId(x, y, z)]);};
+		inline uint16_t getTopBlockAt(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
 		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
+		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
+		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 
 	};
 

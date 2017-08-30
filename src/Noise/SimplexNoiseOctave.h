@@ -11,7 +11,7 @@ namespace voxel
 		double x;
 		double y;
 		double z;
-		//double w;
+		double w;
 	};
 
 	class SimplexNoiseOctave

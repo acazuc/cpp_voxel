@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include "Noise/WorleyNoise.h"
 #include "World.h"
 #include "Main.h"
 #include <cstring>
@@ -25,8 +26,8 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
-		this->topBlocks = new uint16_t[CHUNK_WIDTH * CHUNK_WIDTH];
-		this->blocks = new Block*[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
+		this->blocks = new Block[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
@@ -34,15 +35,17 @@ namespace voxel
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
 				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 3 + CHUNK_HEIGHT / 2;
+				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
+				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
+				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 2;
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
-				this->topBlocks[x * CHUNK_WIDTH + z] = noiseIndex;
+				this->topBlocks[getXZId(x, z)] = noiseIndex;
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
 					if (y > noiseIndex)
 					{
-						this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
-						this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = 0xf;
+						this->lightMap[getXYZId(x, y, z)] = 0xf;
 						continue;
 					}
 					uint8_t blockType = 1;
@@ -54,7 +57,7 @@ namespace voxel
 						blockType = 3;
 					else
 						blockType = 2;
-					this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(blockType);
+					this->blocks[getXYZId(x, y, z)].setType(blockType);
 				}
 			}
 		}
@@ -62,8 +65,6 @@ namespace voxel
 
 	Chunk::~Chunk()
 	{
-		for (uint32_t i = 0; i < CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH; ++i)
-			delete (this->blocks[i]);
 		delete[] (this->blocks);
 		delete (this->texCoordsBuffer);
 		delete (this->vertexesBuffer);
@@ -97,40 +98,132 @@ namespace voxel
 
 	void Chunk::setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		if (x > 0 && y > this->topBlocks[(x - 1) * CHUNK_WIDTH + z])
-			light = std::max(light, uint8_t(0xe));
-		if (x < CHUNK_WIDTH - 1 && y > this->topBlocks[(x + 1) * CHUNK_WIDTH + z])
-			light = std::max(light, uint8_t(0xe));
-		if (z > 0 && y > this->topBlocks[x * CHUNK_WIDTH + z - 1])
-			light = std::max(light, uint8_t(0xe));
-		if (z < CHUNK_WIDTH - 1 && y > this->topBlocks[x * CHUNK_WIDTH + z + 1])
-			light = std::max(light, uint8_t(0xe));
-		uint8_t curLvl = this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z];
+		if (y >= this->topBlocks[getXZId(x, z)])
+		{
+			light = std::max(light, uint8_t(0xf));
+		}
+		else
+		{
+			if (x > 0)
+			{
+				if (y > this->topBlocks[getXZId(x - 1, z)])
+				{
+					light = std::max(light, uint8_t(0xe));
+					goto endNearTop;
+				}
+			}
+			else if (this->chunkXLess)
+			{
+				if (y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, z))
+				{
+					light = std::max(light, uint8_t(0xe));
+					goto endNearTop;
+				}
+			}
+			if (x < CHUNK_WIDTH - 1)
+			{
+				if (y > this->topBlocks[getXZId(x + 1, z)])
+				{
+					light = std::max(light, uint8_t(0xe));
+					goto endNearTop;
+				}
+			}
+			else if (this->chunkXMore)
+			{
+				if (y > this->chunkXMore->getTopBlockAt(0, z))
+				{
+					light = std::max(light, uint8_t(0xe));
+					goto endNearTop;
+				}
+			}
+			if (z > 0 && y > this->topBlocks[getXZId(x, z - 1)])
+			{
+				light = std::max(light, uint8_t(0xe));
+				goto endNearTop;
+			}
+			if (z < CHUNK_WIDTH - 1 && y > this->topBlocks[getXZId(x, z + 1)])
+			{
+				light = std::max(light, uint8_t(0xe));
+				goto endNearTop;
+			}
+		}
+	endNearTop:
+		if (x == 0 && this->chunkXLess)
+		{
+			uint8_t nearLight = this->chunkXLess->getLightAt(CHUNK_WIDTH - 1, y, z);
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1), light);
+		}
+		if (x == CHUNK_WIDTH - 1 && this->chunkXMore)
+		{
+			uint8_t nearLight = this->chunkXMore->getLightAt(0, y, z);
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1), light);
+		}
+		if (z == 0 && this->chunkZLess)
+		{
+			uint8_t nearLight = this->chunkZLess->getLightAt(x, y, CHUNK_WIDTH - 1);
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1), light);
+		}
+		if (z == CHUNK_WIDTH - 1 && this->chunkZMore)
+		{
+			uint8_t nearLight = this->chunkZMore->getLightAt(x, y, 0);
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1), light);
+		}
+		uint8_t curLvl = this->lightMap[getXYZId(x, y, z)];
 		if (curLvl >= light)
 			return;
-		this->lightMap[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = light;
+		this->lightMap[getXYZId(x, y, z)] = light;
 		if (light <= 1)
 			return;
+		if (!this->blocks[getXYZId(x, y, z)].isTransparent())
+			return;
 		if (x > 0)
+		{
 			setBlockLightRec(x - 1, y, z, light - 1);
-		else if (this->chunkXLess)
-			this->chunkXLess->setBlockLightRec(CHUNK_WIDTH - 1, y, z, light - 1);
+		}
+		/*else if (this->chunkXLess)
+		{
+			uint8_t nearLight = this->chunkXLess->getLightAt(0, y, z);
+			if (light > nearLight + 1)
+				this->chunkXLess->regenerateBuffers();
+		}*/
 		if (x < CHUNK_WIDTH - 1)
+		{
 			setBlockLightRec(x + 1, y, z, light - 1);
-		else if (this->chunkXMore)
-			this->chunkXMore->setBlockLightRec(0, y, z, light - 1);
+		}
+		/*else if (this->chunkXMore)
+		{
+			uint8_t nearLight = this->chunkXMore->getLightAt(CHUNK_WIDTH - 1, y, z);
+			if (light > nearLight + 1)
+				this->chunkXMore->regenerateBuffers();
+		}*/
 		if (y > 0)
 			setBlockLightRec(x, y - 1, z, light - 1);
-		if (y < CHUNK_HEIGHT - 1)
+		if (y < CHUNK_HEIGHT - 1 && y < this->topBlocks[x * CHUNK_WIDTH + z])
 			setBlockLightRec(x, y + 1, z, light - 1);
 		if (z > 0)
+		{
 			setBlockLightRec(x, y, z - 1, light - 1);
-		else if (this->chunkZLess)
-			this->chunkZLess->setBlockLightRec(x, y, CHUNK_WIDTH - 1, light - 1);
+		}
+		/*else if (this->chunkZLess)
+		{
+			uint8_t nearLight = this->chunkZLess->getLightAt(x, y, CHUNK_WIDTH - 1);
+			if (light > nearLight + 1)
+				this->chunkZLess->regenerateBuffers();
+		}*/
 		if (z < CHUNK_WIDTH - 1)
+		{
 			setBlockLightRec(x, y, z + 1, light - 1);
-		else if (this->chunkZMore)
-			this->chunkZMore->setBlockLightRec(x, y, 0, light - 1);
+		}
+		/*else if (this->chunkZMore)
+		{
+			uint8_t nearLight = this->chunkZMore->getLightAt(x, y, 0);
+			if (light > nearLight + 1)
+				this->chunkZMore->regenerateBuffers();
+		}*/
 	}
 
 	void Chunk::generateLightMap()
@@ -160,8 +253,8 @@ namespace voxel
 			{
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					Block *block = this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z];
-					if (block)
+					Block *block = &this->blocks[getXYZId(x, y, z)];
+					//if (block)
 					{
 						pos.x = this->x + x;
 						pos.y = y;
@@ -208,9 +301,9 @@ namespace voxel
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateBuffers();
 		}
-		if (y > this->topBlocks[x * CHUNK_WIDTH + z])
-			this->topBlocks[x * CHUNK_WIDTH + z] = y;
-		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = new Block(type);
+		if (y > this->topBlocks[getXZId(x, z)])
+			this->topBlocks[getXZId(x, z)] = y;
+		this->blocks[getXYZId(x, y, z)].setType(type);
 		regenerateBuffers();
 	}
 
@@ -236,21 +329,21 @@ namespace voxel
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateBuffers();
 		}
-		if (y == this->topBlocks[x * CHUNK_WIDTH + z])
+		if (y == this->topBlocks[getXZId(x, z)])
 		{
 			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
 			{
-				if (getBlockAt(x, i, z))
+				Block *block = getBlockAt(x, i, z);
+				if (block && block->getType())
 				{
 					if (i == y)
 						continue;
-					this->topBlocks[x * CHUNK_WIDTH + z] = i;
+					this->topBlocks[getXZId(x, z)] = i;
 					break;
 				}
 			}
 		}
-		delete (this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z]);
-		this->blocks[(x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z] = NULL;
+		this->blocks[getXYZId(x, y, z)].setType(0);
 		regenerateBuffers();
 	}
 

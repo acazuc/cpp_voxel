@@ -18,7 +18,7 @@ namespace voxel
 
 	class Chunk;
 
-	struct BlockLights
+	struct BlockLightsLevels
 	{
 		uint8_t f1p1 : 4;
 		uint8_t f1p2 : 4;
@@ -51,15 +51,18 @@ namespace voxel
 
 	private:
 		uint8_t type;
-		bool calcLightsIsTransparentChunk(Chunk *chunk, int32_t x, int32_t y, int32_t z);
-		bool calcLightsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
-		void calcLights(Chunk *chunk, glm::vec3 &pos, BlockLights &lights, uint8_t visibleFaces);
+		bool calcLightsLevelsIsTransparentChunk(Chunk *chunk, int32_t x, int32_t y, int32_t z);
+		bool calcLightsLevelsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
+		void calcLightsLevels(Chunk *chunk, glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces);
 		void calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces);
+		void smoothLights(Chunk *chunk, glm::vec3 &pos, float *lights, uint8_t visibleFaces);
 
 	public:
 		Block(uint8_t type);
+		Block();
 		void fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
-		inline bool isTransparent() {return (this->type == 0 || this->type == 16 * 13 + 15);};
+		inline bool isTransparent() {return (this->type == 0);};
+		inline void setType(uint8_t type) {this->type = type;};
 		inline uint8_t getType() {return (this->type);};
 
 	};

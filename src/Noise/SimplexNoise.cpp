@@ -44,4 +44,12 @@ namespace voxel
 		return (result);
 	}
 
+	double SimplexNoise::get4(int32_t x, int32_t y, int32_t z, int32_t w)
+	{
+		double result = 0;
+		for (uint32_t i = 0; i < this->octavesNumber; ++i)
+			result += this->octaves[i].get4(x / this->frequencies[i], y / this->frequencies[i], z / this->frequencies[i], w / this->frequencies[i]) * this->amplitudes[i];
+		return (result);
+	}
+
 }

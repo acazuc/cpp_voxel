@@ -114,7 +114,7 @@ namespace voxel
 				if (chunk)
 				{
 					Block *block = chunk->getBlockAt(pos.x - chunkX, pos.y, pos.z - chunkZ);
-					if (block)
+					if (block && block->getType())
 					{
 						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
 						{

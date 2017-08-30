@@ -17,8 +17,9 @@ SRCS_NAME = Main.cpp \
 	    ChunkLoader.cpp \
 	    Clouds.cpp \
 	    Skybox.cpp \
-	    SimplexNoise/SimplexNoise.cpp \
-	    SimplexNoise/SimplexNoiseOctave.cpp \
+	    Noise/SimplexNoise.cpp \
+	    Noise/SimplexNoiseOctave.cpp \
+	    Noise/WorleyNoise.cpp \
 	    Utils/readfile.cpp \
 	    Player/PlayerRaycast.cpp \
 
@@ -44,7 +45,7 @@ $(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp
 
 odir:
 	@mkdir -p $(OBJS_PATH)
-	@mkdir -p $(OBJS_PATH)/SimplexNoise
+	@mkdir -p $(OBJS_PATH)/Noise
 	@mkdir -p $(OBJS_PATH)/Utils
 	@mkdir -p $(OBJS_PATH)/Player
 

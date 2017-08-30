@@ -24,6 +24,7 @@ namespace voxel
 		~SimplexNoise();
 		double get2(int32_t x, int32_t y);
 		double get3(int32_t x, int32_t y, int32_t z);
+		double get4(int32_t x, int32_t y, int32_t z, int32_t w);
 
 	};
 

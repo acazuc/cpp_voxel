@@ -77,43 +77,43 @@ namespace voxel
 				}
 			}
 			if (checkChunk(world, playerChunkX, playerChunkZ))
-			{};//	goto end;
+				goto end;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
 			{
 				int32_t chunkX = playerChunkX - i * CHUNK_WIDTH;
 				int32_t chunkZ = playerChunkZ - i * CHUNK_WIDTH;
 				if (checkChunk(world, chunkX, chunkZ))
-				{};//	goto end;
+					goto end;
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-					{};//	goto end;
+						goto end;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkZ += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-					{};//	goto end;
+						goto end;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-					{};//	goto end;
+						goto end;
 				}
 				for (int32_t j = 0; j <= i * 2 - 1; ++j)
 				{
 					chunkZ -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-					{};//	goto end;
+						goto end;
 				}
 			}
 			ts.tv_nsec = 100000000;
 			nanosleep(&ts, NULL);
-		//end:
+		end:
 			continue;
-			ts.tv_nsec = 100000000;
+			ts.tv_nsec = 10000000;
 			nanosleep(&ts, NULL);
 		}
 	}

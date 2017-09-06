@@ -1,5 +1,6 @@
 #include "Main.h"
 #include "Utils/readfile.h"
+#include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
@@ -28,6 +29,7 @@ namespace voxel
 	World *Main::world;
 	bool Main::smooth = false;
 	bool Main::ssao = false;
+	int Main::disableTex = 0;
 
 	void Main::buildFocusedShader()
 	{
@@ -66,6 +68,7 @@ namespace voxel
 		blocksShader.program->link();
 		blocksShader.fogDistanceLocation = blocksShader.program->getUniformLocation("fogDistance");
 		blocksShader.timeFactorLocation = blocksShader.program->getUniformLocation("timeFactor");
+		blocksShader.disableTexLocation = blocksShader.program->getUniformLocation("disableTex");
 		blocksShader.texCoordsLocation = blocksShader.program->getAttribLocation("vertexUV");
 		blocksShader.texCoordsLocation->setVertexAttribArray(true);
 		blocksShader.vertexesLocation = blocksShader.program->getAttribLocation("vertexPosition");
@@ -151,6 +154,7 @@ namespace voxel
 			blocksShader.mLocation->setMat4f(osef);
 			blocksShader.texLocation->setVec1i(0);
 			blocksShader.fogDistanceLocation->setVec1f(16 * 14);
+			blocksShader.disableTexLocation->setVec1i(0);
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);
@@ -171,6 +175,7 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
+		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
@@ -202,6 +207,15 @@ namespace voxel
 		{
 			Main::smooth = !Main::smooth;
 			Main::world->update();
+		}
+		if (event.key == GLFW_KEY_I)
+		{
+			if (Main::disableTex == 1)
+				Main::disableTex = 0;
+			else
+				Main::disableTex = 1;
+			blocksShader.program->use();
+			blocksShader.disableTexLocation->setVec1i(Main::disableTex);
 		}
 	}
 

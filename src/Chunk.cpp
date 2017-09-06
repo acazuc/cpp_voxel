@@ -28,7 +28,7 @@ namespace voxel
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
 		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
-		this->blocks = new Block[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		this->blocks = new ChunkBlock[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
@@ -54,13 +54,13 @@ namespace voxel
 					}
 					uint8_t blockType = 1;
 					if (y == 0)
-						blockType = 18;
+						blockType = 7;
 					else if (y == noiseIndex)
-						blockType = 1;
+						blockType = 2;
 					else if (y > noiseIndex - 3)
 						blockType = 3;
 					else
-						blockType = 2;
+						blockType = 1;
 					this->blocks[getXYZId(x, y, z)].setType(blockType);
 				}
 			}
@@ -245,14 +245,11 @@ namespace voxel
 			{
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					Block *block = &this->blocks[getXYZId(x, y, z)];
-					//if (block)
-					{
-						pos.x = this->x + x;
-						pos.y = y;
-						pos.z = this->z + z;
-						block->fillBuffers(this, pos, vertexes, texCoords, colors, indices);
-					}
+					ChunkBlock *block = &this->blocks[getXYZId(x, y, z)];
+					pos.x = this->x + x;
+					pos.y = y;
+					pos.z = this->z + z;
+					block->fillBuffers(this, pos, vertexes, texCoords, colors, indices);
 				}
 			}
 		}
@@ -326,8 +323,8 @@ namespace voxel
 		{
 			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
 			{
-				Block *block = getBlockAt(x, i, z);
-				if (block && block->getType())
+				ChunkBlock *block = getBlockAt(x, i, z);
+				if (block->getType())
 				{
 					if (i == y)
 						continue;

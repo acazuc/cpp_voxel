@@ -35,6 +35,7 @@ namespace voxel
 		static World *world;
 		static bool smooth;
 		static bool ssao;
+		static int disableTex;
 		static void buildFocusedShader();
 		static void buildBlocksShader();
 		static void buildCloudsShader();

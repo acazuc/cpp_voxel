@@ -10,7 +10,7 @@ SRCS_PATH = src/
 
 SRCS_NAME = Main.cpp \
 	    World.cpp \
-	    Block.cpp \
+	    ChunkBlock.cpp \
 	    Chunk.cpp \
 	    Player.cpp \
 	    Frustum.cpp \
@@ -22,6 +22,8 @@ SRCS_NAME = Main.cpp \
 	    Noise/WorleyNoise.cpp \
 	    Utils/readfile.cpp \
 	    Player/PlayerRaycast.cpp \
+	    Blocks/Blocks.cpp \
+	    Blocks/Block.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -48,6 +50,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Noise
 	@mkdir -p $(OBJS_PATH)/Utils
 	@mkdir -p $(OBJS_PATH)/Player
+	@mkdir -p $(OBJS_PATH)/Blocks
 
 clean:
 	@echo " - Cleaning objs"

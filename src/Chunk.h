@@ -1,7 +1,7 @@
 #ifndef CHUNK_H
 # define CHUNK_H
 
-# include "Block.h"
+# include "ChunkBlock.h"
 # include <librender/Shader/VertexBuffer.h>
 
 using librender::VertexBuffer;
@@ -22,8 +22,8 @@ namespace voxel
 		VertexBuffer *vertexesBuffer;
 		VertexBuffer *indicesBuffer;
 		VertexBuffer *colorsBuffer;
+		ChunkBlock *blocks;
 		glm::mat4 modelMat;
-		Block *blocks;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;
@@ -47,7 +47,7 @@ namespace voxel
 		void draw();
 		void addBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
 		void destroyBlock(int32_t x, int32_t y, int32_t z);
-		inline Block **getBlocks() {return (&this->blocks);};
+		inline ChunkBlock **getBlocks() {return (&this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
 		inline void setChunkXMore(Chunk *chunk);
@@ -56,7 +56,7 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline Block *getBlockAt(int32_t x, int32_t y, int32_t z) {return (&this->blocks[getXYZId(x, y, z)]);};
+		inline ChunkBlock *getBlockAt(int32_t x, int32_t y, int32_t z) {return (&this->blocks[getXYZId(x, y, z)]);};
 		inline uint8_t getLightAt(int32_t x, int32_t y, int32_t z) {return (this->lightMap[getXYZId(x, y, z)]);};
 		inline uint16_t getTopBlockAt(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};

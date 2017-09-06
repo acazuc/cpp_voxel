@@ -13,6 +13,7 @@ namespace voxel
 	{
 		ProgramLocation *fogDistanceLocation;
 		ProgramLocation *timeFactorLocation;
+		ProgramLocation *disableTexLocation;
 		ProgramLocation *texCoordsLocation;
 		ProgramLocation *vertexesLocation;
 		ProgramLocation *fogColorLocation;

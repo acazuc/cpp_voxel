@@ -122,7 +122,7 @@ namespace voxel
 				Chunk *chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
 				if (chunk)
 				{
-					Block *block = chunk->getBlockAt(posX - chunkX, posY, posZ - chunkZ);
+					ChunkBlock *block = chunk->getBlockAt(posX - chunkX, posY, posZ - chunkZ);
 					if (block && block->getType())
 					{
 						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))

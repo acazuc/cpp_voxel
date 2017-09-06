@@ -7,10 +7,13 @@ centroid varying vec3 viewSpace;
 uniform sampler2D tex;
 uniform float fogDistance;
 uniform vec4 fogColor;
+uniform int disableTex;
 
 void main()
 {
-	vec4 texCol = texture2D(tex, UV);
+	vec4 texCol = vec4(1, 1, 1, 1);
+	if (disableTex == 1)
+		texCol = texture2D(tex, UV);
 	vec4 col = texCol * vec4(color, 1);
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);

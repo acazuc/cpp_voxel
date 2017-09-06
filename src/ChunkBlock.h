@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-# define BLOCK_H
+#ifndef CHUNK_BLOCK_H
+# define CHUNK_BLOCK_H
 
 # include <librender/GL.h>
 # include <glm/glm.hpp>
@@ -46,7 +46,7 @@ namespace voxel
 		uint8_t f6p4 : 4;
 	};
 
-	class Block
+	class ChunkBlock
 	{
 
 	private:
@@ -59,8 +59,8 @@ namespace voxel
 		void initLightsLevels(BlockLightsLevels &levels, uint8_t visibleFaces, int8_t *blocksLights);
 
 	public:
-		Block(uint8_t type);
-		Block();
+		ChunkBlock(uint8_t type);
+		ChunkBlock();
 		void fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
 		inline bool isTransparent() {return (this->type == 0);};
 		inline void setType(uint8_t type) {this->type = type;};

@@ -324,8 +324,8 @@ namespace voxel
 			Chunk *chunk = this->world.getChunk(chunkX, chunkZ);
 			if (!chunk)
 				return (false);
-			Block *block = chunk->getBlockAt(x - chunkX, y, z - chunkZ);
-			if (!block || !block->getType())
+			ChunkBlock *block = chunk->getBlockAt(x - chunkX, y, z - chunkZ);
+			if (!block->getType())
 				return (false);
 			return (true);
 		}

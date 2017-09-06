@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
 
-#define WIDTH .501
+#define WIDTH .502
 
 namespace voxel
 {
@@ -68,8 +68,8 @@ namespace voxel
 		Main::getFocusedShader().mLocation->setMat4f(model);
 		Main::getFocusedShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getFocusedShader().fogColorLocation->setVec4f(Main::getSkyColor());
-		Main::getFocusedShader().vertexesLocation->setDataBuffer(this->vertexesBuffer);
-		Main::getFocusedShader().colorsLocation->setDataBuffer(this->colorsBuffer);
+		Main::getFocusedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
+		Main::getFocusedShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
 		glLineWidth(2);
 		glDrawArrays(GL_LINES, 0, 24);
 	}
@@ -85,9 +85,15 @@ namespace voxel
 
 	static float intbound(float pos, float dir)
 	{
+		if (dir < 0 && dir == std::round(dir))
+			return (0);
 		if (dir > 0)
-			return ((round(pos) - pos) / dir);
-		return ((pos - round(pos)) / (-dir));
+		{
+			if (pos == 0)
+				return (1 / dir);
+			return ((std::ceil(pos) - pos) / dir);
+		}
+		return ((pos - std::floor(pos)) / (-dir));
 	}
 
 	void PlayerRaycast::raycast()
@@ -95,7 +101,7 @@ namespace voxel
 		this->found = false;
 		//glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 		//glBlendEquation(GL_FUNC_ADD);
-		glm::vec3 pos(round(this->player.getPosX()), round(this->player.getPosY()), round(this->player.getPosZ()));
+		glm::vec3 pos(std::round(this->player.getPosX()), std::round(this->player.getPosY()), std::round(this->player.getPosZ()));
 		glm::vec4 dir = glm::vec4(0, 0, -1, 0) * this->player.getViewMat();
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
 		glm::vec3 max(intbound(this->player.getPosX(), dir.x), intbound(this->player.getPosY(), dir.y), intbound(this->player.getPosZ(), dir.z));
@@ -108,24 +114,27 @@ namespace voxel
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
 			{
-				int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-				int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+				float posX = /*std::round*/(pos.x);
+				float posY = /*std::round*/(pos.y);
+				float posZ = /*std::round*/(pos.z);
+				int32_t chunkX = std::floor(posX / CHUNK_WIDTH) * CHUNK_WIDTH;
+				int32_t chunkZ = std::floor(posZ / CHUNK_WIDTH) * CHUNK_WIDTH;
 				Chunk *chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
 				if (chunk)
 				{
-					Block *block = chunk->getBlockAt(pos.x - chunkX, pos.y, pos.z - chunkZ);
+					Block *block = chunk->getBlockAt(posX - chunkX, posY, posZ - chunkZ);
 					if (block && block->getType())
 					{
 						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
 						{
-							chunk->destroyBlock(pos.x - chunkX, pos.y, pos.z - chunkZ);
+							chunk->destroyBlock(posX - chunkX, posY, posZ - chunkZ);
 							return;
 						}
 						else if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
 						{
-							int32_t newX = pos.x - chunkX;
-							int32_t newY = pos.y;
-							int32_t newZ = pos.z - chunkZ;
+							int32_t newX = posX - chunkX;
+							int32_t newY = posY;
+							int32_t newZ = posZ - chunkZ;
 							if (face == BLOCK_FACE_LEFT)
 								newX -= 1;
 							else if (face == BLOCK_FACE_RIGHT)
@@ -174,9 +183,9 @@ namespace voxel
 						}
 						this->found = true;
 						this->face = face;
-						this->x = pos.x;
-						this->y = pos.y;
-						this->z = pos.z;
+						this->x = posX;
+						this->y = posY;
+						this->z = posZ;
 						return;
 					}
 				}

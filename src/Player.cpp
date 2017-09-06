@@ -7,7 +7,7 @@
 #define RUN_SPEED 5.6
 #define JUMP_FORCE .155
 #define GRAVITY 0.55
-#define FLY_SPEED 100
+#define FLY_SPEED 10
 
 #define BODY_UNDER 1.62f
 #define BODY_OVER 0.08f
@@ -32,7 +32,7 @@ namespace voxel
 	, rotY(0)
 	, rotZ(0)
 	, isOnFloor(true)
-	, flying(false)
+	, flying(true)
 	{
 		this->fallStarted = nanotime;
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .01, 1000.);

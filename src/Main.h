@@ -5,12 +5,14 @@
 # include "Shaders/BlocksShader.h"
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
+# include "World.h"
 # include <librender/Shader/ProgramLocation.h>
 # include <librender/Shader/Program.h>
 # include <librender/Window/Window.h>
 # include <librender/Texture.h>
 
 using librender::ProgramLocation;
+using librender::KeyEvent;
 using librender::Program;
 using librender::Texture;
 using librender::Window;
@@ -30,10 +32,14 @@ namespace voxel
 		static glm::vec4 skyColor;
 		static Texture *terrain;
 		static Window *window;
+		static World *world;
+		static bool smooth;
+		static bool ssao;
 		static void buildFocusedShader();
 		static void buildBlocksShader();
 		static void buildCloudsShader();
 		static void buildSkyboxShader();
+		static void keyDown(KeyEvent &event);
 
 	public:
 		static void main();
@@ -45,6 +51,8 @@ namespace voxel
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
 		static Window *getWindow() {return (window);};
+		static bool getSmooth() {return (smooth);};
+		static bool getSsao() {return (ssao);};
 
 	};
 

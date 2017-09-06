@@ -23,6 +23,13 @@ namespace voxel
 			delete (this->chunks[i]);
 	}
 
+	void World::update()
+	{
+		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		for (uint32_t i = 0; i < this->chunks.size(); ++i)
+			this->chunks[i]->regenerateLightMap();
+	}
+
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
@@ -41,7 +48,7 @@ namespace voxel
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-		glBindTexture(GL_TEXTURE_2D, Main::getTerrain()->getTextureID());
+		glBindTexture(GL_TEXTURE_2D, Main::getTerrain()->getId());
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
 			Chunk *chunk = *iter;

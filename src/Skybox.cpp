@@ -76,16 +76,16 @@ namespace voxel
 		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
 		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
-		glBindTexture(GL_TEXTURE_2D, sun->getTextureID());
+		glBindTexture(GL_TEXTURE_2D, sun->getId());
 		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
-		Main::getSkyboxShader().texCoordsLocation->setDataBuffer(this->sunTexCoordsBuffer);
-		Main::getSkyboxShader().vertexesLocation->setDataBuffer(this->sunVertexesBuffer);
-		Main::getSkyboxShader().colorsLocation->setDataBuffer(this->sunColorsBuffer);
+		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->sunTexCoordsBuffer);
+		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->sunVertexesBuffer);
+		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->sunColorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindTexture(GL_TEXTURE_2D, moon->getTextureID());
-		Main::getSkyboxShader().texCoordsLocation->setDataBuffer(this->moonTexCoordsBuffer);
-		Main::getSkyboxShader().vertexesLocation->setDataBuffer(this->moonVertexesBuffer);
-		Main::getSkyboxShader().colorsLocation->setDataBuffer(this->moonColorsBuffer);
+		glBindTexture(GL_TEXTURE_2D, moon->getId());
+		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->moonTexCoordsBuffer);
+		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->moonVertexesBuffer);
+		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->moonColorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 

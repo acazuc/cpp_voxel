@@ -2,11 +2,9 @@
 # define PLAYER_H
 
 # include "./Player/PlayerRaycast.h"
-# include <librender/Shader/DataBuffer.h>
 # include <glm/glm.hpp>
 # include <cstdint>
 
-using librender::DataBuffer;
 
 namespace voxel
 {

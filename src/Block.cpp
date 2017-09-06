@@ -1,11 +1,12 @@
 #include "Block.h"
 #include "Chunk.h"
+#include "Main.h"
 #include <cstring>
 #include "Debug.h"
 
 #define BLOCK_SIZE .5
 #define LIGHT_MIN .125
-#define LIGHT_RANGE .6
+#define LIGHT_RANGE .7
 #define SSAO_FACTOR 2
 
 #define F1P1 0
@@ -33,7 +34,7 @@
 #define F6P3 22
 #define F6P4 23
 
-#define LIGHT_SSAO_TEST(light, ssao, base) if (base <= ssao) {light = 0;} else {light = base - ssao;}
+#define LIGHT_SSAO_TEST(light, ssao) if (light <= ssao) {light = 0;} else {light -= ssao;}
 #define SMOOTH_TEST_LESS(lights, changed, index, diff) if (!changed[index]) {lights[index] -= diff;changed[index] = true;}
 #define SMOOTH_TEST_MORE(lights, changed, index, diff) if (!changed[index]) {lights[index] += diff;changed[index] = true;}
 
@@ -63,7 +64,10 @@ namespace voxel
 		if (!visibleFaces)
 			return;
 		BlockLightsLevels lightsLevels;
-		calcLightsLevels(chunk, pos, lightsLevels, visibleFaces);
+		uint8_t blockLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ()) & 0xf;
+		std::memset(&lightsLevels, (blockLight & 0xf) << 4 | (blockLight & 0xf), sizeof(lightsLevels));
+		if (Main::getSsao())
+			calcAmbientOcclusion(chunk, pos, lightsLevels, visibleFaces);
 		glm::vec3 color(1, 1, 1);
 		float lights[24];
 		lights[F1P1] = lightsLevelsValues[lightsLevels.f1p1] * LIGHT_RANGE + LIGHT_MIN;
@@ -90,7 +94,8 @@ namespace voxel
 		lights[F6P2] = lightsLevelsValues[lightsLevels.f6p2] * LIGHT_RANGE + LIGHT_MIN;
 		lights[F6P3] = lightsLevelsValues[lightsLevels.f6p3] * LIGHT_RANGE + LIGHT_MIN;
 		lights[F6P4] = lightsLevelsValues[lightsLevels.f6p4] * LIGHT_RANGE + LIGHT_MIN;
-		smoothLights(chunk, pos, lights, visibleFaces);
+		if (Main::getSmooth())
+			smoothLights(chunk, pos, lights, visibleFaces, lightsLevels);
 		float texXOrg = ((this->type - 1) % 16) / 16.;
 		float texYOrg = ((this->type - 1) / 16) / 16.;
 		float texXDst = texXOrg + 1. / 16;
@@ -445,58 +450,80 @@ namespace voxel
 		}
 	}
 
-	bool Block::calcLightsLevelsIsTransparentChunk(Chunk *chunk, int32_t x, int32_t y, int32_t z)
+	uint8_t Block::calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
+		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
+			return (0);
+		int32_t newX = pos.x - chunk->getX() + addX;
+		int32_t newY = pos.y + addY;
+		int32_t newZ = pos.z - chunk->getZ() + addZ;
+		if (newX < 0)
+		{
+			newX += CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkXLess()))
+				return (0);
+		}
+		else if (newX >= CHUNK_WIDTH)
+		{
+			newX -= CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkXMore()))
+				return (0);
+		}
+		if (newZ < 0)
+		{
+			newZ += CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkZLess()))
+				return (0);
+		}
+		else if (newZ >= CHUNK_WIDTH)
+		{
+			newZ -= CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkZMore()))
+				return (0);
+		}
 		if (!chunk)
-			return (true);
-		Block *tmp = chunk->getBlockAt(x, y, z);
-		return (!tmp || tmp->isTransparent());
+			return (0);
+		return (chunk->getLightAt(newX, newY, newZ));
 	}
 
 	bool Block::calcLightsLevelsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
-			return (1);
+			return (true);
 		int32_t newX = pos.x - chunk->getX() + addX;
 		int32_t newY = pos.y + addY;
 		int32_t newZ = pos.z - chunk->getZ() + addZ;
-		bool different = (addX < 0 && newX < 0)
-			|| (addX > 0 && newX >= CHUNK_WIDTH)
-			|| (addZ < 0 && newZ < 0)
-			|| (addZ > 0 && newZ >= CHUNK_WIDTH);
-		if (different)
+		if (newX < 0)
 		{
-			Chunk *newChunk = chunk;
-			if (newX < 0)
-			{
-				newX += CHUNK_WIDTH;
-				if (!(newChunk = newChunk->getChunkXLess()))
-					return (true);
-			}
-			else if (newX >= CHUNK_WIDTH)
-			{
-				newX -= CHUNK_WIDTH;
-				if (!(newChunk = newChunk->getChunkXMore()))
-					return (true);
-			}
-			if (newZ < 0)
-			{
-				newZ += CHUNK_WIDTH;
-				if (!(newChunk = newChunk->getChunkZLess()))
-					return (true);
-			}
-			else if (newZ >= CHUNK_WIDTH)
-			{
-				newZ -= CHUNK_WIDTH;
-				if (!(newChunk = newChunk->getChunkZMore()))
-					return (true);
-			}
-			return (calcLightsLevelsIsTransparentChunk(newChunk, newX, newY, newZ));
+			newX += CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkXLess()))
+				return (true);
 		}
-		return (calcLightsLevelsIsTransparentChunk(chunk, newX, newY, newZ));
+		else if (newX >= CHUNK_WIDTH)
+		{
+			newX -= CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkXMore()))
+				return (true);
+		}
+		if (newZ < 0)
+		{
+			newZ += CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkZLess()))
+				return (true);
+		}
+		else if (newZ >= CHUNK_WIDTH)
+		{
+			newZ -= CHUNK_WIDTH;
+			if (!(chunk = chunk->getChunkZMore()))
+				return (true);
+		}
+		if (!chunk)
+			return (true);
+		Block *block = chunk->getBlockAt(newX, newY, newZ);
+		return (!block || block->isTransparent());
 	}
 
-	void Block::calcLightsLevels(Chunk *chunk, glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces)
+	void Block::calcAmbientOcclusion(Chunk *chunk, glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces)
 	{
 		BlockLightsLevels ssao;
 		std::memset(&ssao, 0x00, sizeof(ssao));
@@ -692,248 +719,500 @@ namespace voxel
 				}
 			}
 		}
-		uint8_t blockLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ()) & 0xf;
-		LIGHT_SSAO_TEST(lights.f1p1, ssao.f1p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f1p2, ssao.f1p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f1p3, ssao.f1p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f1p4, ssao.f1p4, blockLight);
-		LIGHT_SSAO_TEST(lights.f2p1, ssao.f2p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f2p2, ssao.f2p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f2p3, ssao.f2p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f2p4, ssao.f2p4, blockLight);
-		LIGHT_SSAO_TEST(lights.f3p1, ssao.f3p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f3p2, ssao.f3p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f3p3, ssao.f3p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f3p4, ssao.f3p4, blockLight);
-		LIGHT_SSAO_TEST(lights.f4p1, ssao.f4p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f4p2, ssao.f4p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f4p3, ssao.f4p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f4p4, ssao.f4p4, blockLight);
-		LIGHT_SSAO_TEST(lights.f5p1, ssao.f5p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f5p2, ssao.f5p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f5p3, ssao.f5p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f5p4, ssao.f5p4, blockLight);
-		LIGHT_SSAO_TEST(lights.f6p1, ssao.f6p1, blockLight);
-		LIGHT_SSAO_TEST(lights.f6p2, ssao.f6p2, blockLight);
-		LIGHT_SSAO_TEST(lights.f6p3, ssao.f6p3, blockLight);
-		LIGHT_SSAO_TEST(lights.f6p4, ssao.f6p4, blockLight);
+		LIGHT_SSAO_TEST(lights.f1p1, ssao.f1p1);
+		LIGHT_SSAO_TEST(lights.f1p2, ssao.f1p2);
+		LIGHT_SSAO_TEST(lights.f1p3, ssao.f1p3);
+		LIGHT_SSAO_TEST(lights.f1p4, ssao.f1p4);
+		LIGHT_SSAO_TEST(lights.f2p1, ssao.f2p1);
+		LIGHT_SSAO_TEST(lights.f2p2, ssao.f2p2);
+		LIGHT_SSAO_TEST(lights.f2p3, ssao.f2p3);
+		LIGHT_SSAO_TEST(lights.f2p4, ssao.f2p4);
+		LIGHT_SSAO_TEST(lights.f3p1, ssao.f3p1);
+		LIGHT_SSAO_TEST(lights.f3p2, ssao.f3p2);
+		LIGHT_SSAO_TEST(lights.f3p3, ssao.f3p3);
+		LIGHT_SSAO_TEST(lights.f3p4, ssao.f3p4);
+		LIGHT_SSAO_TEST(lights.f4p1, ssao.f4p1);
+		LIGHT_SSAO_TEST(lights.f4p2, ssao.f4p2);
+		LIGHT_SSAO_TEST(lights.f4p3, ssao.f4p3);
+		LIGHT_SSAO_TEST(lights.f4p4, ssao.f4p4);
+		LIGHT_SSAO_TEST(lights.f5p1, ssao.f5p1);
+		LIGHT_SSAO_TEST(lights.f5p2, ssao.f5p2);
+		LIGHT_SSAO_TEST(lights.f5p3, ssao.f5p3);
+		LIGHT_SSAO_TEST(lights.f5p4, ssao.f5p4);
+		LIGHT_SSAO_TEST(lights.f6p1, ssao.f6p1);
+		LIGHT_SSAO_TEST(lights.f6p2, ssao.f6p2);
+		LIGHT_SSAO_TEST(lights.f6p3, ssao.f6p3);
+		LIGHT_SSAO_TEST(lights.f6p4, ssao.f6p4);
 	}
 
-	void Block::smoothLights(Chunk *chunk, glm::vec3 &pos, float *lights, uint8_t visibleFaces)
+	void Block::smoothLights(Chunk *chunk, glm::vec3 &pos, float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels)
 	{
-		bool changedLess[24];
-		bool changedMore[24];
-		std::memset(changedLess, 0, sizeof(changedLess));
-		std::memset(changedMore, 0, sizeof(changedMore));
-		uint8_t lightLevel = chunk->getLightAt(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ());
-		float diff = LIGHT_RANGE / 16 / 2;
-		if (!(visibleFaces & BLOCK_FACE_LEFT) || !calcLightsLevelsIsTransparent(chunk, pos, -1, 0, 0))
+		bool blocksTrans[27];
+		int8_t blocksLights[27];
 		{
-			uint8_t nearLight;
-			if (pos.x - chunk->getX() == 0)
+			int8_t i = 0;
+			for (int8_t x = -1; x <= 1; ++x)
 			{
-				if (chunk->getChunkXLess())
-					nearLight = chunk->getChunkXLess()->getLightAt(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ());
-				else
-					nearLight = lightLevel;
-			}
-			else
-			{
-				nearLight = chunk->getLightAt(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ());
-			}
-			if (lightLevel > nearLight)
-			{
-				SMOOTH_TEST_LESS(lights, changedLess, F1P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F1P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F2P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F2P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P2, diff);
-			}
-			else if (lightLevel < nearLight)
-			{
-				SMOOTH_TEST_MORE(lights, changedMore, F1P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F1P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F2P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F2P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P2, diff);
-			}
-		}
-		if (!(visibleFaces & BLOCK_FACE_RIGHT) || !calcLightsLevelsIsTransparent(chunk, pos, 1, 0, 0))
-		{
-			uint8_t nearLight;
-			if (pos.x - chunk->getX() == CHUNK_WIDTH - 1)
-			{
-				if (chunk->getChunkXMore())
-					nearLight = chunk->getChunkXMore()->getLightAt(0, pos.y, pos.z - chunk->getZ());
-				else
-					nearLight = lightLevel;
-			}
-			else
-			{
-				nearLight = chunk->getLightAt(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ());
-			}
-			if (lightLevel > nearLight)
-			{
-				SMOOTH_TEST_LESS(lights, changedLess, F1P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F1P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F2P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F2P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P4, diff);
-			}
-			else if (lightLevel < nearLight)
-			{
-				SMOOTH_TEST_MORE(lights, changedMore, F1P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F1P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F2P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F2P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P4, diff);
-			}
-		}
-		if (!(visibleFaces & BLOCK_FACE_BACK) || !calcLightsLevelsIsTransparent(chunk, pos, 0, 0, -1))
-		{
-			uint8_t nearLight;
-			if (pos.z - chunk->getZ() == 0)
-			{
-				if (chunk->getChunkZLess())
-					nearLight = chunk->getChunkZLess()->getLightAt(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1);
-				else
-					nearLight = lightLevel;
-			}
-			else
-			{
-				nearLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1);
-			}
-			if (lightLevel > nearLight)
-			{
-				SMOOTH_TEST_LESS(lights, changedLess, F3P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F3P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F4P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F4P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P2, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P3, diff);
-			}
-			else if (lightLevel < nearLight)
-			{
-				SMOOTH_TEST_MORE(lights, changedMore, F3P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F3P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F4P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F4P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P2, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P3, diff);
-			}
-		}
-		if (!(visibleFaces & BLOCK_FACE_FRONT) || !calcLightsLevelsIsTransparent(chunk, pos, 0, 0, 1))
-		{
-			uint8_t nearLight;
-			if (pos.z - chunk->getZ() == CHUNK_WIDTH - 1)
-			{
-				if (chunk->getChunkZMore())
-					nearLight = chunk->getChunkZMore()->getLightAt(pos.x - chunk->getX(), pos.y, 0);
-				else
-					nearLight = lightLevel;
-			}
-			else
-			{
-				nearLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1);
-			}
-			if (lightLevel > nearLight)
-			{
-				SMOOTH_TEST_LESS(lights, changedLess, F3P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F3P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F4P3, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F4P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F5P4, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P1, diff);
-				SMOOTH_TEST_LESS(lights, changedLess, F6P4, diff);
-			}
-			else if (lightLevel < nearLight)
-			{
-				SMOOTH_TEST_MORE(lights, changedMore, F3P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F3P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F4P3, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F4P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F5P4, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P1, diff);
-				SMOOTH_TEST_MORE(lights, changedMore, F6P4, diff);
-			}
-		}
-		if (pos.y > 0)
-		{
-			if (!(visibleFaces & BLOCK_FACE_DOWN) || !calcLightsLevelsIsTransparent(chunk, pos, 0, -1, 0))
-			{
-				uint8_t nearLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ());
-				if (lightLevel > nearLight)
+				for (int8_t y = -1; y <= 1; ++y)
 				{
-					SMOOTH_TEST_LESS(lights, changedLess, F1P1, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F1P4, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F2P1, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F2P4, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F3P1, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F3P4, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F4P1, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F4P4, diff);
-				}
-				else if (lightLevel < nearLight)
-				{
-					SMOOTH_TEST_MORE(lights, changedMore, F1P1, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F1P4, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F2P1, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F2P4, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F3P1, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F3P4, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F4P1, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F4P4, diff);
+					for (int8_t z = -1; z <= 1; ++z)
+					{
+						blocksTrans[i] = calcLightsLevelsIsTransparent(chunk, pos, x, y, z);
+						blocksLights[i++] = calcLightLevel(chunk, pos, x, y, z);
+					}
 				}
 			}
 		}
-		if (pos.y < CHUNK_WIDTH - 1)
+		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
-			if (!(visibleFaces & BLOCK_FACE_UP) || !calcLightsLevelsIsTransparent(chunk, pos, 0, 1, 0))
 			{
-				uint8_t nearLight = chunk->getLightAt(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ());
-				if (lightLevel > nearLight)
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
 				{
-					SMOOTH_TEST_LESS(lights, changedLess, F1P2, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F1P3, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F2P2, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F2P3, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F3P2, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F3P3, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F4P2, diff);
-					SMOOTH_TEST_LESS(lights, changedLess, F4P3, diff);
+					for (int8_t y = 0; y <= 1; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 2] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
 				}
-				else if (lightLevel < nearLight)
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f1p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F1P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
 				{
-					SMOOTH_TEST_MORE(lights, changedMore, F1P2, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F1P3, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F2P2, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F2P3, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F3P2, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F3P3, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F4P2, diff);
-					SMOOTH_TEST_MORE(lights, changedMore, F4P3, diff);
+					for (int8_t y = 0; y <= 1; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 2] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
 				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f1p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F1P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t y = 1; y <= 2; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 2] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f1p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F1P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t y = 1; y <= 2; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 2] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f1p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F1P2] = LIGHT_MIN + result * LIGHT_RANGE;
 			}
 		}
-
+		if (visibleFaces & BLOCK_FACE_BACK)
+		{
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t y = 0; y <= 1; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 0] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f2p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F2P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t y = 0; y <= 1; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 0] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f2p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F2P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t y = 1; y <= 2; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 0] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f2p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F2P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t y = 1; y <= 2; ++y)
+					{
+						if (blocksTrans[(x * 3 + y) * 3 + 0] && !blocksTrans[(x * 3 + y) * 3 + 1])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + y) * 3 + 1]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f2p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F2P2] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+		}
+		if (visibleFaces & BLOCK_FACE_LEFT)
+		{
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 0; y <= 1; ++y)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(0 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f3p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F3P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 1; y <= 2; ++y)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(0 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f3p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F3P2] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 1; y <= 2; ++y)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(0 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f3p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F3P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 0; y <= 1; ++y)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(0 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f3p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F3P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+		}
+		if (visibleFaces & BLOCK_FACE_RIGHT)
+		{
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 0; y <= 1; ++y)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(2 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f4p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F4P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 1; y <= 2; ++y)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(2 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f4p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F4P2] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 1; y <= 2; ++y)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(2 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f4p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F4P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t y = 0; y <= 1; ++y)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(2 * 3 + y) * 3 + z] && !blocksTrans[(1 * 3 + y) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(1 * 3 + y) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f4p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F4P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+		}
+		if (visibleFaces & BLOCK_FACE_UP)
+		{
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(x * 3 + 2) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f5p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F5P2] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(x * 3 + 2) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f5p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F5P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(x * 3 + 2) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f5p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F5P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(x * 3 + 2) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f5p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F5P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+		}
+		if (visibleFaces & BLOCK_FACE_DOWN)
+		{
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(x * 3 + 0) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f6p2] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F6P2] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t z = 0; z <= 1; ++z)
+					{
+						if (blocksTrans[(x * 3 + 0) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f6p3] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F6P3] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 1; x <= 2; ++x)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(x * 3 + 0) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f6p4] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F6P4] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+			{
+				float totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (int8_t x = 0; x <= 1; ++x)
+				{
+					for (int8_t z = 1; z <= 2; ++z)
+					{
+						if (blocksTrans[(x * 3 + 0) * 3 + z] && !blocksTrans[(x * 3 + 1) * 3 + z])
+						{
+							totalLight += lightsLevelsValues[blocksLights[(x * 3 + 1) * 3 + z]];
+							lightsPoints++;
+						}
+					}
+				}
+				float average = totalLight / lightsPoints;
+				float result = average + (lightsLevelsValues[lightsLevels.f6p1] - lightsLevelsValues[blocksLights[(1 * 3 + 1) * 3 + 1]]);
+				lights[F6P1] = LIGHT_MIN + result * LIGHT_RANGE;
+			}
+		}
 	}
 
 }

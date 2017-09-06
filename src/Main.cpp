@@ -25,6 +25,9 @@ namespace voxel
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
+	World *Main::world;
+	bool Main::smooth = false;
+	bool Main::ssao = false;
 
 	void Main::buildFocusedShader()
 	{
@@ -135,6 +138,7 @@ namespace voxel
 		glEnable(GL_BLEND);
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		window->setKeyDownCallback(Main::keyDown);
 		window->show();
 		window->setVSync(true);
 		buildFocusedShader();
@@ -162,12 +166,12 @@ namespace voxel
 			ERROR("Failed to read terrain.png");
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
-		terrain->bind();
+		glBindTexture(GL_TEXTURE_2D, terrain->getId());
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
-		World *world = new World();
+		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
@@ -185,6 +189,20 @@ namespace voxel
 		}
 		delete (world);
 		delete (window);
+	}
+
+	void Main::keyDown(KeyEvent &event)
+	{
+		if (event.key == GLFW_KEY_P)
+		{
+			Main::ssao = !Main::ssao;
+			Main::world->update();
+		}
+		if (event.key == GLFW_KEY_O)
+		{
+			Main::smooth = !Main::smooth;
+			Main::world->update();
+		}
 	}
 
 	void Main::glErrors(std::string err)

@@ -1,9 +1,9 @@
 #ifndef PLAYER_RAYCAST_H
 # define PLAYER_RAYCAST_H
 
-# include <librender/Shader/DataBuffer.h>
+# include <librender/Shader/VertexBuffer.h>
 
-using librender::DataBuffer;
+using librender::VertexBuffer;
 
 namespace voxel
 {
@@ -15,8 +15,8 @@ namespace voxel
 
 	private:
 		Player &player;
-		DataBuffer vertexesBuffer;
-		DataBuffer colorsBuffer;
+		VertexBuffer vertexesBuffer;
+		VertexBuffer colorsBuffer;
 		uint8_t face;
 		int32_t x;
 		int32_t y;

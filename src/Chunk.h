@@ -2,9 +2,9 @@
 # define CHUNK_H
 
 # include "Block.h"
-# include <librender/Shader/DataBuffer.h>
+# include <librender/Shader/VertexBuffer.h>
 
-using librender::DataBuffer;
+using librender::VertexBuffer;
 
 # define CHUNK_WIDTH 16
 # define CHUNK_HEIGHT 255
@@ -18,10 +18,10 @@ namespace voxel
 	{
 
 	private:
-		DataBuffer *texCoordsBuffer;
-		DataBuffer *vertexesBuffer;
-		DataBuffer *indicesBuffer;
-		DataBuffer *colorsBuffer;
+		VertexBuffer *texCoordsBuffer;
+		VertexBuffer *vertexesBuffer;
+		VertexBuffer *indicesBuffer;
+		VertexBuffer *colorsBuffer;
 		glm::mat4 modelMat;
 		Block *blocks;
 		Chunk *chunkXLess;
@@ -34,6 +34,7 @@ namespace voxel
 		uint8_t *lightMap;
 		int32_t x;
 		int32_t z;
+		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool deleted;
 		void generateGLBuffer();
@@ -61,17 +62,18 @@ namespace voxel
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
+		inline void regenerateLightMap() {this->mustGenerateLightMap = true;};
 		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
-		inline void setTexCoordsBuffer(DataBuffer *texCoordsBuffer) {this->texCoordsBuffer = texCoordsBuffer;};
-		inline DataBuffer *getTexCoordsBuffer() {return (this->texCoordsBuffer);};
-		inline void setVertexesBuffer(DataBuffer *vertexesBuffer) {this->vertexesBuffer = vertexesBuffer;};
-		inline DataBuffer *getVertexesBuffer() {return (this->vertexesBuffer);};
-		inline void setIndicesBuffer(DataBuffer *indicesBuffer) {this->indicesBuffer = indicesBuffer;};
-		inline DataBuffer *getIndicesBuffer() {return (this->indicesBuffer);};
-		inline void setColorsBuffer(DataBuffer *colorsBuffer) {this->colorsBuffer = colorsBuffer;};
-		inline DataBuffer *getColorsBuffer() {return (this->colorsBuffer);};
+		inline void setTexCoordsBuffer(VertexBuffer *texCoordsBuffer) {this->texCoordsBuffer = texCoordsBuffer;};
+		inline VertexBuffer *getTexCoordsBuffer() {return (this->texCoordsBuffer);};
+		inline void setVertexesBuffer(VertexBuffer *vertexesBuffer) {this->vertexesBuffer = vertexesBuffer;};
+		inline VertexBuffer *getVertexesBuffer() {return (this->vertexesBuffer);};
+		inline void setIndicesBuffer(VertexBuffer *indicesBuffer) {this->indicesBuffer = indicesBuffer;};
+		inline VertexBuffer *getIndicesBuffer() {return (this->indicesBuffer);};
+		inline void setColorsBuffer(VertexBuffer *colorsBuffer) {this->colorsBuffer = colorsBuffer;};
+		inline VertexBuffer *getColorsBuffer() {return (this->colorsBuffer);};
 		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 

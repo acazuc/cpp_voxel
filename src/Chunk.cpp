@@ -15,6 +15,7 @@ namespace voxel
 	, world(world)
 	, x(x)
 	, z(z)
+	, mustGenerateLightMap(true)
 	, mustGenerateBuffers(true)
 	, deleted(false)
 	{
@@ -34,8 +35,8 @@ namespace voxel
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				float noiseIndex = 0;
-				//float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
+				//float noiseIndex = 0;
+				float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
 				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
@@ -59,10 +60,13 @@ namespace voxel
 						blockType = 3;
 					else
 						blockType = 2;
+					//if (y % 4 != 0)
+					//	blockType = 0;
 					this->blocks[getXYZId(x, y, z)].setType(blockType);
 				}
 			}
 		}
+		generateLightMap();
 	}
 
 	Chunk::~Chunk()
@@ -88,14 +92,16 @@ namespace voxel
 	{
 		if (!this->world.getFrustum().check(this->x, 0, this->z, this->x + CHUNK_WIDTH, CHUNK_HEIGHT, this->z + CHUNK_WIDTH))
 			return;
-		if (this->mustGenerateBuffers)
+		if (this->mustGenerateLightMap)
 		{
-			this->mustGenerateBuffers = false;
+			generateLightMap();
 			generateGLBuffer();
 		}
-		Main::getBlocksShader().texCoordsLocation->setDataBuffer(*this->texCoordsBuffer);
-		Main::getBlocksShader().vertexesLocation->setDataBuffer(*this->vertexesBuffer);
-		Main::getBlocksShader().colorsLocation->setDataBuffer(*this->colorsBuffer);
+		if (this->mustGenerateBuffers)
+			generateGLBuffer();
+		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->texCoordsBuffer);
+		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->vertexesBuffer);
+		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->colorsBuffer);
 		this->indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 	}
@@ -156,25 +162,25 @@ namespace voxel
 		{
 			uint8_t nearLight = this->chunkXLess->getLightAt(CHUNK_WIDTH - 1, y, z);
 			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1), light);
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		if (x == CHUNK_WIDTH - 1 && this->chunkXMore)
+		else if (x == CHUNK_WIDTH - 1 && this->chunkXMore)
 		{
 			uint8_t nearLight = this->chunkXMore->getLightAt(0, y, z);
 			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1), light);
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 		if (z == 0 && this->chunkZLess)
 		{
 			uint8_t nearLight = this->chunkZLess->getLightAt(x, y, CHUNK_WIDTH - 1);
 			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1), light);
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		if (z == CHUNK_WIDTH - 1 && this->chunkZMore)
+		else if (z == CHUNK_WIDTH - 1 && this->chunkZMore)
 		{
 			uint8_t nearLight = this->chunkZMore->getLightAt(x, y, 0);
 			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1), light);
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 		uint8_t curLvl = this->lightMap[getXYZId(x, y, z)];
 		if (curLvl >= light)
@@ -182,8 +188,18 @@ namespace voxel
 		this->lightMap[getXYZId(x, y, z)] = light;
 		if (light <= 1)
 			return;
-		//if (!this->blocks[getXYZId(x, y, z)].isTransparent())
-		//	return;
+		if (!this->blocks[getXYZId(x, y, z)].isTransparent())
+		{
+			if (x > 0)
+				setBlockLightRec(x - 1, y, z, 0);
+			if (x < CHUNK_WIDTH - 1)
+				setBlockLightRec(x + 1, y, z, 0);
+			if (z > 0)
+				setBlockLightRec(x, y, z - 1, 0);
+			if (z < CHUNK_WIDTH - 1)
+				setBlockLightRec(x, y, z + 1, 0);
+			return;
+		}
 		if (x > 0)
 			setBlockLightRec(x - 1, y, z, light - 1);
 		/*else if (this->chunkXLess)
@@ -224,6 +240,7 @@ namespace voxel
 
 	void Chunk::generateLightMap()
 	{
+		this->mustGenerateLightMap = false;
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH * sizeof(*this->lightMap));
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
@@ -237,7 +254,7 @@ namespace voxel
 
 	void Chunk::generateGLBuffer()
 	{
-		generateLightMap();
+		this->mustGenerateBuffers = false;
 		std::vector<glm::vec2> texCoords;
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
@@ -261,13 +278,13 @@ namespace voxel
 			}
 		}
 		if (!this->texCoordsBuffer)
-			this->texCoordsBuffer = new DataBuffer();
+			this->texCoordsBuffer = new VertexBuffer();
 		if (!this->vertexesBuffer)
-			this->vertexesBuffer = new DataBuffer();
+			this->vertexesBuffer = new VertexBuffer();
 		if (!this->indicesBuffer)
-			this->indicesBuffer = new DataBuffer();
+			this->indicesBuffer = new VertexBuffer();
 		if (!this->colorsBuffer)
-			this->colorsBuffer = new DataBuffer();
+			this->colorsBuffer = new VertexBuffer();
 		this->texCoordsBuffer->setData(GL_ARRAY_BUFFER, texCoords.data(), texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
 		this->vertexesBuffer->setData(GL_ARRAY_BUFFER, vertexes.data(), vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		this->indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
@@ -300,6 +317,7 @@ namespace voxel
 		if (y > this->topBlocks[getXZId(x, z)])
 			this->topBlocks[getXZId(x, z)] = y;
 		this->blocks[getXYZId(x, y, z)].setType(type);
+		regenerateLightMap();
 		regenerateBuffers();
 	}
 
@@ -340,6 +358,7 @@ namespace voxel
 			}
 		}
 		this->blocks[getXYZId(x, y, z)].setType(0);
+		regenerateLightMap();
 		regenerateBuffers();
 	}
 

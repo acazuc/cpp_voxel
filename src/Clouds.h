@@ -1,11 +1,11 @@
 #ifndef CLOUDS_H
 # define CLOUDS_H
 
-# include <librender/Shader/DataBuffer.h>
+# include <librender/Shader/VertexBuffer.h>
 # include <glm/vec3.hpp>
 # include <vector>
 
-using librender::DataBuffer;
+using librender::VertexBuffer;
 
 namespace voxel
 {
@@ -18,8 +18,8 @@ namespace voxel
 	private:
 		World &world;
 		std::vector<bool> parts;
-		DataBuffer vertexesBuffer;
-		DataBuffer colorsBuffer;
+		VertexBuffer vertexesBuffer;
+		VertexBuffer colorsBuffer;
 		uint32_t partsHeight;
 		uint32_t partsWidth;
 		uint32_t verticesNb;

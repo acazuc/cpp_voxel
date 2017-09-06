@@ -40,7 +40,8 @@ namespace voxel
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
 				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
-				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 2;
+				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 3;
+				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
 				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
 				this->topBlocks[getXZId(x, z)] = noiseIndex;
@@ -60,8 +61,6 @@ namespace voxel
 						blockType = 3;
 					else
 						blockType = 2;
-					//if (y % 4 != 0)
-					//	blockType = 0;
 					this->blocks[getXYZId(x, y, z)].setType(blockType);
 				}
 			}
@@ -118,7 +117,7 @@ namespace voxel
 			{
 				if (y > this->topBlocks[getXZId(x - 1, z)])
 				{
-					light = std::max(light, uint8_t(0xe));
+					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
 				}
 			}
@@ -126,7 +125,7 @@ namespace voxel
 			{
 				if (y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, z))
 				{
-					light = std::max(light, uint8_t(0xe));
+					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
 				}
 			}
@@ -134,7 +133,7 @@ namespace voxel
 			{
 				if (y > this->topBlocks[getXZId(x + 1, z)])
 				{
-					light = std::max(light, uint8_t(0xe));
+					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
 				}
 			}
@@ -142,18 +141,18 @@ namespace voxel
 			{
 				if (y > this->chunkXMore->getTopBlockAt(0, z))
 				{
-					light = std::max(light, uint8_t(0xe));
+					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
 				}
 			}
 			if (z > 0 && y > this->topBlocks[getXZId(x, z - 1)])
 			{
-				light = std::max(light, uint8_t(0xe));
+				light = std::max(light, uint8_t(0xf));
 				goto endNearTop;
 			}
 			if (z < CHUNK_WIDTH - 1 && y > this->topBlocks[getXZId(x, z + 1)])
 			{
-				light = std::max(light, uint8_t(0xe));
+				light = std::max(light, uint8_t(0xf));
 				goto endNearTop;
 			}
 		}
@@ -194,6 +193,10 @@ namespace voxel
 				setBlockLightRec(x - 1, y, z, 0);
 			if (x < CHUNK_WIDTH - 1)
 				setBlockLightRec(x + 1, y, z, 0);
+			if (y > 0)
+				setBlockLightRec(x, y - 1, z, 0);
+			if (y < CHUNK_HEIGHT - 1)
+				setBlockLightRec(x, y + 1, z, 0);
 			if (z > 0)
 				setBlockLightRec(x, y, z - 1, 0);
 			if (z < CHUNK_WIDTH - 1)
@@ -202,40 +205,16 @@ namespace voxel
 		}
 		if (x > 0)
 			setBlockLightRec(x - 1, y, z, light - 1);
-		/*else if (this->chunkXLess)
-		{
-			uint8_t nearLight = this->chunkXLess->getLightAt(CHUNK_WIDTH - 1, y, z);
-			if (light > nearLight + 1)
-				this->chunkXLess->regenerateBuffers();
-		}*/
 		if (x < CHUNK_WIDTH - 1)
 			setBlockLightRec(x + 1, y, z, light - 1);
-		/*else if (this->chunkXMore)
-		{
-			uint8_t nearLight = this->chunkXMore->getLightAt(0, y, z);
-			if (light > nearLight + 1)
-				this->chunkXMore->regenerateBuffers();
-		}*/
 		if (y > 0)
 			setBlockLightRec(x, y - 1, z, light - 1);
-		if (y < CHUNK_HEIGHT - 1 && y < this->topBlocks[x * CHUNK_WIDTH + z])
+		if (y < CHUNK_HEIGHT - 1 && y < this->topBlocks[getXZId(x, z)])
 			setBlockLightRec(x, y + 1, z, light - 1);
 		if (z > 0)
 			setBlockLightRec(x, y, z - 1, light - 1);
-		/*else if (this->chunkZLess)
-		{
-			uint8_t nearLight = this->chunkZLess->getLightAt(x, y, CHUNK_WIDTH - 1);
-			if (light > nearLight + 1)
-				this->chunkZLess->regenerateBuffers();
-		}*/
 		if (z < CHUNK_WIDTH - 1)
 			setBlockLightRec(x, y, z + 1, light - 1);
-		/*else if (this->chunkZMore)
-		{
-			uint8_t nearLight = this->chunkZMore->getLightAt(x, y, 0);
-			if (light > nearLight + 1)
-				this->chunkZMore->regenerateBuffers();
-		}*/
 	}
 
 	void Chunk::generateLightMap()

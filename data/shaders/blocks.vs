@@ -6,7 +6,7 @@ attribute vec2 vertexUV;
 
 centroid varying vec2 UV;
 centroid varying vec3 color;
-centroid varying vec4 viewSpace;
+centroid varying vec3 viewSpace;
 
 uniform mat4 MVP;
 uniform mat4 M;
@@ -21,6 +21,6 @@ void main()
 	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;
 	UV = vertexUV;
 	color = vertexColor;
-	viewSpace = V * M * newVertex;
+	viewSpace = (V * M * newVertex).xyz;
 	gl_Position = MVP * newVertex;
 }

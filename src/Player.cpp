@@ -35,7 +35,7 @@ namespace voxel
 	, flying(true)
 	{
 		this->fallStarted = nanotime;
-		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .01, 1000.);
+		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
 	}
 
 	bool Player::handleMovementXZ()

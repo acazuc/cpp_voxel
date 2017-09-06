@@ -55,7 +55,8 @@ namespace voxel
 		uint8_t calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		void calcAmbientOcclusion(Chunk *chunk, glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces);
 		void calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces);
-		void smoothLights(Chunk *chunk, glm::vec3 &pos, float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels);
+		void smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blockLights);
+		void initLightsLevels(BlockLightsLevels &levels, uint8_t visibleFaces, int8_t *blocksLights);
 
 	public:
 		Block(uint8_t type);

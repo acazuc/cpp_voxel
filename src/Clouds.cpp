@@ -1,7 +1,7 @@
 #include "Clouds.h"
+#include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
-#include "Utils/System.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <libformat/PNG.h>
@@ -43,7 +43,7 @@ namespace voxel
 		float playerXDiff = this->world.getPlayer().getPosX() - this->lastPlayerX;
 		float playerZDiff = this->world.getPlayer().getPosZ() - this->lastPlayerZ;
 		float playerDiff = sqrt(playerXDiff * playerXDiff + playerZDiff * playerZDiff);
-		if (offsetDiff + playerDiff > CLOUD_WIDTH || offsetDiff + playerDiff < -CLOUD_WIDTH)
+		if (offsetDiff + playerDiff > CLOUD_WIDTH * 3 || offsetDiff + playerDiff < -CLOUD_WIDTH * 3)
 			rebuild();
 		Main::getCloudsShader().program->use();
 		glm::mat4 model(1);
@@ -66,10 +66,10 @@ namespace voxel
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
 		this->verticesNb = 0;
-		int32_t baseX = this->world.getPlayer().getPosX() - DISPLAY_DISTANCE + nanotime / 1000000000.;
-		int32_t endX = this->world.getPlayer().getPosX() + DISPLAY_DISTANCE + nanotime / 1000000000.;
-		int32_t baseY = this->world.getPlayer().getPosZ() - DISPLAY_DISTANCE;
-		int32_t endY = this->world.getPlayer().getPosZ() + DISPLAY_DISTANCE;
+		int32_t baseX = this->world.getPlayer().getPosX() - DISPLAY_DISTANCE - CLOUD_WIDTH * 2 + nanotime / 1000000000.;
+		int32_t endX = this->world.getPlayer().getPosX() + DISPLAY_DISTANCE + CLOUD_WIDTH * 2 + nanotime / 1000000000.;
+		int32_t baseY = this->world.getPlayer().getPosZ() - DISPLAY_DISTANCE - CLOUD_WIDTH * 2;
+		int32_t endY = this->world.getPlayer().getPosZ() + DISPLAY_DISTANCE + CLOUD_WIDTH * 2;
 		baseX -= baseX % CLOUD_WIDTH;
 		endX -= endX % CLOUD_WIDTH;
 		baseY -= baseY % CLOUD_WIDTH;

@@ -4,7 +4,8 @@ namespace voxel
 {
 
 	Block::Block(uint8_t id)
-	: id(id)
+	: opacity(15)
+	, id(id)
 	{
 		//Empty
 	}
@@ -48,13 +49,95 @@ namespace voxel
 
 	Block *Block::setTexSideX(float texSideX)
 	{
-		this->texSideX = texSideX;
+		setTexFrontX(texSideX);
+		setTexRightX(texSideX);
+		setTexBackX(texSideX);
+		setTexLeftX(texSideX);
 		return (this);
 	}
 
 	Block *Block::setTexSideY(float texSideY)
 	{
-		this->texSideY = texSideY;
+		setTexFrontY(texSideY);
+		setTexRightY(texSideY);
+		setTexBackY(texSideY);
+		setTexLeftY(texSideY);
+		return (this);
+	}
+
+	Block *Block::setTexFront(float texFrontX, float texFrontY)
+	{
+		setTexFrontX(texFrontX);
+		setTexFrontY(texFrontY);
+		return (this);
+	}
+
+	Block *Block::setTexFrontX(float texFrontX)
+	{
+		this->texFrontX = texFrontX;
+		return (this);
+	}
+
+	Block *Block::setTexFrontY(float texFrontY)
+	{
+		this->texFrontY = texFrontY;
+		return (this);
+	}
+
+	Block *Block::setTexRight(float texRightX, float texRightY)
+	{
+		setTexRightX(texRightX);
+		setTexRightY(texRightY);
+		return (this);
+	}
+
+	Block *Block::setTexRightX(float texRightX)
+	{
+		this->texRightX = texRightX;
+		return (this);
+	}
+
+	Block *Block::setTexRightY(float texRightY)
+	{
+		this->texRightY = texRightY;
+		return (this);
+	}
+
+	Block *Block::setTexBack(float texBackX, float texBackY)
+	{
+		setTexBackX(texBackX);
+		setTexBackY(texBackY);
+		return (this);
+	}
+
+	Block *Block::setTexBackX(float texBackX)
+	{
+		this->texBackX = texBackX;
+		return (this);
+	}
+
+	Block *Block::setTexBackY(float texBackY)
+	{
+		this->texBackY = texBackY;
+		return (this);
+	}
+
+	Block *Block::setTexLeft(float texLeftX, float texLeftY)
+	{
+		setTexLeftX(texLeftX);
+		setTexLeftY(texLeftY);
+		return (this);
+	}
+
+	Block *Block::setTexLeftX(float texLeftX)
+	{
+		this->texLeftX = texLeftX;
+		return (this);
+	}
+
+	Block *Block::setTexLeftY(float texLeftY)
+	{
+		this->texLeftY = texLeftY;
 		return (this);
 	}
 

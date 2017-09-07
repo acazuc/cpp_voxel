@@ -121,9 +121,17 @@ namespace voxel
 					goto endNearTop;
 				}
 			}
-			else if (this->chunkXLess)
+			else
 			{
-				if (y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, z))
+				if (this->chunkXLess)
+				{
+					if (y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, z))
+					{
+						light = std::max(light, uint8_t(0xf));
+						goto endNearTop;
+					}
+				}
+				else
 				{
 					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
@@ -137,23 +145,69 @@ namespace voxel
 					goto endNearTop;
 				}
 			}
-			else if (this->chunkXMore)
+			else
 			{
-				if (y > this->chunkXMore->getTopBlockAt(0, z))
+				if (this->chunkXMore)
+				{
+					if (y > this->chunkXMore->getTopBlockAt(0, z))
+					{
+						light = std::max(light, uint8_t(0xf));
+						goto endNearTop;
+					}
+				}
+				else
 				{
 					light = std::max(light, uint8_t(0xf));
 					goto endNearTop;
 				}
 			}
-			if (z > 0 && y > this->topBlocks[getXZId(x, z - 1)])
+			if (z > 0)
 			{
-				light = std::max(light, uint8_t(0xf));
-				goto endNearTop;
+				if (y > this->topBlocks[getXZId(x, z - 1)])
+				{
+					light = std::max(light, uint8_t(0xf));
+					goto endNearTop;
+				}
 			}
-			if (z < CHUNK_WIDTH - 1 && y > this->topBlocks[getXZId(x, z + 1)])
+			else
 			{
-				light = std::max(light, uint8_t(0xf));
-				goto endNearTop;
+				if (this->chunkZLess)
+				{
+					if (y > this->chunkZLess->getTopBlockAt(x, CHUNK_WIDTH - 1))
+					{
+						light = std::max(light, uint8_t(0xf));
+						goto endNearTop;
+					}
+				}
+				else
+				{
+					light = std::max(light, uint8_t(0xf));
+					goto endNearTop;
+				}
+			}
+			if (z < CHUNK_WIDTH - 1)
+			{
+				if (y > this->topBlocks[getXZId(x, z + 1)])
+				{
+					light = std::max(light, uint8_t(0xf));
+					goto endNearTop;
+				}
+			}
+			else
+			{
+				if (this->chunkZMore)
+				{
+					if (y > this->chunkZMore->getTopBlockAt(x, 0))
+					{
+						light = std::max(light, uint8_t(0xf));
+						goto endNearTop;
+					}
+				}
+				else
+				{
+					light = std::max(light, uint8_t(0xf));
+					goto endNearTop;
+				}
 			}
 		}
 	endNearTop:

@@ -8,12 +8,19 @@ uniform sampler2D tex;
 uniform float fogDistance;
 uniform vec4 fogColor;
 uniform int disableTex;
+uniform float timeFactor;
 
 void main()
 {
 	vec4 texCol = vec4(1, 1, 1, 1);
-	if (disableTex == 1)
+	if (disableTex == 0)
 		texCol = texture2D(tex, UV);
+	else
+	{
+		//float rand = fract(sin(dot(viewSpace.xy, vec2(12.9898, 78.233 * timeFactor))) * 43758.5453);
+		//texCol = vec4(rand, rand, rand, 1);
+		//texCol *= texture2D(tex, UV);
+	}
 	vec4 col = texCol * vec4(color, 1);
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);

@@ -63,7 +63,7 @@ namespace voxel
 		calcVisibleFaces(chunk, pos, visibleFaces);
 		if (!visibleFaces)
 			return;
-		bool blocksTransparentparent[27];
+		bool blocksTransparent[27];
 		int8_t blocksLights[27];
 		{
 			int8_t i = 0;
@@ -73,7 +73,7 @@ namespace voxel
 				{
 					for (int8_t z = -1; z <= 1; ++z)
 					{
-						blocksTransparentparent[i] = calcLightsLevelsIsTransparent(chunk, pos, x, y, z);
+						blocksTransparent[i] = calcLightsLevelsIsTransparent(chunk, pos, x, y, z);
 						blocksLights[i++] = calcLightLevel(chunk, pos, x, y, z);
 					}
 				}
@@ -83,26 +83,25 @@ namespace voxel
 		initLightsLevels(lightsLevels, visibleFaces, blocksLights);
 		std::memset(&lightsLevels, ((blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf) << 4) | (blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf), sizeof(lightsLevels));
 		if (Main::getSsao())
-			calcAmbientOcclusion(chunk, pos, lightsLevels, visibleFaces);
+			calcAmbientOcclusion(pos, lightsLevels, visibleFaces, blocksTransparent);
 		glm::vec3 color(1, 1, 1);
 		float lights[24];
-		smoothLights(lights, visibleFaces, lightsLevels, blocksTransparentparent, blocksLights);
+		smoothLights(lights, visibleFaces, lightsLevels, blocksTransparent, blocksLights);
 		Block *blockModel = Blocks::getBlock(this->type);
-		//float texSize = 1. / 16;
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY() + texSize));
 			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY()));
 			colors.push_back(glm::vec3(lights[F1P2] * color.x, lights[F1P2] * color.y, lights[F1P2] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY()));
 			colors.push_back(glm::vec3(lights[F1P3] * color.x, lights[F1P3] * color.y, lights[F1P3] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY() + texSize));
 			colors.push_back(glm::vec3(lights[F1P4] * color.x, lights[F1P4] * color.y, lights[F1P4] * color.z));
 			if (lightsLevels.f1p2 + lightsLevels.f1p4 > lightsLevels.f1p1 + lightsLevels.f1p3)
 			{
@@ -127,16 +126,16 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexBackX() + texSize, blockModel->getTexBackY() + texSize));
 			colors.push_back(glm::vec3(lights[F2P1] * color.x, lights[F2P1] * color.y, lights[F2P1] * color.z));
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexBackX() + texSize, blockModel->getTexBackY()));
 			colors.push_back(glm::vec3(lights[F2P2] * color.x, lights[F2P2] * color.y, lights[F2P2] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexBackX(), blockModel->getTexBackY()));
 			colors.push_back(glm::vec3(lights[F2P3] * color.x, lights[F2P3] * color.y, lights[F2P3] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexBackX(), blockModel->getTexBackY() + texSize));
 			colors.push_back(glm::vec3(lights[F2P4] * color.x, lights[F2P4] * color.y, lights[F2P4] * color.z));
 			if (lightsLevels.f2p2 + lightsLevels.f2p4 <= lightsLevels.f2p1 + lightsLevels.f2p3)
 			{
@@ -161,16 +160,16 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexLeftX(), blockModel->getTexLeftY() + texSize));
 			colors.push_back(glm::vec3(lights[F3P1] * color.x, lights[F3P1] * color.y, lights[F3P1] * color.z));
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexLeftX(), blockModel->getTexLeftY()));
 			colors.push_back(glm::vec3(lights[F3P2] * color.x, lights[F3P2] * color.y, lights[F3P2] * color.z));
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexLeftX() + texSize, blockModel->getTexLeftY()));
 			colors.push_back(glm::vec3(lights[F3P3] * color.x, lights[F3P3] * color.y, lights[F3P3] * color.z));
 			vertexes.push_back(glm::vec3(pos.x - BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexLeftX() + texSize, blockModel->getTexLeftY() + texSize));
 			colors.push_back(glm::vec3(lights[F3P4] * color.x, lights[F3P4] * color.y, lights[F3P4] * color.z));
 			if (lightsLevels.f3p2 + lightsLevels.f3p4 > lightsLevels.f3p1 + lightsLevels.f3p3)
 			{
@@ -195,16 +194,16 @@ namespace voxel
 		{
 			GLuint currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexRightX() + texSize, blockModel->getTexRightY() + texSize));
 			colors.push_back(glm::vec3(lights[F4P1] * color.x, lights[F4P1] * color.y, lights[F4P1] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z - BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX() + texSize, blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexRightX() + texSize, blockModel->getTexRightY()));
 			colors.push_back(glm::vec3(lights[F4P2] * color.x, lights[F4P2] * color.y, lights[F4P2] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY()));
+			texCoords.push_back(glm::vec2(blockModel->getTexRightX(), blockModel->getTexRightY()));
 			colors.push_back(glm::vec3(lights[F4P3] * color.x, lights[F4P3] * color.y, lights[F4P3] * color.z));
 			vertexes.push_back(glm::vec3(pos.x + BLOCK_SIZE, pos.y - BLOCK_SIZE, pos.z + BLOCK_SIZE));
-			texCoords.push_back(glm::vec2(blockModel->getTexSideX(), blockModel->getTexSideY() + texSize));
+			texCoords.push_back(glm::vec2(blockModel->getTexRightX(), blockModel->getTexRightY() + texSize));
 			colors.push_back(glm::vec3(lights[F4P4] * color.x, lights[F4P4] * color.y, lights[F4P4] * color.z));
 			if (lightsLevels.f4p2 + lightsLevels.f4p4 < lightsLevels.f4p1 + lightsLevels.f4p3)
 			{
@@ -517,36 +516,36 @@ namespace voxel
 		}*/
 	}
 
-	void ChunkBlock::calcAmbientOcclusion(Chunk *chunk, glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces)
+	void ChunkBlock::calcAmbientOcclusion(glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent)
 	{
 		BlockLightsLevels ssao;
 		std::memset(&ssao, 0x00, sizeof(ssao));
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, 1))
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
 				ssao.f1p4 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 0, -1, 1))
+			if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
 			{
 				ssao.f1p4 += SSAO_FACTOR;
 				ssao.f1p1 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, 1))
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
 				ssao.f1p1 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, 1))
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
 				ssao.f1p2 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 0, 1, 1))
+			if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
 			{
 				ssao.f1p2 += SSAO_FACTOR;
 				ssao.f1p3 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, 1))
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
 				ssao.f1p3 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 0, 1))
+			if (!blocksTransparent[(2 * 3 + 1) * 3 + 2])
 			{
 				ssao.f1p3 += SSAO_FACTOR;
 				ssao.f1p4 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 0, 1))
+			if (!blocksTransparent[(0 * 3 + 1) * 3 + 2])
 			{
 				ssao.f1p1 += SSAO_FACTOR;
 				ssao.f1p2 += SSAO_FACTOR;
@@ -554,30 +553,30 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, -1))
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
 				ssao.f2p4 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 0, -1, -1))
+			if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
 			{
 				ssao.f2p4 += SSAO_FACTOR;
 				ssao.f2p1 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, -1))
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
 				ssao.f2p1 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, -1))
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
 				ssao.f2p2 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 0, 1, -1))
+			if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
 			{
 				ssao.f2p2 += SSAO_FACTOR;
 				ssao.f2p3 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, -1))
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
 				ssao.f2p3 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 0, -1))
+			if (!blocksTransparent[(2 * 3 + 1) * 3 + 0])
 			{
 				ssao.f2p3 += SSAO_FACTOR;
 				ssao.f2p4 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 0, -1))
+			if (!blocksTransparent[(0 * 3 + 1) * 3 + 0])
 			{
 				ssao.f2p1 += SSAO_FACTOR;
 				ssao.f2p2 += SSAO_FACTOR;
@@ -585,30 +584,30 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, 1))
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
 				ssao.f3p4 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, 0))
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
 			{
 				ssao.f3p4 += SSAO_FACTOR;
 				ssao.f3p1 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, -1))
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
 				ssao.f3p1 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, -1))
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
 				ssao.f3p2 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, 0))
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
 			{
 				ssao.f3p2 += SSAO_FACTOR;
 				ssao.f3p3 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, 1))
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
 				ssao.f3p3 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 0, 1))
+			if (!blocksTransparent[(0 * 3 + 1) * 3 + 2])
 			{
 				ssao.f3p3 += SSAO_FACTOR;
 				ssao.f3p4 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 0, -1))
+			if (!blocksTransparent[(0 * 3 + 1) * 3 + 0])
 			{
 				ssao.f3p1 += SSAO_FACTOR;
 				ssao.f3p2 += SSAO_FACTOR;
@@ -616,30 +615,30 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, 1))
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
 				ssao.f4p4 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, 0))
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
 			{
 				ssao.f4p4 += SSAO_FACTOR;
 				ssao.f4p1 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, -1))
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
 				ssao.f4p1 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, -1))
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
 				ssao.f4p2 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, 0))
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
 			{
 				ssao.f4p2 += SSAO_FACTOR;
 				ssao.f4p3 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, 1))
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
 				ssao.f4p3 += SSAO_FACTOR;
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 0, 1))
+			if (!blocksTransparent[(2 * 3 + 1) * 3 + 2])
 			{
 				ssao.f4p3 += SSAO_FACTOR;
 				ssao.f4p4 += SSAO_FACTOR;
 			}
-			if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 0, -1))
+			if (!blocksTransparent[(2 * 3 + 1) * 3 + 0])
 			{
 				ssao.f4p1 += SSAO_FACTOR;
 				ssao.f4p2 += SSAO_FACTOR;
@@ -649,30 +648,30 @@ namespace voxel
 		{
 			if (pos.y < CHUNK_HEIGHT - 1)
 			{
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, -1))
+				if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
 					ssao.f5p2 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, 0))
+				if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
 				{
 					ssao.f5p1 += SSAO_FACTOR;
 					ssao.f5p2 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, 1, 1))
+				if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
 					ssao.f5p1 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, -1))
+				if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
 					ssao.f5p3 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, 0))
+				if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
 				{
 					ssao.f5p3 += SSAO_FACTOR;
 					ssao.f5p4 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, 1, 1))
+				if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
 					ssao.f5p4 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 0, 1, -1))
+				if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
 				{
 					ssao.f5p2 += SSAO_FACTOR;
 					ssao.f5p3 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 0, 1, 1))
+				if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
 				{
 					ssao.f5p4 += SSAO_FACTOR;
 					ssao.f5p1 += SSAO_FACTOR;
@@ -683,30 +682,30 @@ namespace voxel
 		{
 			if (pos.y > 0)
 			{
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, 1))
+				if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
 					ssao.f6p1 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, 0))
+				if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
 				{
 					ssao.f6p1 += SSAO_FACTOR;
 					ssao.f6p2 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, -1, -1, -1))
+				if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
 					ssao.f6p2 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, -1))
+				if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
 					ssao.f6p3 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, 0))
+				if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
 				{
 					ssao.f6p3 += SSAO_FACTOR;
 					ssao.f6p4 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 1, -1, 1))
+				if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
 					ssao.f6p4 += SSAO_FACTOR;
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 0, -1, -1))
+				if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
 				{
 					ssao.f6p2 += SSAO_FACTOR;
 					ssao.f6p3 += SSAO_FACTOR;
 				}
-				if (!calcLightsLevelsIsTransparent(chunk, pos, 0, -1, 1))
+				if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
 				{
 					ssao.f6p4 += SSAO_FACTOR;
 					ssao.f6p1 += SSAO_FACTOR;

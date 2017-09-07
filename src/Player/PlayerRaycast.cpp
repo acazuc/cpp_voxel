@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
 
-#define WIDTH .502
+#define OFFSET .002
 
 namespace voxel
 {
@@ -19,30 +19,30 @@ namespace voxel
 			colors[i] = glm::vec4(0, 0, 0, .5);
 		this->colorsBuffer.setData(GL_ARRAY_BUFFER, colors, sizeof(colors), GL_FLOAT, 4, GL_STATIC_DRAW);
 		glm::vec3 vertexes[24];
-		vertexes[0] = glm::vec3(-WIDTH, +WIDTH, +WIDTH);
-		vertexes[1] = glm::vec3(+WIDTH, +WIDTH, +WIDTH);
-		vertexes[2] = glm::vec3(-WIDTH, -WIDTH, +WIDTH);
-		vertexes[3] = glm::vec3(+WIDTH, -WIDTH, +WIDTH);
-		vertexes[4] = glm::vec3(-WIDTH, -WIDTH, +WIDTH);
-		vertexes[5] = glm::vec3(-WIDTH, +WIDTH, +WIDTH);
-		vertexes[6] = glm::vec3(+WIDTH, -WIDTH, +WIDTH);
-		vertexes[7] = glm::vec3(+WIDTH, +WIDTH, +WIDTH);
-		vertexes[8] = glm::vec3(-WIDTH, +WIDTH, -WIDTH);
-		vertexes[9] = glm::vec3(+WIDTH, +WIDTH, -WIDTH);
-		vertexes[10] = glm::vec3(-WIDTH, -WIDTH, -WIDTH);
-		vertexes[11] = glm::vec3(+WIDTH, -WIDTH, -WIDTH);
-		vertexes[12] = glm::vec3(-WIDTH, -WIDTH, -WIDTH);
-		vertexes[13] = glm::vec3(-WIDTH, +WIDTH, -WIDTH);
-		vertexes[14] = glm::vec3(+WIDTH, -WIDTH, -WIDTH);
-		vertexes[15] = glm::vec3(+WIDTH, +WIDTH, -WIDTH);
-		vertexes[16] = glm::vec3(-WIDTH, -WIDTH, +WIDTH);
-		vertexes[17] = glm::vec3(-WIDTH, -WIDTH, -WIDTH);
-		vertexes[18] = glm::vec3(+WIDTH, -WIDTH, +WIDTH);
-		vertexes[19] = glm::vec3(+WIDTH, -WIDTH, -WIDTH);
-		vertexes[20] = glm::vec3(-WIDTH, +WIDTH, +WIDTH);
-		vertexes[21] = glm::vec3(-WIDTH, +WIDTH, -WIDTH);
-		vertexes[22] = glm::vec3(+WIDTH, +WIDTH, +WIDTH);
-		vertexes[23] = glm::vec3(+WIDTH, +WIDTH, -WIDTH);
+		vertexes[0] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[1] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[2] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[3] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[4] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[5] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[6] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[7] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[8] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+		vertexes[9] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+		vertexes[10] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[11] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[12] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[13] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+		vertexes[14] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[15] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+		vertexes[16] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[17] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[18] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[19] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
+		vertexes[20] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[21] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+		vertexes[22] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+		vertexes[23] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 	}
 
@@ -101,10 +101,10 @@ namespace voxel
 		this->found = false;
 		//glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 		//glBlendEquation(GL_FUNC_ADD);
-		glm::vec3 pos(std::round(this->player.getPosX()), std::round(this->player.getPosY()), std::round(this->player.getPosZ()));
+		glm::vec3 pos(std::floor(this->player.getPos().x), std::floor(this->player.getPos().y), std::floor(this->player.getPos().z));
 		glm::vec4 dir = glm::vec4(0, 0, -1, 0) * this->player.getViewMat();
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
-		glm::vec3 max(intbound(this->player.getPosX(), dir.x), intbound(this->player.getPosY(), dir.y), intbound(this->player.getPosZ(), dir.z));
+		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y, dir.y), intbound(this->player.getPos().z, dir.z));
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
 		if (dir.x == 0 && dir.y == 0 && dir.z == 0)
 			return;

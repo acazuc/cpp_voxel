@@ -35,6 +35,7 @@ namespace voxel
 		void tick();
 		void draw();
 		Chunk *getChunk(int32_t x, int32_t z);
+		void getAABBs(AABB &aabb, std::vector<AABB> &aabbs);
 		void addChunk(Chunk *chunk);
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};

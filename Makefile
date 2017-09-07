@@ -17,6 +17,9 @@ SRCS_NAME = Main.cpp \
 	    ChunkLoader.cpp \
 	    Clouds.cpp \
 	    Skybox.cpp \
+	    Entity.cpp \
+	    AABB.cpp \
+	    Region.cpp \
 	    Noise/SimplexNoise.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \

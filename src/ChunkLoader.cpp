@@ -25,8 +25,8 @@ namespace voxel
 	{
 		if (!running)
 			return (true);
-		double part1 = (world.getPlayer().getPosZ() - ((int32_t)world.getPlayer().getPosZ() % CHUNK_WIDTH)) - chunkZ;
-		double part2 = (world.getPlayer().getPosX() - ((int32_t)world.getPlayer().getPosX() % CHUNK_WIDTH)) - chunkX;
+		double part1 = (world.getPlayer().getPos().z - ((int32_t)world.getPlayer().getPos().z % CHUNK_WIDTH)) - chunkZ;
+		double part2 = (world.getPlayer().getPos().x - ((int32_t)world.getPlayer().getPos().x % CHUNK_WIDTH)) - chunkX;
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
@@ -45,8 +45,8 @@ namespace voxel
 		ts.tv_sec = 0;
 		while (running)
 		{
-			float playerX = world.getPlayer().getPosX();
-			float playerZ = world.getPlayer().getPosZ();
+			float playerX = world.getPlayer().getPos().x;
+			float playerZ = world.getPlayer().getPos().z;
 			int32_t playerChunkX = playerX - (int32_t)playerX % CHUNK_WIDTH;
 			int32_t playerChunkZ = playerZ - (int32_t)playerZ % CHUNK_WIDTH;
 			{

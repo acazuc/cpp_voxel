@@ -12,6 +12,7 @@
 # define BLOCK_FACE_RIGHT	0x08
 # define BLOCK_FACE_UP		0x10
 # define BLOCK_FACE_DOWN	0x20
+# define BLOCK_SIZE 1
 
 namespace voxel
 {

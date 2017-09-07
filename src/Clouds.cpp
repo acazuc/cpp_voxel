@@ -40,8 +40,8 @@ namespace voxel
 	void Clouds::draw()
 	{
 		float offsetDiff = (-nanotime / 1000000000.) - this->lastXOffset;
-		float playerXDiff = this->world.getPlayer().getPosX() - this->lastPlayerX;
-		float playerZDiff = this->world.getPlayer().getPosZ() - this->lastPlayerZ;
+		float playerXDiff = this->world.getPlayer().getPos().x - this->lastPlayerX;
+		float playerZDiff = this->world.getPlayer().getPos().z - this->lastPlayerZ;
 		float playerDiff = sqrt(playerXDiff * playerXDiff + playerZDiff * playerZDiff);
 		if (offsetDiff + playerDiff > CLOUD_WIDTH * 3 || offsetDiff + playerDiff < -CLOUD_WIDTH * 3)
 			rebuild();
@@ -61,15 +61,15 @@ namespace voxel
 	void Clouds::rebuild()
 	{
 		this->lastXOffset = -nanotime / 1000000000.;
-		this->lastPlayerX = this->world.getPlayer().getPosX();
-		this->lastPlayerZ = this->world.getPlayer().getPosZ();
+		this->lastPlayerX = this->world.getPlayer().getPos().x;
+		this->lastPlayerZ = this->world.getPlayer().getPos().z;
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
 		this->verticesNb = 0;
-		int32_t baseX = this->world.getPlayer().getPosX() - DISPLAY_DISTANCE - CLOUD_WIDTH * 2 + nanotime / 1000000000.;
-		int32_t endX = this->world.getPlayer().getPosX() + DISPLAY_DISTANCE + CLOUD_WIDTH * 2 + nanotime / 1000000000.;
-		int32_t baseY = this->world.getPlayer().getPosZ() - DISPLAY_DISTANCE - CLOUD_WIDTH * 2;
-		int32_t endY = this->world.getPlayer().getPosZ() + DISPLAY_DISTANCE + CLOUD_WIDTH * 2;
+		int32_t baseX = this->world.getPlayer().getPos().x - DISPLAY_DISTANCE - CLOUD_WIDTH * 2 + nanotime / 1000000000.;
+		int32_t endX = this->world.getPlayer().getPos().x + DISPLAY_DISTANCE + CLOUD_WIDTH * 2 + nanotime / 1000000000.;
+		int32_t baseY = this->world.getPlayer().getPos().z - DISPLAY_DISTANCE - CLOUD_WIDTH * 2;
+		int32_t endY = this->world.getPlayer().getPos().z + DISPLAY_DISTANCE + CLOUD_WIDTH * 2;
 		baseX -= baseX % CLOUD_WIDTH;
 		endX -= endX % CLOUD_WIDTH;
 		baseY -= baseY % CLOUD_WIDTH;

@@ -27,6 +27,7 @@ namespace voxel
 		static SkyboxShader skyboxShader;
 		static glm::vec4 skyColor;
 		static Texture *terrain;
+		static Texture *steve;
 		static Window *window;
 		static World *world;
 		static bool smooth;
@@ -43,6 +44,7 @@ namespace voxel
 		static SkyboxShader &getSkyboxShader() {return (skyboxShader);};
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
+		static Texture *getSteve() {return (steve);};
 		static Window *getWindow() {return (window);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};

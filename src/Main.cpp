@@ -25,6 +25,7 @@ namespace voxel
 	SkyboxShader Main::skyboxShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
+	Texture *Main::steve;
 	Window *Main::window;
 	World *Main::world;
 	bool Main::smooth = false;
@@ -79,6 +80,14 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
+		if (!libformat::PNG::read("data/textures/char.png", datas, width, height))
+			ERROR("Failed to read char.png");
+		steve = new Texture(datas, width, height);
+		delete[] (datas);
+		glBindTexture(GL_TEXTURE_2D, steve->getId());
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();

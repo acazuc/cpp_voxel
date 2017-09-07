@@ -100,8 +100,11 @@ namespace voxel
 		}
 		else
 		{
-			if (this->isOnFloor && keySpace)
-				jump();
+			if (this->isOnFloor)
+			{
+				if (keySpace)
+					jump();
+			}
 		}
 		if (!addX && !addY && !addZ)
 			return;

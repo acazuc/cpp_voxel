@@ -9,8 +9,10 @@ using librender::Program;
 namespace voxel
 {
 
-	struct FocusedShader
+	class FocusedShader
 	{
+
+	public:
 		ProgramLocation *fogDistanceLocation;
 		ProgramLocation *vertexesLocation;
 		ProgramLocation *fogColorLocation;
@@ -19,6 +21,8 @@ namespace voxel
 		ProgramLocation *mLocation;
 		ProgramLocation *vLocation;
 		Program *program;
+		void load();
+
 	};
 
 }

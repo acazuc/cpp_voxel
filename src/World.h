@@ -7,6 +7,7 @@
 # include "Player.h"
 # include "Clouds.h"
 # include "Skybox.h"
+# include "Region.h"
 # include "Chunk.h"
 # include <vector>
 # include <mutex>
@@ -20,6 +21,7 @@ namespace voxel
 	private:
 		std::vector<VertexBuffer*> buffersToDelete;
 		std::recursive_mutex chunksMutex;
+		std::vector<Region*> regions;
 		std::vector<Chunk*> chunks;
 		ChunkLoader chunkLoader;
 		SimplexNoise noise;
@@ -39,6 +41,7 @@ namespace voxel
 		void addChunk(Chunk *chunk);
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
+		inline std::vector<Region*> &getRegions() {return (this->regions);};
 		inline std::vector<Chunk*> &getChunks() {return (this->chunks);};
 		inline SimplexNoise &getNoise() {return (this->noise);};
 		inline Frustum &getFrustum() {return (this->frustum);};

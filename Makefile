@@ -27,6 +27,10 @@ SRCS_NAME = Main.cpp \
 	    Player/PlayerRaycast.cpp \
 	    Blocks/Blocks.cpp \
 	    Blocks/Block.cpp \
+	    Shaders/BlocksShader.cpp \
+	    Shaders/CloudsShader.cpp \
+	    Shaders/SkyboxShader.cpp \
+	    Shaders/FocusedShader.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -54,6 +58,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Utils
 	@mkdir -p $(OBJS_PATH)/Player
 	@mkdir -p $(OBJS_PATH)/Blocks
+	@mkdir -p $(OBJS_PATH)/Shaders
 
 clean:
 	@echo " - Cleaning objs"

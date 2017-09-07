@@ -6,14 +6,10 @@
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
 # include "World.h"
-# include <librender/Shader/ProgramLocation.h>
-# include <librender/Shader/Program.h>
 # include <librender/Window/Window.h>
 # include <librender/Texture.h>
 
-using librender::ProgramLocation;
 using librender::KeyEvent;
-using librender::Program;
 using librender::Texture;
 using librender::Window;
 using librender::Color;
@@ -36,10 +32,6 @@ namespace voxel
 		static bool smooth;
 		static bool ssao;
 		static int disableTex;
-		static void buildFocusedShader();
-		static void buildBlocksShader();
-		static void buildCloudsShader();
-		static void buildSkyboxShader();
 		static void keyDown(KeyEvent &event);
 
 	public:

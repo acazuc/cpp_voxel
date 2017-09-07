@@ -101,10 +101,10 @@ namespace voxel
 		this->found = false;
 		//glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 		//glBlendEquation(GL_FUNC_ADD);
-		glm::vec3 pos(std::floor(this->player.getPos().x), std::floor(this->player.getPos().y), std::floor(this->player.getPos().z));
+		glm::vec3 pos(std::floor(this->player.getPos().x), std::floor(this->player.getPos().y + 0.72), std::floor(this->player.getPos().z));
 		glm::vec4 dir = glm::vec4(0, 0, -1, 0) * this->player.getViewMat();
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
-		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y, dir.y), intbound(this->player.getPos().z, dir.z));
+		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y + 0.72, dir.y), intbound(this->player.getPos().z, dir.z));
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
 		if (dir.x == 0 && dir.y == 0 && dir.z == 0)
 			return;

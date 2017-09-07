@@ -9,14 +9,18 @@ using librender::Program;
 namespace voxel
 {
 
-	struct SkyboxShader
+	class SkyboxShader
 	{
+	
+	public:
 		ProgramLocation *texCoordsLocation;
 		ProgramLocation *vertexesLocation;
 		ProgramLocation *colorsLocation;
 		ProgramLocation *mvpLocation;
 		ProgramLocation *texLocation;
 		Program *program;
+		void load();
+
 	};
 
 }

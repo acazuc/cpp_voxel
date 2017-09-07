@@ -2,9 +2,6 @@
 #include "World.h"
 #include "Main.h"
 
-#define JUMP_FORCE .155
-#define GRAVITY 0.55
-
 extern int64_t nanotime;
 
 namespace voxel
@@ -19,7 +16,7 @@ namespace voxel
 	, width(0)
 	, depth(0)
 	, isOnFloor(true)
-	, flying(true)
+	, flying(false)
 	{
 		this->fallStarted = nanotime;
 	}
@@ -28,26 +25,22 @@ namespace voxel
 	{
 		if (!this->flying)
 		{
-			if (this->isOnFloor)
-			{
-				if (Main::getWindow()->isKeyDown(GLFW_KEY_SPACE))
-				{
-					this->isOnFloor = false;
-					this->fallStarted = nanotime;
-					this->gravity = -JUMP_FORCE;
-					this->hasJumped = true;
-				}
-			}
-			else
+			if (!this->isOnFloor)
 			{
 				this->gravity = GRAVITY * ((nanotime - this->fallStarted) / 1000000000.);
 				if (this->hasJumped)
 					this->gravity -= JUMP_FORCE;
 			}
-			if (!this->gravity)
-				return;
 			move(0, -this->gravity, 0);
 		}
+	}
+
+	void Entity::jump()
+	{
+		this->isOnFloor = false;
+		this->fallStarted = nanotime;
+		this->gravity = -JUMP_FORCE;
+		this->hasJumped = true;
 	}
 
 	void Entity::setPos(float x, float y, float z)

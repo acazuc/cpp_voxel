@@ -18,8 +18,8 @@ namespace voxel
 		glm::mat4 viewMat;
 		int32_t oldMouseX;
 		int32_t oldMouseY;
-		bool handleMovement();
-		bool handleRotation();
+		void handleMovement();
+		void handleRotation();
 
 	public:
 		Player(World &world);

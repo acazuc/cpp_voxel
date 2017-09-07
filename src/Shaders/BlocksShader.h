@@ -9,8 +9,10 @@ using librender::Program;
 namespace voxel
 {
 
-	struct BlocksShader
+	class BlocksShader
 	{
+
+	public:
 		ProgramLocation *fogDistanceLocation;
 		ProgramLocation *timeFactorLocation;
 		ProgramLocation *disableTexLocation;
@@ -23,6 +25,8 @@ namespace voxel
 		ProgramLocation *mLocation;
 		ProgramLocation *vLocation;
 		Program *program;
+		void load();
+
 	};
 
 }

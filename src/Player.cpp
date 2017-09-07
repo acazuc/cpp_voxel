@@ -7,9 +7,6 @@
 #define RUN_SPEED 5.6
 #define FLY_SPEED 10
 
-#define BODY_UNDER 1.62f
-#define BODY_OVER 0.08f
-
 extern int64_t frameDelta;
 extern int64_t nanotime;
 
@@ -23,13 +20,13 @@ namespace voxel
 	, oldMouseY(0)
 	{
 		setWidth(.6);
-		setHeight(4);
+		setHeight(1.8);
 		setDepth(.6);
 		setPos(0, 128, 0);
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
 	}
 
-	bool Player::handleMovement()
+	void Player::handleMovement()
 	{
 		float addX = 0;
 		float addY = 0;
@@ -41,7 +38,7 @@ namespace voxel
 		bool keySpace = Main::getWindow()->isKeyDown(GLFW_KEY_SPACE);
 		bool keyLShift = Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT);
 		if (!keyW && !keyA && !keyS && !keyD && !keySpace && !keyLShift)
-			return (false);
+			return;
 		if (keyW && keyS)
 		{
 			keyW = false;
@@ -83,7 +80,7 @@ namespace voxel
 				addX *= FLY_SPEED;
 				addZ *= FLY_SPEED;
 			}
-			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_SHIFT))
+			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			{
 				addX *= RUN_SPEED;
 				addZ *= RUN_SPEED;
@@ -101,18 +98,22 @@ namespace voxel
 			else if (keyLShift)
 				addY -= frameDelta / 1000000000. * FLY_SPEED;
 		}
+		else
+		{
+			if (this->isOnFloor && keySpace)
+				jump();
+		}
 		if (!addX && !addY && !addZ)
-			return (false);
+			return;
 		move(addX, addY, addZ);
-		return (true);
 	}
 
-	bool Player::handleRotation()
+	void Player::handleRotation()
 	{
 		int32_t mouseX = Main::getWindow()->getMouseX();
 		int32_t mouseY = Main::getWindow()->getMouseY();
 		if (mouseX == this->oldMouseX && mouseY == this->oldMouseY)
-			return (false);
+			return;
 		this->rot.y += (mouseX - this->oldMouseX) / 20.;
 		this->rot.x += (mouseY - this->oldMouseY) / 20.;
 		this->oldMouseX = mouseX;
@@ -124,24 +125,21 @@ namespace voxel
 			this->rot.x = 90;
 		else if (this->rot.x < -90)
 			this->rot.x = -90;
-		return (true);
 	}
 
 	void Player::tick()
 	{
 		Entity::tick();
-		bool move = handleMovement();
-		bool rot = handleRotation();
+		handleMovement();
+		handleRotation();
 		this->raycast.tick();
-		if (!move && !rot)
-			return;
 		this->viewMat = glm::mat4(1.);
 		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.01, 0, 0));
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010, 0).x, glm::vec3(0, 0, 1));
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
-		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->pos.x, -this->pos.y, -this->pos.z));
+		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->pos.x, -this->pos.y - 0.72, -this->pos.z));
 		this->world.getFrustum().update();
 	}
 

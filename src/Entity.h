@@ -4,6 +4,9 @@
 # include "./AABB.h"
 # include <glm/vec3.hpp>
 
+# define JUMP_FORCE .24
+# define GRAVITY 0.98
+
 namespace voxel
 {
 
@@ -31,6 +34,7 @@ namespace voxel
 		virtual void tick();
 		void setPos(float x, float y, float z);
 		void move(float x, float y, float z);
+		void jump();
 		void setHeight(float height);
 		void setWidth(float width);
 		void setDepth(float depth);

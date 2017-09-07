@@ -31,102 +31,6 @@ namespace voxel
 	bool Main::ssao = false;
 	int Main::disableTex = 0;
 
-	void Main::buildFocusedShader()
-	{
-		std::string vShad = readfile("data/shaders/focused.vs");
-		LOG("building focused vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		std::string fShad = readfile("data/shaders/focused.fs");
-		LOG("building focused fragment shader");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
-		focusedShader.program = new Program();
-		focusedShader.program->attachShader(vertShad);
-		focusedShader.program->attachShader(fragShad);
-		focusedShader.program->link();
-		focusedShader.fogDistanceLocation = focusedShader.program->getUniformLocation("fogDistance");
-		focusedShader.vertexesLocation = focusedShader.program->getAttribLocation("vertexPosition");
-		focusedShader.vertexesLocation->setVertexAttribArray(true);
-		focusedShader.fogColorLocation = focusedShader.program->getUniformLocation("fogColor");
-		focusedShader.colorsLocation = focusedShader.program->getAttribLocation("vertexColor");
-		focusedShader.colorsLocation->setVertexAttribArray(true);
-		focusedShader.mvpLocation = focusedShader.program->getUniformLocation("MVP");
-		focusedShader.mLocation = focusedShader.program->getUniformLocation("M");
-		focusedShader.vLocation = focusedShader.program->getUniformLocation("V");
-	}
-
-	void Main::buildBlocksShader()
-	{
-		std::string vShad = readfile("data/shaders/blocks.vs");
-		LOG("building blocks vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		LOG("building blocks fragment shader");
-		std::string fShad = readfile("data/shaders/blocks.fs");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
-		blocksShader.program = new Program();
-		blocksShader.program->attachShader(vertShad);
-		blocksShader.program->attachShader(fragShad);
-		blocksShader.program->link();
-		blocksShader.fogDistanceLocation = blocksShader.program->getUniformLocation("fogDistance");
-		blocksShader.timeFactorLocation = blocksShader.program->getUniformLocation("timeFactor");
-		blocksShader.disableTexLocation = blocksShader.program->getUniformLocation("disableTex");
-		blocksShader.texCoordsLocation = blocksShader.program->getAttribLocation("vertexUV");
-		blocksShader.texCoordsLocation->setVertexAttribArray(true);
-		blocksShader.vertexesLocation = blocksShader.program->getAttribLocation("vertexPosition");
-		blocksShader.vertexesLocation->setVertexAttribArray(true);
-		blocksShader.fogColorLocation = blocksShader.program->getUniformLocation("fogColor");
-		blocksShader.colorsLocation = blocksShader.program->getAttribLocation("vertexColor");
-		blocksShader.colorsLocation->setVertexAttribArray(true);
-		blocksShader.mvpLocation = blocksShader.program->getUniformLocation("MVP");
-		blocksShader.texLocation = blocksShader.program->getAttribLocation("tex");
-		blocksShader.mLocation = blocksShader.program->getUniformLocation("M");
-		blocksShader.vLocation = blocksShader.program->getUniformLocation("V");
-	}
-
-	void Main::buildCloudsShader()
-	{
-		std::string vShad = readfile("data/shaders/clouds.vs");
-		LOG("building clouds vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		std::string fShad = readfile("data/shaders/clouds.fs");
-		LOG("building clouds fragment shader");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
-		cloudsShader.program = new Program();
-		cloudsShader.program->attachShader(vertShad);
-		cloudsShader.program->attachShader(fragShad);
-		cloudsShader.program->link();
-		cloudsShader.fogDistanceLocation = cloudsShader.program->getUniformLocation("fogDistance");
-		cloudsShader.vertexesLocation = cloudsShader.program->getAttribLocation("vertexPosition");
-		cloudsShader.vertexesLocation->setVertexAttribArray(true);
-		cloudsShader.fogColorLocation = cloudsShader.program->getUniformLocation("fogColor");
-		cloudsShader.colorsLocation = cloudsShader.program->getAttribLocation("vertexColor");
-		cloudsShader.colorsLocation->setVertexAttribArray(true);
-		cloudsShader.mvpLocation = cloudsShader.program->getUniformLocation("MVP");
-		cloudsShader.mLocation = cloudsShader.program->getUniformLocation("M");
-		cloudsShader.vLocation = cloudsShader.program->getUniformLocation("V");
-	}
-
-	void Main::buildSkyboxShader()
-	{
-		std::string vShad = readfile("data/shaders/skybox.vs");
-		LOG("building skybox vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		LOG("building skybox fragment shader");
-		std::string fShad = readfile("data/shaders/skybox.fs");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
-		skyboxShader.program = new Program();
-		skyboxShader.program->attachShader(vertShad);
-		skyboxShader.program->attachShader(fragShad);
-		skyboxShader.program->link();
-		skyboxShader.texCoordsLocation = skyboxShader.program->getAttribLocation("vertexUV");
-		skyboxShader.texCoordsLocation->setVertexAttribArray(true);
-		skyboxShader.vertexesLocation = skyboxShader.program->getAttribLocation("vertexPosition");
-		skyboxShader.vertexesLocation->setVertexAttribArray(true);
-		skyboxShader.colorsLocation = skyboxShader.program->getAttribLocation("vertexColor");
-		skyboxShader.colorsLocation->setVertexAttribArray(true);
-		skyboxShader.mvpLocation = skyboxShader.program->getUniformLocation("MVP");
-		skyboxShader.texLocation = skyboxShader.program->getAttribLocation("tex");
-	}
-
 	void Main::main()
 	{
 		glfwWindowHint(GLFW_SAMPLES, 16);
@@ -144,10 +48,10 @@ namespace voxel
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
 		window->setVSync(true);
-		buildFocusedShader();
-		buildBlocksShader();
-		buildCloudsShader();
-		buildSkyboxShader();
+		focusedShader.load();
+		skyboxShader.load();
+		cloudsShader.load();
+		blocksShader.load();
 		{
 			glm::mat4 osef(1);
 			blocksShader.program->use();

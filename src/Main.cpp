@@ -1,6 +1,7 @@
 #include "Main.h"
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
+#include "Entities/Human.h"
 #include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
@@ -23,6 +24,7 @@ namespace voxel
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
 	SkyboxShader Main::skyboxShader;
+	EntityShader Main::entityShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Texture *Main::steve;
@@ -53,6 +55,7 @@ namespace voxel
 		skyboxShader.load();
 		cloudsShader.load();
 		blocksShader.load();
+		entityShader.load();
 		{
 			glm::mat4 osef(1);
 			blocksShader.program->use();
@@ -65,8 +68,8 @@ namespace voxel
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);
 			skyboxShader.program->use();
 			skyboxShader.texLocation->setVec1i(0);
-			focusedShader.program->use();
-			focusedShader.fogDistanceLocation->setVec1f(16 * 14);
+			entityShader.program->use();
+			entityShader.fogDistanceLocation->setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;
@@ -89,7 +92,10 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		Blocks::init();
+		Human::init();
 		Main::world = new World();
+		Human human(*world);
+		human.setPos(0, 128, 0);
 		int64_t lastFrame = System::nanotime();
 		while (!window->closeRequested())
 		{
@@ -102,6 +108,8 @@ namespace voxel
 			window->clearScreen();
 			world->tick();
 			world->draw();
+			human.tick();
+			human.draw();
 			window->pollEvents();
 			window->update();
 		}

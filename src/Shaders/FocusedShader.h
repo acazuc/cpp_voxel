@@ -13,13 +13,9 @@ namespace voxel
 	{
 
 	public:
-		ProgramLocation *fogDistanceLocation;
 		ProgramLocation *vertexesLocation;
-		ProgramLocation *fogColorLocation;
 		ProgramLocation *colorsLocation;
 		ProgramLocation *mvpLocation;
-		ProgramLocation *mLocation;
-		ProgramLocation *vLocation;
 		Program *program;
 		void load();
 

@@ -10,6 +10,7 @@ void main()
 {
 	vec4 col = vec4(color, 1);
 	float dist = length(viewSpace);
-	float fog = clamp(1 / exp(pow(max(0, dist - fogDistance), 2) * 0.01), 0, 1);
+	float tmp = max(0, dist - fogDistance);
+	float fog = clamp(1 / exp(pow(tmp, 2) * 0.01), 0, 1);
 	gl_FragColor = mix(col, fogColor, 1 - fog);
 }

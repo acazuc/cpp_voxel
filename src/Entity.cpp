@@ -12,9 +12,6 @@ namespace voxel
 	, aabb(0, 0, 0, 0, 0, 0)
 	, fallStarted(0)
 	, gravity(0)
-	, height(0)
-	, width(0)
-	, depth(0)
 	, isOnFloor(true)
 	, flying(false)
 	{
@@ -48,9 +45,9 @@ namespace voxel
 		this->pos.x = x;
 		this->pos.y = y;
 		this->pos.z = z;
-		float w = this->width / 2;
-		float h = this->height / 2;
-		float d = this->depth / 2;
+		float w = this->size.x / 2;
+		float h = this->size.y / 2;
+		float d = this->size.z / 2;
 		this->aabb.set(x - w, y - h, z - d, x + w, y + h, z + d);
 	}
 
@@ -80,28 +77,20 @@ namespace voxel
 			this->fallStarted = nanotime;
 	}
 
-	void Entity::setHeight(float height)
+	void Entity::setSize(float width, float height, float depth)
 	{
-		this->height = height;
-		float h = this->height / 2;
-		this->aabb.setY0(this->pos.y - h);
-		this->aabb.setY1(this->pos.y + h);
-	}
-
-	void Entity::setWidth(float width)
-	{
-		this->width = width;
-		float w = this->width / 2;
+		this->size.x = width;
+		this->size.y = height;
+		this->size.z = depth;
+		float w = this->size.x / 2;
+		float h = this->size.y / 2;
+		float d = this->size.z / 2;
 		this->aabb.setX0(this->pos.x - w);
 		this->aabb.setX1(this->pos.x + w);
-	}
-
-	void Entity::setDepth(float depth)
-	{
-		this->depth = depth;
-		float d = this->depth / 2;
+		this->aabb.setY0(this->pos.y - h);
+		this->aabb.setY1(this->pos.y + h);
 		this->aabb.setZ0(this->pos.z - d);
-		this->aabb.setZ1(this->pos.z + d);
+		this->aabb.setZ0(this->pos.z + d);
 	}
 
 }

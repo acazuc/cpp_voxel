@@ -5,6 +5,7 @@
 # include "Shaders/BlocksShader.h"
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
+# include "Shaders/EntityShader.h"
 # include "World.h"
 # include <librender/Window/Window.h>
 # include <librender/Texture.h>
@@ -25,6 +26,7 @@ namespace voxel
 		static BlocksShader blocksShader;
 		static CloudsShader cloudsShader;
 		static SkyboxShader skyboxShader;
+		static EntityShader entityShader;
 		static glm::vec4 skyColor;
 		static Texture *terrain;
 		static Texture *steve;
@@ -42,6 +44,7 @@ namespace voxel
 		static BlocksShader &getBlocksShader() {return (blocksShader);};
 		static CloudsShader &getCloudsShader() {return (cloudsShader);};
 		static SkyboxShader &getSkyboxShader() {return (skyboxShader);};
+		static EntityShader &getEntityShader() {return (entityShader);};
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
 		static Texture *getSteve() {return (steve);};

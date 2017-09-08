@@ -31,6 +31,9 @@ SRCS_NAME = Main.cpp \
 	    Shaders/CloudsShader.cpp \
 	    Shaders/SkyboxShader.cpp \
 	    Shaders/FocusedShader.cpp \
+	    Shaders/EntityShader.cpp \
+	    Entities/BodyPart.cpp \
+	    Entities/Human.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -59,6 +62,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Player
 	@mkdir -p $(OBJS_PATH)/Blocks
 	@mkdir -p $(OBJS_PATH)/Shaders
+	@mkdir -p $(OBJS_PATH)/Entities
 
 clean:
 	@echo " - Cleaning objs"

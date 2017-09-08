@@ -23,15 +23,11 @@ namespace voxel
 		this->program->attachShader(vertShad);
 		this->program->attachShader(fragShad);
 		this->program->link();
-		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");
 		this->vertexesLocation->setVertexAttribArray(true);
-		this->fogColorLocation = this->program->getUniformLocation("fogColor");
 		this->colorsLocation = this->program->getAttribLocation("vertexColor");
 		this->colorsLocation->setVertexAttribArray(true);
 		this->mvpLocation = this->program->getUniformLocation("MVP");
-		this->mLocation = this->program->getUniformLocation("M");
-		this->vLocation = this->program->getUniformLocation("V");
 	}
 
 }

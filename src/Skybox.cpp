@@ -76,13 +76,13 @@ namespace voxel
 		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
 		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
-		glBindTexture(GL_TEXTURE_2D, sun->getId());
+		sun->bind();
 		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
 		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->sunTexCoordsBuffer);
 		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->sunVertexesBuffer);
 		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->sunColorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindTexture(GL_TEXTURE_2D, moon->getId());
+		moon->bind();
 		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->moonTexCoordsBuffer);
 		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->moonVertexesBuffer);
 		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->moonColorsBuffer);
@@ -97,12 +97,12 @@ namespace voxel
 		GLfloat sunVertexes[] = {-100, -100, 500, -100, 100, 500, 100, -100, 500, 100, 100, 500, 100, -100, 500, -100, 100, 500};
 		GLfloat moonColors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		GLfloat sunColors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-		this->moonTexCoordsBuffer.setData(GL_ARRAY_BUFFER, moonTexCoords, sizeof(moonTexCoords), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-		this->sunTexCoordsBuffer.setData(GL_ARRAY_BUFFER, sunTexCoords, sizeof(sunTexCoords), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-		this->moonVertexesBuffer.setData(GL_ARRAY_BUFFER, moonVertexes, sizeof(moonVertexes), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->sunVertexesBuffer.setData(GL_ARRAY_BUFFER, sunVertexes, sizeof(sunVertexes), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->moonTexCoordsBuffer.setData(GL_ARRAY_BUFFER, moonTexCoords, sizeof(moonTexCoords), GL_FLOAT, 2, GL_STATIC_DRAW);
+		this->sunTexCoordsBuffer.setData(GL_ARRAY_BUFFER, sunTexCoords, sizeof(sunTexCoords), GL_FLOAT, 2, GL_STATIC_DRAW);
+		this->moonVertexesBuffer.setData(GL_ARRAY_BUFFER, moonVertexes, sizeof(moonVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->sunVertexesBuffer.setData(GL_ARRAY_BUFFER, sunVertexes, sizeof(sunVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 	}
 
 }

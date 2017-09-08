@@ -19,9 +19,8 @@ namespace voxel
 	, oldMouseX(0)
 	, oldMouseY(0)
 	{
-		setWidth(.6);
-		setHeight(1.8);
-		setDepth(.6);
+		this->flying = true;
+		setSize(.6, 1.8, .6);
 		setPos(0, 128, 0);
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
 	}
@@ -106,8 +105,6 @@ namespace voxel
 					jump();
 			}
 		}
-		if (!addX && !addY && !addZ)
-			return;
 		move(addX, addY, addZ);
 	}
 

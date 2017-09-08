@@ -59,8 +59,6 @@ namespace voxel
 						blockType = 2;
 					else if (y > noiseIndex - 3)
 						blockType = 3;
-					else
-						blockType = 1;
 					this->blocks[getXYZId(x, y, z)].setType(blockType);
 				}
 			}

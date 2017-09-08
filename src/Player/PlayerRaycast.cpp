@@ -65,9 +65,6 @@ namespace voxel
 		model = glm::translate(model, glm::vec3(this->x, this->y, this->z));
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat() * model;
 		Main::getFocusedShader().mvpLocation->setMat4f(mvp);
-		Main::getFocusedShader().mLocation->setMat4f(model);
-		Main::getFocusedShader().vLocation->setMat4f(this->player.getViewMat());
-		Main::getFocusedShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getFocusedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
 		Main::getFocusedShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
 		glLineWidth(2);

@@ -32,6 +32,11 @@ namespace voxel
 		}
 	}
 
+	void Entity::draw()
+	{
+		//Empty
+	}
+
 	void Entity::jump()
 	{
 		this->isOnFloor = false;

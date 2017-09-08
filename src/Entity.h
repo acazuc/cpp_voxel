@@ -30,6 +30,7 @@ namespace voxel
 	public:
 		Entity(World &world);
 		virtual void tick();
+		virtual void draw();
 		void setPos(float x, float y, float z);
 		void move(float x, float y, float z);
 		void jump();

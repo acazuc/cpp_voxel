@@ -29,7 +29,6 @@ namespace voxel
 		static EntityShader entityShader;
 		static glm::vec4 skyColor;
 		static Texture *terrain;
-		static Texture *steve;
 		static Window *window;
 		static World *world;
 		static bool smooth;
@@ -47,7 +46,6 @@ namespace voxel
 		static EntityShader &getEntityShader() {return (entityShader);};
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
-		static Texture *getSteve() {return (steve);};
 		static Window *getWindow() {return (window);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};

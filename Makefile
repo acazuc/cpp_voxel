@@ -20,6 +20,7 @@ SRCS_NAME = Main.cpp \
 	    Entity.cpp \
 	    AABB.cpp \
 	    Region.cpp \
+	    EntitiesManager.cpp \
 	    Noise/SimplexNoise.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \
@@ -34,6 +35,7 @@ SRCS_NAME = Main.cpp \
 	    Shaders/EntityShader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
+	    Entities/Creeper.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 

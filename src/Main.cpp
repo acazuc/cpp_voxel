@@ -1,7 +1,9 @@
 #include "Main.h"
+#include "EntitiesManager.h"
 #include "Utils/readfile.h"
-#include "Blocks/Blocks.h"
+#include "Entities/Creeper.h"
 #include "Entities/Human.h"
+#include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "Debug.h"
 #include "World.h"
@@ -27,11 +29,10 @@ namespace voxel
 	EntityShader Main::entityShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
-	Texture *Main::steve;
 	Window *Main::window;
 	World *Main::world;
-	bool Main::smooth = false;
-	bool Main::ssao = false;
+	bool Main::smooth = true;
+	bool Main::ssao = true;
 	int Main::disableTex = 0;
 
 	void Main::main()
@@ -83,20 +84,14 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
-		if (!libformat::PNG::read("data/textures/char.png", datas, width, height))
-			ERROR("Failed to read char.png");
-		steve = new Texture(datas, width, height);
-		delete[] (datas);
-		glBindTexture(GL_TEXTURE_2D, steve->getId());
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		EntitiesManager::init();
 		Blocks::init();
 		Human::init();
+		Creeper::init();
 		Main::world = new World();
-		Human human(*world);
-		human.setPos(0, 128, 0);
 		int64_t lastFrame = System::nanotime();
+		Creeper creeper(*world);
+		creeper.setPos(0, 128, 0);
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
@@ -108,8 +103,7 @@ namespace voxel
 			window->clearScreen();
 			world->tick();
 			world->draw();
-			human.tick();
-			human.draw();
+			creeper.draw();
 			window->pollEvents();
 			window->update();
 		}

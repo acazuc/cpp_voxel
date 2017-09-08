@@ -54,6 +54,7 @@ namespace voxel
 			Chunk *chunk = *iter;
 			chunk->draw();
 		}
+		this->entitiesManager.draw();
 		this->clouds.draw();
 		this->skybox.draw();
 		this->player.draw();

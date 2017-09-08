@@ -1,6 +1,5 @@
 #include "Human.h"
 #include "Main.h"
-#include "Debug.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 extern int64_t nanotime;
@@ -40,7 +39,7 @@ namespace voxel
 	void Human::draw()
 	{
 		Main::getEntityShader().program->use();
-		Main::getSteve()->bind();
+		EntitiesManager::getCharacter()->bind();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(this->pos.x, this->pos.y, this->pos.z));
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));

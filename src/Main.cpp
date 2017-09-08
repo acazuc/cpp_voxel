@@ -2,6 +2,7 @@
 #include "EntitiesManager.h"
 #include "Utils/readfile.h"
 #include "Entities/Creeper.h"
+#include "Entities/Zombie.h"
 #include "Entities/Human.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
@@ -86,12 +87,10 @@ namespace voxel
 		glActiveTexture(GL_TEXTURE0);
 		EntitiesManager::init();
 		Blocks::init();
-		Human::init();
-		Creeper::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
-		Creeper creeper(*world);
-		creeper.setPos(0, 128, 0);
+		Zombie zombie(*world);
+		zombie.setPos(0, 128, 0);
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
@@ -103,7 +102,8 @@ namespace voxel
 			window->clearScreen();
 			world->tick();
 			world->draw();
-			creeper.draw();
+			zombie.tick();
+			zombie.draw();
 			window->pollEvents();
 			window->update();
 		}

@@ -1,4 +1,4 @@
-#include "Human.h"
+#include "Zombie.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,14 +7,14 @@ extern int64_t nanotime;
 namespace voxel
 {
 
-	BodyPart *Human::head;
-	BodyPart *Human::body;
-	BodyPart *Human::armL;
-	BodyPart *Human::armR;
-	BodyPart *Human::legL;
-	BodyPart *Human::legR;
+	BodyPart *Zombie::head;
+	BodyPart *Zombie::body;
+	BodyPart *Zombie::armL;
+	BodyPart *Zombie::armR;
+	BodyPart *Zombie::legL;
+	BodyPart *Zombie::legR;
 
-	void Human::init()
+	void Zombie::init()
 	{
 		head = new BodyPart(glm::vec3(-4, 0, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
 		head->setPos(glm::vec3(0, 9, 0));
@@ -29,16 +29,16 @@ namespace voxel
 		legR->setPos(glm::vec3(2, -3, 0));
 	}
 
-	Human::Human(World &world)
+	Zombie::Zombie(World &world)
 	: Entity(world)
 	{
 		setSize(.6, 1.8, .6);
 	}
 
-	void Human::draw()
+	void Zombie::draw()
 	{
 		Main::getEntityShader().program->use();
-		EntitiesManager::getCharacter()->bind();
+		EntitiesManager::getZombie()->bind();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(this->pos.x, this->pos.y, this->pos.z));
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));

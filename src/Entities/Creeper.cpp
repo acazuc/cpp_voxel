@@ -17,22 +17,22 @@ namespace voxel
 	void Creeper::init()
 	{
 		head = new BodyPart(glm::vec3(-4, 0, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		head->setPos(glm::vec3(0, 9, 0));
+		head->setPos(glm::vec3(0, 4, 0));
 		body = new BodyPart(glm::vec3(-4, -3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
+		body->setPos(glm::vec3(0, -5, 0));
 		legFL = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legFL->setPos(glm::vec3(-2, -3, 4));
+		legFL->setPos(glm::vec3(-2, -8, 4));
 		legFR = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legFR->setPos(glm::vec3(2, -3, 4));
+		legFR->setPos(glm::vec3(2, -8, 4));
 		legBL = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legBL->setPos(glm::vec3(-2, -3, -4));
+		legBL->setPos(glm::vec3(-2, -8, -4));
 		legBR = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legBR->setPos(glm::vec3(2, -3, -4));
+		legBR->setPos(glm::vec3(2, -8, -4));
 	}
 
 	Creeper::Creeper(World &world)
 	: Entity(world)
 	{
-		this->flying = true;
 		setSize(.6, 1.7, .6);
 	}
 

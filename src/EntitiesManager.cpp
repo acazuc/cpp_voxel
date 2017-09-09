@@ -59,6 +59,44 @@ namespace voxel
 		}
 	}
 
+	EntitiesManager::EntitiesManager(World &world)
+	: world(world)
+	{
+		Creeper *creeper = new Creeper(this->world);
+		creeper->setPos(0, 128, 0);
+		addEntity(creeper);
+		Human *human = new Human(this->world);
+		human->setPos(5, 128, 0);
+		addEntity(human);
+		Pig *pig = new Pig(this->world);
+		pig->setPos(10, 128, 0);
+		addEntity(pig);
+		Pigman *pigman = new Pigman(this->world);
+		pigman->setPos(15, 128, 0);
+		addEntity(pigman);
+		Pigzombie *pigzombie = new Pigzombie(this->world);
+		pigzombie->setPos(20, 128, 0);
+		addEntity(pigzombie);
+		Sheep *sheep = new Sheep(this->world);
+		sheep->setPos(25, 128, 0);
+		addEntity(sheep);
+		Skeleton *skeleton = new Skeleton(this->world);
+		skeleton->setPos(30, 128, 0);
+		addEntity(skeleton);
+		Slime *slime = new Slime(this->world);
+		slime->setPos(35, 128, 0);
+		addEntity(slime);
+		Zombie *zombie = new Zombie(this->world);
+		zombie->setPos(40, 128, 0);
+		addEntity(zombie);
+	}
+
+	EntitiesManager::~EntitiesManager()
+	{
+		for (uint32_t i = 0; i < this->entities.size(); ++i)
+			delete (this->entities[i]);
+	}
+
 	void EntitiesManager::tick()
 	{
 		for (uint32_t i = 0; i < this->entities.size(); ++i)
@@ -69,10 +107,12 @@ namespace voxel
 
 	void EntitiesManager::draw()
 	{
+		glDisable(GL_CULL_FACE);
 		for (uint32_t i = 0; i < this->entities.size(); ++i)
 		{
 			this->entities[i]->draw();
 		}
+		glEnable(GL_CULL_FACE);
 	}
 
 	void EntitiesManager::addEntity(Entity *entity)

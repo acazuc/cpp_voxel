@@ -23,6 +23,7 @@ namespace voxel
 
 	public:
 		Player(World &world);
+		void update();
 		void tick();
 		void draw();
 		inline glm::mat4 &getProjMat() {return (this->projMat);};

@@ -3,6 +3,7 @@
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
+#include "TickManager.h"
 #include "Debug.h"
 #include "World.h"
 #include <cstring>
@@ -86,6 +87,8 @@ namespace voxel
 		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
+		nanotime = lastFrame;
+		TickManager::init();
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
@@ -95,7 +98,9 @@ namespace voxel
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
 			window->clearScreen();
-			world->tick();
+			TickManager::update();
+			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
+				world->tick();
 			world->draw();
 			window->pollEvents();
 			window->update();

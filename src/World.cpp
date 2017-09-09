@@ -7,7 +7,8 @@ namespace voxel
 {
 
 	World::World()
-	: chunkLoader(this)
+	: entitiesManager(*this)
+	, chunkLoader(this)
 	, noise(512, .5, 1337)
 	, frustum(*this)
 	, player(*this)
@@ -34,6 +35,7 @@ namespace voxel
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		this->player.tick();
+		this->entitiesManager.tick();
 	}
 
 	void World::draw()
@@ -42,6 +44,7 @@ namespace voxel
 		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
 			delete (this->buffersToDelete[i]);
 		this->buffersToDelete.clear();
+		this->player.update();
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
 		Main::getBlocksShader().program->use();
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());

@@ -1,13 +1,13 @@
 #include "Player.h"
+#include "TickManager.h"
 #include "World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-#define WALK_SPEED 4.3
-#define RUN_SPEED 5.6
-#define FLY_SPEED 10
+#define WALK_SPEED 1
+#define RUN_SPEED 1.3
+#define FLY_SPEED 2
 
-extern int64_t frameDelta;
 extern int64_t nanotime;
 
 namespace voxel
@@ -19,7 +19,7 @@ namespace voxel
 	, oldMouseX(0)
 	, oldMouseY(0)
 	{
-		this->flying = true;
+		this->flying = false;
 		setSize(.6, 1.8, .6);
 		setPos(0, 128, 0);
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
@@ -27,9 +27,7 @@ namespace voxel
 
 	void Player::handleMovement()
 	{
-		float addX = 0;
-		float addY = 0;
-		float addZ = 0;
+		glm::vec3 add;
 		bool keyW = Main::getWindow()->isKeyDown(GLFW_KEY_W);
 		bool keyA = Main::getWindow()->isKeyDown(GLFW_KEY_A);
 		bool keyS = Main::getWindow()->isKeyDown(GLFW_KEY_S);
@@ -72,30 +70,30 @@ namespace voxel
 				angle += 180;
 			else if (keyD)
 				angle += 0;
-			addX = frameDelta / 1000000000. * std::cos(angle / 180. * M_PI);
-			addZ = frameDelta / 1000000000. * std::sin(angle / 180. * M_PI);
+			add.x = std::cos(angle / 180. * M_PI);
+			add.z = std::sin(angle / 180. * M_PI);
 			if (this->flying)
 			{
-				addX *= FLY_SPEED;
-				addZ *= FLY_SPEED;
+				add.x *= FLY_SPEED;
+				add.z *= FLY_SPEED;
 			}
 			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			{
-				addX *= RUN_SPEED;
-				addZ *= RUN_SPEED;
+				add.x *= RUN_SPEED;
+				add.z *= RUN_SPEED;
 			}
 			else
 			{
-				addX *= WALK_SPEED;
-				addZ *= WALK_SPEED;
+				add.x *= WALK_SPEED;
+				add.z *= WALK_SPEED;
 			}
 		}
 		if (this->flying)
 		{
 			if (keySpace)
-				addY += frameDelta / 1000000000. * FLY_SPEED;
+				add.y += FLY_SPEED;
 			else if (keyLShift)
-				addY -= frameDelta / 1000000000. * FLY_SPEED;
+				add.y -= FLY_SPEED;
 		}
 		else
 		{
@@ -105,7 +103,11 @@ namespace voxel
 					jump();
 			}
 		}
-		move(addX, addY, addZ);
+		if (this->isOnFloor)
+			add *= 0.1;
+		else
+			add *= 0.02;
+		this->posDst += add;
 	}
 
 	void Player::handleRotation()
@@ -129,8 +131,17 @@ namespace voxel
 
 	void Player::tick()
 	{
-		Entity::tick();
 		handleMovement();
+		Entity::tick();
+	}
+
+	void Player::draw()
+	{
+		this->raycast.draw();
+	}
+
+	void Player::update()
+	{
 		handleRotation();
 		this->raycast.tick();
 		this->viewMat = glm::mat4(1.);
@@ -139,13 +150,9 @@ namespace voxel
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
-		this->viewMat = glm::translate(this->viewMat, glm::vec3(-this->pos.x, -this->pos.y - 0.72, -this->pos.z));
+		glm::vec3 realPos = getRealPos();
+		this->viewMat = glm::translate(this->viewMat, glm::vec3(-realPos.x, -realPos.y - 0.72, -realPos.z));
 		this->world.getFrustum().update();
-	}
-
-	void Player::draw()
-	{
-		this->raycast.draw();
 	}
 
 }

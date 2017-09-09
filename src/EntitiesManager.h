@@ -10,6 +10,8 @@ using librender::Texture;
 namespace voxel
 {
 
+	class World;
+
 	class EntitiesManager
 	{
 
@@ -29,9 +31,12 @@ namespace voxel
 		static Texture *cow;
 		static Texture *pig;
 		std::vector<Entity*> entities;
+		World &world;
 
 	public:
 		static void init();
+		EntitiesManager(World &world);
+		~EntitiesManager();
 		void tick();
 		void draw();
 		void addEntity(Entity *entity);

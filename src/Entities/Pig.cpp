@@ -39,10 +39,11 @@ namespace voxel
 
 	void Pig::draw()
 	{
+		glm::vec3 pos = getRealPos();
 		Main::getEntityShader().program->use();
 		EntitiesManager::getPig()->bind();
 		glm::mat4 model(1);
-		model = glm::translate(model, glm::vec3(this->pos.x, this->pos.y, this->pos.z));
+		model = glm::translate(model, glm::vec3(pos.x, pos.y, pos.z));
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
 		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
 		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));

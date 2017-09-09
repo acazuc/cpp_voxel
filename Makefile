@@ -21,6 +21,7 @@ SRCS_NAME = Main.cpp \
 	    AABB.cpp \
 	    Region.cpp \
 	    EntitiesManager.cpp \
+	    TickManager.cpp \
 	    Noise/SimplexNoise.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \

@@ -1,6 +1,7 @@
 #include "PlayerRaycast.h"
 #include "Blocks/Blocks.h"
 #include "World/World.h"
+#include "Debug.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
@@ -135,18 +136,18 @@ namespace voxel
 								{
 									for (int32_t z = 0; z < nb; ++z)
 									{
-										glm::vec3 pos(pos.x + (x + .5) / nb, pos.y + (y + .5) / nb, pos.z + (z + .5) / nb);
+										glm::vec3 pos2(pos.x + (x + .5) / nb, pos.y + (y + .5) / nb, pos.z + (z + .5) / nb);
 										pos.x += std::rand() * .2 / RAND_MAX - .1;
 										pos.y += std::rand() * .2 / RAND_MAX - .1;
 										pos.z += std::rand() * .2 / RAND_MAX - .1;
-										glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .1, 0);
+										glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .15, 0);
 										size.y = size.x;
 										glm::vec3 dir(std::rand() * .1 / RAND_MAX - .05, std::rand() * .2 / RAND_MAX, std::rand() * .1 / RAND_MAX - .05);
 										glm::vec2 uv(texX, texY);
 										uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 										uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 										glm::vec2 uvSize(1. / 16 / 8, 1. / 16 / 8);
-										Particle *particle = new Particle(this->player.getWorld(), pos, size, dir, uv, uvSize, light);
+										Particle *particle = new Particle(this->player.getWorld(), pos2, size, dir, uv, uvSize, light);
 										this->player.getWorld().getParticlesManager().addParticle(particle);
 									}
 								}

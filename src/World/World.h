@@ -1,9 +1,9 @@
 #ifndef WORLD_H
 # define WORLD_H
 
+# include "Particles/ParticlesManager.h"
 # include "Entities/EntitiesManager.h"
 # include "Noise/SimplexNoise.h"
-# include "ParticlesManager.h"
 # include "Player/Player.h"
 # include "ChunkLoader.h"
 # include "Frustum.h"

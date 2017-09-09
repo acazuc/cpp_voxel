@@ -15,8 +15,6 @@ SRCS_NAME = Main.cpp \
 	    Skybox.cpp \
 	    AABB.cpp \
 	    TickManager.cpp \
-	    Particle.cpp \
-	    ParticlesManager.cpp \
 	    Noise/SimplexNoise.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \
@@ -48,6 +46,8 @@ SRCS_NAME = Main.cpp \
 	    World/ChunkBlock.cpp \
 	    World/Chunk.cpp \
 	    World/Region.cpp \
+	    Particles/Particle.cpp \
+	    Particles/ParticlesManager.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -78,6 +78,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Shaders
 	@mkdir -p $(OBJS_PATH)/Entities
 	@mkdir -p $(OBJS_PATH)/World
+	@mkdir -p $(OBJS_PATH)/Particles
 
 clean:
 	@echo " - Cleaning objs"

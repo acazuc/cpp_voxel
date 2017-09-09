@@ -18,7 +18,7 @@ namespace voxel
 	Slime::Slime(World &world)
 	: Entity(world)
 	{
-		setSize(1.01, 1.01, 1.01);
+		setSize(glm::vec3(1.01, 1.01, 1.01));
 	}
 
 	void Slime::draw()

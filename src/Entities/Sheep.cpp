@@ -34,7 +34,7 @@ namespace voxel
 	Sheep::Sheep(World &world)
 	: Entity(world)
 	{
-		setSize(.9, 1.3, .9);
+		setSize(glm::vec3(.9, 1.3, .9));
 	}
 
 	void Sheep::draw()

@@ -1,8 +1,8 @@
 #ifndef SKELETON_H
 # define SKELETON_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

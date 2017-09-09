@@ -1,8 +1,8 @@
 #ifndef CREEPER_H
 # define CREEPER_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

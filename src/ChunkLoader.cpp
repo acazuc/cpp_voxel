@@ -1,8 +1,8 @@
 #include "ChunkLoader.h"
-#include "World.h"
+#include "World/World.h"
 #include <ctime>
 
-# define LOAD_DISTANCE 16
+#define LOAD_DISTANCE 16
 
 namespace voxel
 {

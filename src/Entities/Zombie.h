@@ -1,8 +1,8 @@
 #ifndef ZOMBIE_H
 # define ZOMBIE_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

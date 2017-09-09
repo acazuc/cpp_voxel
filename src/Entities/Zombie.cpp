@@ -33,7 +33,7 @@ namespace voxel
 	Zombie::Zombie(World &world)
 	: Entity(world)
 	{
-		setSize(.6, 1.8, .6);
+		setSize(glm::vec3(.6, 1.8, .6));
 	}
 
 	void Zombie::draw()

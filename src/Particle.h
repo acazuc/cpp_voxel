@@ -1,7 +1,7 @@
 #ifndef PARTICLE_H
 # define PARTICLE_H
 
-# include "Entity.h"
+# include "Entities/Entity.h"
 # include <glm/mat4x4.hpp>
 # include <librender/GL.h>
 # include <glm/vec2.hpp>

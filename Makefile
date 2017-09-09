@@ -9,18 +9,11 @@ INCLUDES_PATH = include -I lib/glfw/include -I lib/glad/include -I lib/librender
 SRCS_PATH = src/
 
 SRCS_NAME = Main.cpp \
-	    World.cpp \
-	    ChunkBlock.cpp \
-	    Chunk.cpp \
-	    Player.cpp \
 	    Frustum.cpp \
 	    ChunkLoader.cpp \
 	    Clouds.cpp \
 	    Skybox.cpp \
-	    Entity.cpp \
 	    AABB.cpp \
-	    Region.cpp \
-	    EntitiesManager.cpp \
 	    TickManager.cpp \
 	    Particle.cpp \
 	    ParticlesManager.cpp \
@@ -28,6 +21,7 @@ SRCS_NAME = Main.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \
 	    Utils/readfile.cpp \
+	    Player/Player.cpp \
 	    Player/PlayerRaycast.cpp \
 	    Blocks/Blocks.cpp \
 	    Blocks/Block.cpp \
@@ -48,6 +42,12 @@ SRCS_NAME = Main.cpp \
 	    Entities/Skeleton.cpp \
 	    Entities/Slime.cpp \
 	    Entities/Cow.cpp \
+	    Entities/Entity.cpp \
+	    Entities/EntitiesManager.cpp \
+	    World/World.cpp \
+	    World/ChunkBlock.cpp \
+	    World/Chunk.cpp \
+	    World/Region.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -77,6 +77,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Blocks
 	@mkdir -p $(OBJS_PATH)/Shaders
 	@mkdir -p $(OBJS_PATH)/Entities
+	@mkdir -p $(OBJS_PATH)/World
 
 clean:
 	@echo " - Cleaning objs"

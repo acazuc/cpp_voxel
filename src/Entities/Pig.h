@@ -1,8 +1,8 @@
 #ifndef PIG_H
 # define PIG_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

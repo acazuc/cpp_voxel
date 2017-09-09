@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "TickManager.h"
-#include "World.h"
+#include "World/World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,8 +20,8 @@ namespace voxel
 	, oldMouseY(0)
 	{
 		this->flying = true;
-		setSize(.6, 1.8, .6);
-		setPos(0, 70, 0);
+		setSize(glm::vec3(.6, 1.8, .6));
+		setPos(glm::vec3(0, 70, 0));
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
 	}
 
@@ -103,7 +103,7 @@ namespace voxel
 					jump();
 			}
 		}
-		if (this->isOnFloor)
+		if (this->isOnFloor || this->flying)
 			add *= 0.1;
 		else
 			add *= 0.02;

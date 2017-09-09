@@ -7,7 +7,7 @@
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
 # include "Shaders/EntityShader.h"
-# include "World.h"
+# include "World/World.h"
 # include <librender/Window/Window.h>
 # include <librender/Texture.h>
 

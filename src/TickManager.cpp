@@ -1,4 +1,5 @@
 #include "TickManager.h"
+#include <algorithm>
 
 extern int64_t nanotime;
 
@@ -18,8 +19,9 @@ namespace voxel
 	void TickManager::update()
 	{
 		int64_t passedTime = nanotime - lastUpdate;
-		ticksToDo = passedTime / (1000000000 / 20);
-		lastUpdate += ticksToDo * (1000000000 / 20);
+		int64_t ticks = passedTime / (1000000000 / 20);
+		ticksToDo = std::min(10l, ticks);
+		lastUpdate += ticks * (1000000000 / 20);
 		delta = (nanotime - lastUpdate) / (float)(1000000000 / 20);
 	}
 

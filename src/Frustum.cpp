@@ -1,5 +1,5 @@
 #include "Frustum.h"
-#include "World.h"
+#include "World/World.h"
 #include <glm/gtc/type_ptr.hpp>
 
 namespace voxel
@@ -79,25 +79,25 @@ namespace voxel
 		normalize(this->data[5]);
 	}
 
-	bool Frustum::check(float x1, float y1, float z1, float x2, float y2, float z2)
+	bool Frustum::check(AABB &aabb)
 	{
 		for (uint8_t i = 0; i < 6; ++i)
 		{
-			if (this->data[i][0] * x1 + this->data[i][1] * y1 + this->data[i][2] * z1 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP0().x + this->data[i][1] * aabb.getP0().y + this->data[i][2] * aabb.getP0().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x2 + this->data[i][1] * y1 + this->data[i][2] * z1 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP1().x + this->data[i][1] * aabb.getP0().y + this->data[i][2] * aabb.getP0().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x1 + this->data[i][1] * y2 + this->data[i][2] * z1 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP0().x + this->data[i][1] * aabb.getP1().y + this->data[i][2] * aabb.getP0().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x2 + this->data[i][1] * y2 + this->data[i][2] * z1 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP1().x + this->data[i][1] * aabb.getP1().y + this->data[i][2] * aabb.getP0().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x1 + this->data[i][1] * y1 + this->data[i][2] * z2 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP0().x + this->data[i][1] * aabb.getP0().y + this->data[i][2] * aabb.getP1().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x2 + this->data[i][1] * y1 + this->data[i][2] * z2 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP1().x + this->data[i][1] * aabb.getP0().y + this->data[i][2] * aabb.getP1().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x1 + this->data[i][1] * y2 + this->data[i][2] * z2 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP0().x + this->data[i][1] * aabb.getP1().y + this->data[i][2] * aabb.getP1().z + this->data[i][3] > 0)
 				continue;
-			if (this->data[i][0] * x2 + this->data[i][1] * y2 + this->data[i][2] * z2 + this->data[i][3] > 0)
+			if (this->data[i][0] * aabb.getP1().x + this->data[i][1] * aabb.getP1().y + this->data[i][2] * aabb.getP1().z + this->data[i][3] > 0)
 				continue;
 			return (false);
 		}

@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 # define PLAYER_H
 
-# include "./Player/PlayerRaycast.h"
-# include "./Entity.h"
+# include "Entities/Entity.h"
+# include "PlayerRaycast.h"
 # include <glm/mat4x4.hpp>
 
 

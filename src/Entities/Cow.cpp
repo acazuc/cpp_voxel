@@ -36,7 +36,7 @@ namespace voxel
 	Cow::Cow(World &world)
 	: Entity(world)
 	{
-		setSize(.9, 1.4, .9);
+		setSize(glm::vec3(.9, 1.4, .9));
 	}
 
 	void Cow::draw()

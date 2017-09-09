@@ -68,18 +68,14 @@ namespace voxel
 
 	void World::getAABBs(AABB &aabb, std::vector<AABB> &aabbs)
 	{
-		if (aabb.getY1() < 0 || aabb.getY0() >= CHUNK_HEIGHT)
+		if (aabb.getP1().y < 0 || aabb.getP0().y >= CHUNK_HEIGHT)
 			return;
-		float x0 = aabb.getX0();
-		float y0 = aabb.getY0();
-		float z0 = aabb.getZ0();
-		float x1 = aabb.getX1();
-		float y1 = aabb.getY1();
-		float z1 = aabb.getZ1();
-		int32_t chunkStartX = std::floor(x0 / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkEndX = std::floor(x1 / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkStartZ = std::floor(z0 / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkEndZ = std::floor(z1 / CHUNK_WIDTH) * CHUNK_WIDTH;
+		glm::vec3 p0 = aabb.getP0();
+		glm::vec3 p1 = aabb.getP1();
+		int32_t chunkStartX = std::floor(p0.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkEndX = std::floor(p1.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkStartZ = std::floor(p0.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkEndZ = std::floor(p1.z / CHUNK_WIDTH) * CHUNK_WIDTH;
 		for (int32_t chunkX = chunkStartX; chunkX <= chunkEndX; ++chunkX)
 		{
 			for (int32_t chunkZ = chunkStartZ; chunkZ <= chunkEndZ; ++chunkZ)
@@ -87,12 +83,12 @@ namespace voxel
 				Chunk *chunk = getChunk(chunkX, chunkZ);
 				if (!chunk)
 					continue;
-				int32_t startX = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(x0 - chunkX)));
-				int32_t startY = std::max(0, std::min(CHUNK_HEIGHT - 1, static_cast<int32_t>(y0)));
-				int32_t startZ = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(z0 - chunkZ)));
-				int32_t endX = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(x1 - chunkX)));
-				int32_t endY = std::max(0, std::min(CHUNK_HEIGHT - 1, static_cast<int32_t>(y1)));
-				int32_t endZ = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(z1 - chunkZ)));
+				int32_t startX = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(p0.x - chunkX)));
+				int32_t startY = std::max(0, std::min(CHUNK_HEIGHT - 1, static_cast<int32_t>(p0.y)));
+				int32_t startZ = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(p0.z - chunkZ)));
+				int32_t endX = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(p1.x - chunkX)));
+				int32_t endY = std::max(0, std::min(CHUNK_HEIGHT - 1, static_cast<int32_t>(p1.y)));
+				int32_t endZ = std::max(0, std::min(CHUNK_WIDTH - 1, static_cast<int32_t>(p1.z - chunkZ)));
 				for (int32_t x = startX; x <= endX; ++x)
 				{
 					for (int32_t y = startY; y <= endY; ++y)
@@ -100,9 +96,9 @@ namespace voxel
 						for (int32_t z = startZ; z <= endZ; ++z)
 						{
 							float s = BLOCK_SIZE;
-							if (!chunk->getBlockAt(x, y, z)->getType())
+							if (!chunk->getBlockAt(glm::vec3(x, y, z))->getType())
 								continue;
-							aabbs.push_back(AABB(chunkX + x, y, chunkZ + z, chunkX + x + s, y + s, chunkZ + z + s));
+							aabbs.push_back(AABB(glm::vec3(chunkX + x, y, chunkZ + z), glm::vec3(chunkX + x + s, y + s, chunkZ + z + s)));
 						}
 					}
 				}

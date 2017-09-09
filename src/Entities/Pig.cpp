@@ -34,7 +34,7 @@ namespace voxel
 	Pig::Pig(World &world)
 	: Entity(world)
 	{
-		setSize(.9, .9, .9);
+		setSize(glm::vec3(.9, .9, .9));
 	}
 
 	void Pig::draw()

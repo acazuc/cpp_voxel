@@ -1,11 +1,11 @@
 #include "Main.h"
-#include "EntitiesManager.h"
+#include "Entities/EntitiesManager.h"
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "TickManager.h"
 #include "Debug.h"
-#include "World.h"
+#include "World/World.h"
 #include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
 #include <librender/Shader/VertexShader.h>

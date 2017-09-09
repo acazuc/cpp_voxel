@@ -30,10 +30,9 @@ namespace voxel
 		virtual void tick();
 		virtual void draw();
 		void setPos(glm::vec3 pos);
-		void setPos(float x, float y, float z);
-		void move(float x, float y, float z);
+		void move(glm::vec3 dst);
 		void jump();
-		void setSize(float x, float y, float z);
+		void setSize(glm::vec3 size);
 		glm::vec3 getRealPos();
 		inline glm::vec3 &getPos() {return (this->pos);};
 		inline glm::vec3 &getRot() {return (this->rot);};

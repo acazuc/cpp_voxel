@@ -1,5 +1,5 @@
 #include "Skybox.h"
-#include "World.h"
+#include "World/World.h"
 #include "Debug.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>

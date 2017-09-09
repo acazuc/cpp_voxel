@@ -33,7 +33,7 @@ namespace voxel
 	Creeper::Creeper(World &world)
 	: Entity(world)
 	{
-		setSize(.6, 1.7, .6);
+		setSize(glm::vec3(.6, 1.7, .6));
 	}
 
 	void Creeper::draw()

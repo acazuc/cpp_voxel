@@ -33,7 +33,7 @@ namespace voxel
 	Skeleton::Skeleton(World &world)
 	: Entity(world)
 	{
-		setSize(.6, 1.99, .6);
+		setSize(glm::vec3(.6, 1.99, .6));
 	}
 
 	void Skeleton::draw()

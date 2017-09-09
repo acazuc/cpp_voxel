@@ -1,5 +1,5 @@
 #include "Particle.h"
-#include "ChunkBlock.h"
+#include "World/ChunkBlock.h"
 
 namespace voxel
 {
@@ -13,7 +13,7 @@ namespace voxel
 	, deleted(false)
 	{
 		this->gravity = .04;
-		setSize(.2, .2, .2);
+		setSize(glm::vec3(.2, .2, .2));
 		setPos(pos);
 		this->posDst = vel;
 		this->duration = 4 / (rand() * .9 / RAND_MAX + .1);

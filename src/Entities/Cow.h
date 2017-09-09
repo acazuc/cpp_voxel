@@ -1,8 +1,8 @@
 #ifndef COW_H
 # define COW_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

@@ -2,6 +2,7 @@
 # define CHUNK_H
 
 # include "ChunkBlock.h"
+# include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
 
 using librender::VertexBuffer;
@@ -29,6 +30,7 @@ namespace voxel
 		Chunk *chunkZLess;
 		Chunk *chunkZMore;
 		World &world;
+		AABB aabb;
 		uint32_t verticesNb;
 		uint8_t *topBlocks;
 		uint8_t *lightMap;
@@ -39,14 +41,14 @@ namespace voxel
 		bool deleted;
 		void generateGLBuffer();
 		void generateLightMap();
-		void setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light);
+		void setBlockLightRec(glm::vec3 pos, uint8_t light);
 
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
 		void draw();
-		void addBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
-		void destroyBlock(int32_t x, int32_t y, int32_t z);
+		void addBlock(glm::vec3 pos, uint8_t type);
+		void destroyBlock(glm::vec3 pos);
 		inline ChunkBlock **getBlocks() {return (&this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
@@ -56,8 +58,8 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline ChunkBlock *getBlockAt(int32_t x, int32_t y, int32_t z) {return (&this->blocks[getXYZId(x, y, z)]);};
-		inline uint8_t getLightAt(int32_t x, int32_t y, int32_t z) {return (this->lightMap[getXYZId(x, y, z)]);};
+		inline ChunkBlock *getBlockAt(glm::vec3 pos) {return (&this->blocks[getXYZId(pos)]);};
+		inline uint8_t getLightAt(glm::vec3 pos) {return (this->lightMap[getXYZId(pos)]);};
 		inline uint16_t getTopBlockAt(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
@@ -74,7 +76,7 @@ namespace voxel
 		inline VertexBuffer *getIndicesBuffer() {return (this->indicesBuffer);};
 		inline void setColorsBuffer(VertexBuffer *colorsBuffer) {this->colorsBuffer = colorsBuffer;};
 		inline VertexBuffer *getColorsBuffer() {return (this->colorsBuffer);};
-		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
+		inline int32_t getXYZId(glm::vec3 pos) {return ((pos.x * CHUNK_HEIGHT + pos.y) * CHUNK_WIDTH + pos.z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 
 	};

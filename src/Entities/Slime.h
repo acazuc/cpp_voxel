@@ -1,8 +1,8 @@
 #ifndef SLIME_H
 # define SLIME_H
 
-# include "./BodyPart.h"
-# include "../Entity.h"
+# include "BodyPart.h"
+# include "Entity.h"
 
 namespace voxel
 {

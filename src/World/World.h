@@ -1,12 +1,12 @@
 #ifndef WORLD_H
 # define WORLD_H
 
+# include "Entities/EntitiesManager.h"
 # include "Noise/SimplexNoise.h"
 # include "ParticlesManager.h"
-# include "EntitiesManager.h"
+# include "Player/Player.h"
 # include "ChunkLoader.h"
 # include "Frustum.h"
-# include "Player.h"
 # include "Clouds.h"
 # include "Skybox.h"
 # include "Region.h"

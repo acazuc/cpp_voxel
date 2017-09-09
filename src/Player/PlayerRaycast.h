@@ -2,6 +2,7 @@
 # define PLAYER_RAYCAST_H
 
 # include <librender/Shader/VertexBuffer.h>
+# include <glm/vec3.hpp>
 
 using librender::VertexBuffer;
 
@@ -17,10 +18,8 @@ namespace voxel
 		Player &player;
 		VertexBuffer vertexesBuffer;
 		VertexBuffer colorsBuffer;
+		glm::vec3 pos;
 		uint8_t face;
-		int32_t x;
-		int32_t y;
-		int32_t z;
 		bool found;
 		void raycast();
 

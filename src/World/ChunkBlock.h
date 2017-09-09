@@ -1,6 +1,7 @@
 #ifndef CHUNK_BLOCK_H
 # define CHUNK_BLOCK_H
 
+# include "AABB.h"
 # include <librender/GL.h>
 # include <glm/glm.hpp>
 # include <cstdint>

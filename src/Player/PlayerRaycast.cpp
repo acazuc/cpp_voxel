@@ -1,7 +1,6 @@
 #include "PlayerRaycast.h"
 #include "Blocks/Blocks.h"
-#include "Debug.h"
-#include "World.h"
+#include "World/World.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
@@ -63,7 +62,7 @@ namespace voxel
 			return;
 		Main::getFocusedShader().program->use();
 		glm::mat4 model(1);
-		model = glm::translate(model, glm::vec3(this->x, this->y, this->z));
+		model = glm::translate(model, this->pos);
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat() * model;
 		Main::getFocusedShader().mvpLocation->setMat4f(mvp);
 		Main::getFocusedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
@@ -112,15 +111,13 @@ namespace voxel
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
 			{
-				float posX = pos.x;
-				float posY = pos.y;
-				float posZ = pos.z;
-				int32_t chunkX = std::floor(posX / CHUNK_WIDTH) * CHUNK_WIDTH;
-				int32_t chunkZ = std::floor(posZ / CHUNK_WIDTH) * CHUNK_WIDTH;
+				int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+				int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
 				Chunk *chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
 				if (chunk)
 				{
-					ChunkBlock *block = chunk->getBlockAt(posX - chunkX, posY, posZ - chunkZ);
+					glm::vec3 relative(pos.x - chunkX, pos.y, pos.z - chunkZ);
+					ChunkBlock *block = chunk->getBlockAt(glm::vec3(relative));
 					if (block && block->getType())
 					{
 						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
@@ -131,16 +128,14 @@ namespace voxel
 							float texX = blockModel->getTexTopX();
 							float texY = blockModel->getTexTopY();
 							int32_t nb = 2;
-							int32_t rX = posX - chunkX;
-							int32_t rZ = posZ - chunkZ;
-							uint8_t light = chunk->getLightAt(rX, posY, rZ);
+							uint8_t light = chunk->getLightAt(relative);
 							for (int32_t x = 0; x < nb; ++x)
 							{
 								for (int32_t y = 0; y < nb; ++y)
 								{
 									for (int32_t z = 0; z < nb; ++z)
 									{
-										glm::vec3 pos(posX + (x + .5) / nb, posY + (y + .5) / nb, posZ + (z + .5) / nb);
+										glm::vec3 pos(pos.x + (x + .5) / nb, pos.y + (y + .5) / nb, pos.z + (z + .5) / nb);
 										pos.x += std::rand() * .2 / RAND_MAX - .1;
 										pos.y += std::rand() * .2 / RAND_MAX - .1;
 										pos.z += std::rand() * .2 / RAND_MAX - .1;
@@ -156,66 +151,62 @@ namespace voxel
 									}
 								}
 							}
-							chunk->destroyBlock(rX, posY, rZ);
+							chunk->destroyBlock(relative);
 							return;
 						}
 						else if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
 						{
-							int32_t newX = posX - chunkX;
-							int32_t newY = posY;
-							int32_t newZ = posZ - chunkZ;
+							glm::vec3 newPos(relative);
 							if (face == BLOCK_FACE_LEFT)
-								newX -= 1;
+								newPos.x -= 1;
 							else if (face == BLOCK_FACE_RIGHT)
-								newX += 1;
+								newPos.x += 1;
 							else if (face == BLOCK_FACE_FRONT)
-								newZ += 1;
+								newPos.z += 1;
 							else if (face == BLOCK_FACE_BACK)
-								newZ -= 1;
+								newPos.z -= 1;
 							else if (face == BLOCK_FACE_UP)
-								newY += 1;
+								newPos.y += 1;
 							else if (face == BLOCK_FACE_DOWN)
-								newY -= 1;
+								newPos.y -= 1;
 							Chunk *newChunk = chunk;
-							if (newX < 0)
+							if (newPos.x < 0)
 							{
 								newChunk = chunk->getChunkXLess();
-								newX = CHUNK_WIDTH - 1;
+								newPos.x = CHUNK_WIDTH - 1;
 							}
-							else if (newX >= CHUNK_WIDTH)
+							else if (newPos.x >= CHUNK_WIDTH)
 							{
 								newChunk = chunk->getChunkXMore();
-								newX = 0;
+								newPos.x = 0;
 							}
-							else if (newY < 0)
+							else if (newPos.y < 0)
 							{
 								return;
 							}
-							else if (newY >= CHUNK_HEIGHT)
+							else if (newPos.y >= CHUNK_HEIGHT)
 							{
 								return;
 							}
-							else if (newZ < 0)
+							else if (newPos.z < 0)
 							{
 								newChunk = chunk->getChunkZLess();
-								newZ = CHUNK_WIDTH - 1;
+								newPos.z = CHUNK_WIDTH - 1;
 							}
-							else if (newZ >= CHUNK_WIDTH)
+							else if (newPos.z >= CHUNK_WIDTH)
 							{
 								newChunk = chunk->getChunkZMore();
-								newZ = 0;
+								newPos.z = 0;
 							}
-							ChunkBlock *block = newChunk->getBlockAt(newX, newY, newZ);
+							ChunkBlock *block = newChunk->getBlockAt(newPos);
 							if (block->getType())
 								return;
-							newChunk->addBlock(newX, newY, newZ, 2);
+							newChunk->addBlock(newPos, 2);
 							return;
 						}
 						this->found = true;
 						this->face = face;
-						this->x = posX;
-						this->y = posY;
-						this->z = posZ;
+						this->pos = pos;
 						return;
 					}
 				}

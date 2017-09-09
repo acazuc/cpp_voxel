@@ -66,34 +66,34 @@ namespace voxel
 	: world(world)
 	{
 		Creeper *creeper = new Creeper(this->world);
-		creeper->setPos(0, 128, 0);
+		creeper->setPos(glm::vec3(0, 128, 0));
 		addEntity(creeper);
 		Human *human = new Human(this->world);
-		human->setPos(5, 128, 0);
+		human->setPos(glm::vec3(5, 128, 0));
 		addEntity(human);
 		Pig *pig = new Pig(this->world);
-		pig->setPos(10, 128, 0);
+		pig->setPos(glm::vec3(10, 128, 0));
 		addEntity(pig);
 		Pigman *pigman = new Pigman(this->world);
-		pigman->setPos(15, 128, 0);
+		pigman->setPos(glm::vec3(15, 128, 0));
 		addEntity(pigman);
 		Pigzombie *pigzombie = new Pigzombie(this->world);
-		pigzombie->setPos(20, 128, 0);
+		pigzombie->setPos(glm::vec3(20, 128, 0));
 		addEntity(pigzombie);
 		Sheep *sheep = new Sheep(this->world);
-		sheep->setPos(25, 128, 0);
+		sheep->setPos(glm::vec3(25, 128, 0));
 		addEntity(sheep);
 		Skeleton *skeleton = new Skeleton(this->world);
-		skeleton->setPos(30, 128, 0);
+		skeleton->setPos(glm::vec3(30, 128, 0));
 		addEntity(skeleton);
 		Slime *slime = new Slime(this->world);
-		slime->setPos(35, 128, 0);
+		slime->setPos(glm::vec3(35, 128, 0));
 		addEntity(slime);
 		Zombie *zombie = new Zombie(this->world);
-		zombie->setPos(40, 128, 0);
+		zombie->setPos(glm::vec3(40, 128, 0));
 		addEntity(zombie);
 		Cow *cow = new Cow(this->world);
-		cow->setPos(-5, 128, 0);
+		cow->setPos(glm::vec3(-5, 128, 0));
 		addEntity(cow);
 	}
 

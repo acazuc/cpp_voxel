@@ -9,6 +9,7 @@
 #include "Entities/Slime.h"
 #include "Entities/Pig.h"
 #include "Debug.h"
+#include "Main.h"
 #include <libformat/PNG.h>
 #include <librender/GL.h>
 
@@ -107,6 +108,7 @@ namespace voxel
 
 	void EntitiesManager::draw()
 	{
+		Main::getEntityShader().program->use();
 		glDisable(GL_CULL_FACE);
 		for (uint32_t i = 0; i < this->entities.size(); ++i)
 		{

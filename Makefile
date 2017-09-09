@@ -22,6 +22,8 @@ SRCS_NAME = Main.cpp \
 	    Region.cpp \
 	    EntitiesManager.cpp \
 	    TickManager.cpp \
+	    Particle.cpp \
+	    ParticlesManager.cpp \
 	    Noise/SimplexNoise.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \
@@ -34,6 +36,7 @@ SRCS_NAME = Main.cpp \
 	    Shaders/SkyboxShader.cpp \
 	    Shaders/FocusedShader.cpp \
 	    Shaders/EntityShader.cpp \
+	    Shaders/ParticlesShader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
 	    Entities/Creeper.cpp \

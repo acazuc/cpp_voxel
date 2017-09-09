@@ -20,6 +20,7 @@ namespace voxel
 		glm::vec3 rot;
 		World &world;
 		AABB aabb;
+		float gravity;
 		bool isOnFloor;
 		bool flying;
 

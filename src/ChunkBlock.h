@@ -66,6 +66,7 @@ namespace voxel
 		inline bool isTransparent() {return (this->type == 0 || this->type == 8);};
 		inline void setType(uint8_t type) {this->type = type;};
 		inline uint8_t getType() {return (this->type);};
+		static float getLightValue(int8_t light);
 
 	};
 

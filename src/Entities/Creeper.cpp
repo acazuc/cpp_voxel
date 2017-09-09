@@ -39,7 +39,6 @@ namespace voxel
 	void Creeper::draw()
 	{
 		glm::vec3 pos = getRealPos();
-		Main::getEntityShader().program->use();
 		EntitiesManager::getCreeper()->bind();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(pos.x, pos.y, pos.z));

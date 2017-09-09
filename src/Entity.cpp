@@ -11,6 +11,7 @@ namespace voxel
 	Entity::Entity(World &world)
 	: world(world)
 	, aabb(0, 0, 0, 0, 0, 0)
+	, gravity(.08)
 	, isOnFloor(false)
 	, flying(false)
 	{
@@ -26,11 +27,11 @@ namespace voxel
 	{
 		this->posOrg = this->pos;
 		if (!this->flying)
-			this->posDst.y -= 0.08;
+			this->posDst.y -= this->gravity;
 		move(this->posDst.x, this->posDst.y, this->posDst.z);
-		this->posDst.x *= 0.91F;
-		this->posDst.y *= 0.98F;
-		this->posDst.z *= 0.91F;
+		this->posDst.x *= .91;
+		this->posDst.y *= .98;
+		this->posDst.z *= .91;
 		if (this->flying || this->isOnFloor)
 		{
 			this->posDst.x *= .7;

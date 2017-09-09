@@ -21,6 +21,7 @@ int64_t nanotime;
 namespace voxel
 {
 
+	ParticlesShader Main::particlesShader;
 	FocusedShader Main::focusedShader;
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
@@ -51,6 +52,7 @@ namespace voxel
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
 		window->setVSync(true);
+		particlesShader.load();
 		focusedShader.load();
 		skyboxShader.load();
 		cloudsShader.load();
@@ -70,6 +72,8 @@ namespace voxel
 			skyboxShader.texLocation->setVec1i(0);
 			entityShader.program->use();
 			entityShader.fogDistanceLocation->setVec1f(16 * 14);
+			particlesShader.program->use();
+			particlesShader.fogDistanceLocation->setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;
@@ -137,19 +141,19 @@ namespace voxel
 		GLenum glErr;
 		while ((glErr = glGetError()) != GL_NO_ERROR)
 		{
-			std::cout << err << ": ";
+			std::cerr << err << ": ";
 			if (glErr == GL_INVALID_ENUM)
-				std::cout << "GL_INVALID_ENUM" << std::endl;
+				std::cerr << "GL_INVALID_ENUM" << std::endl;
 			else if (glErr == GL_INVALID_VALUE)
-				std::cout << "GL_INVALID_VALUE" << std::endl;
+				std::cerr << "GL_INVALID_VALUE" << std::endl;
 			else if (glErr == GL_INVALID_OPERATION)
-				std::cout << "GL_INVALID_OPERATION" << std::endl;
+				std::cerr << "GL_INVALID_OPERATION" << std::endl;
 			else if (glErr == GL_STACK_OVERFLOW)
-				std::cout << "GL_STACK_OVERFLOW" << std::endl;
+				std::cerr << "GL_STACK_OVERFLOW" << std::endl;
 			else if (glErr == GL_STACK_UNDERFLOW)
-				std::cout << "GL_STACK_UNDERFLOW" << std::endl;
+				std::cerr << "GL_STACK_UNDERFLOW" << std::endl;
 			else if (glErr == GL_OUT_OF_MEMORY)
-				std::cout << "GL_OUT_OF_MEMORY" << std::endl;
+				std::cerr << "GL_OUT_OF_MEMORY" << std::endl;
 		}
 	}
 }

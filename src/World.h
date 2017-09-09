@@ -2,6 +2,7 @@
 # define WORLD_H
 
 # include "Noise/SimplexNoise.h"
+# include "ParticlesManager.h"
 # include "EntitiesManager.h"
 # include "ChunkLoader.h"
 # include "Frustum.h"
@@ -24,6 +25,7 @@ namespace voxel
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
 		std::vector<Chunk*> chunks;
+		ParticlesManager particlesManager;
 		EntitiesManager entitiesManager;
 		ChunkLoader chunkLoader;
 		SimplexNoise noise;
@@ -45,6 +47,8 @@ namespace voxel
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};
 		inline std::vector<Chunk*> &getChunks() {return (this->chunks);};
+		inline ParticlesManager &getParticlesManager() {return (this->particlesManager);};
+		inline EntitiesManager &getEntitiesManager() {return (this->entitiesManager);};
 		inline SimplexNoise &getNoise() {return (this->noise);};
 		inline Frustum &getFrustum() {return (this->frustum);};
 		inline Player &getPlayer() {return (this->player);};

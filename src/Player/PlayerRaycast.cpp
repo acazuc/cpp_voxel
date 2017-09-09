@@ -1,4 +1,5 @@
 #include "PlayerRaycast.h"
+#include "Blocks/Blocks.h"
 #include "Debug.h"
 #include "World.h"
 #include "Main.h"
@@ -111,9 +112,9 @@ namespace voxel
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
 			{
-				float posX = /*std::round*/(pos.x);
-				float posY = /*std::round*/(pos.y);
-				float posZ = /*std::round*/(pos.z);
+				float posX = pos.x;
+				float posY = pos.y;
+				float posZ = pos.z;
 				int32_t chunkX = std::floor(posX / CHUNK_WIDTH) * CHUNK_WIDTH;
 				int32_t chunkZ = std::floor(posZ / CHUNK_WIDTH) * CHUNK_WIDTH;
 				Chunk *chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
@@ -124,7 +125,38 @@ namespace voxel
 					{
 						if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
 						{
-							chunk->destroyBlock(posX - chunkX, posY, posZ - chunkZ);
+							Block *blockModel = Blocks::getBlock(block->getType());
+							if (!blockModel)
+								return;
+							float texX = blockModel->getTexTopX();
+							float texY = blockModel->getTexTopY();
+							int32_t nb = 2;
+							int32_t rX = posX - chunkX;
+							int32_t rZ = posZ - chunkZ;
+							uint8_t light = chunk->getLightAt(rX, posY, rZ);
+							for (int32_t x = 0; x < nb; ++x)
+							{
+								for (int32_t y = 0; y < nb; ++y)
+								{
+									for (int32_t z = 0; z < nb; ++z)
+									{
+										glm::vec3 pos(posX + (x + .5) / nb, posY + (y + .5) / nb, posZ + (z + .5) / nb);
+										pos.x += std::rand() * .2 / RAND_MAX - .1;
+										pos.y += std::rand() * .2 / RAND_MAX - .1;
+										pos.z += std::rand() * .2 / RAND_MAX - .1;
+										glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .1, 0);
+										size.y = size.x;
+										glm::vec3 dir(std::rand() * .1 / RAND_MAX - .05, std::rand() * .2 / RAND_MAX, std::rand() * .1 / RAND_MAX - .05);
+										glm::vec2 uv(texX, texY);
+										uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
+										uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
+										glm::vec2 uvSize(1. / 16 / 8, 1. / 16 / 8);
+										Particle *particle = new Particle(this->player.getWorld(), pos, size, dir, uv, uvSize, light);
+										this->player.getWorld().getParticlesManager().addParticle(particle);
+									}
+								}
+							}
+							chunk->destroyBlock(rX, posY, rZ);
 							return;
 						}
 						else if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
@@ -173,7 +205,8 @@ namespace voxel
 								newChunk = chunk->getChunkZMore();
 								newZ = 0;
 							}
-							if (newChunk->getBlockAt(newX, newY, newZ))
+							ChunkBlock *block = newChunk->getBlockAt(newX, newY, newZ);
+							if (block->getType())
 								return;
 							newChunk->addBlock(newX, newY, newZ, 2);
 							return;

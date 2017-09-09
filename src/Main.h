@@ -1,6 +1,7 @@
 #ifndef MAIN_H
 # define MAIN_H
 
+# include "Shaders/ParticlesShader.h"
 # include "Shaders/FocusedShader.h"
 # include "Shaders/BlocksShader.h"
 # include "Shaders/CloudsShader.h"
@@ -22,6 +23,7 @@ namespace voxel
 	{
 
 	private:
+		static ParticlesShader particlesShader;
 		static FocusedShader focusedShader;
 		static BlocksShader blocksShader;
 		static CloudsShader cloudsShader;
@@ -39,6 +41,7 @@ namespace voxel
 	public:
 		static void main();
 		static void glErrors(std::string str);
+		static ParticlesShader &getParticlesShader() {return (particlesShader);};
 		static FocusedShader &getFocusedShader() {return (focusedShader);};
 		static BlocksShader &getBlocksShader() {return (blocksShader);};
 		static CloudsShader &getCloudsShader() {return (cloudsShader);};

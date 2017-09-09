@@ -7,7 +7,8 @@ namespace voxel
 {
 
 	World::World()
-	: entitiesManager(*this)
+	: particlesManager(*this)
+	, entitiesManager(*this)
 	, chunkLoader(this)
 	, noise(512, .5, 1337)
 	, frustum(*this)
@@ -36,6 +37,7 @@ namespace voxel
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		this->player.tick();
 		this->entitiesManager.tick();
+		this->particlesManager.tick();
 	}
 
 	void World::draw()
@@ -57,6 +59,7 @@ namespace voxel
 			Chunk *chunk = *iter;
 			chunk->draw();
 		}
+		this->particlesManager.draw();
 		this->entitiesManager.draw();
 		this->clouds.draw();
 		this->skybox.draw();

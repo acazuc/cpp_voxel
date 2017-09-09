@@ -1,7 +1,7 @@
 #include "Main.h"
 #include "EntitiesManager.h"
 #include "Utils/readfile.h"
-#include "Entities/Pigzombie.h"
+#include "Entities/Sheep.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "Debug.h"
@@ -87,7 +87,7 @@ namespace voxel
 		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
-		Pigzombie zombie(*world);
+		Sheep zombie(*world);
 		zombie.setPos(0, 128, 0);
 		while (!window->closeRequested())
 		{

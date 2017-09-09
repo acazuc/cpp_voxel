@@ -17,22 +17,22 @@ namespace voxel
 	void Skeleton::init()
 	{
 		head = new BodyPart(glm::vec3(-4, 0, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		head->setPos(glm::vec3(0, 9, 0));
+		head->setPos(glm::vec3(0, 7.4, 0));
 		body = new BodyPart(glm::vec3(-4, -3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
+		body->setPos(glm::vec3(0, -1.6, 0));
 		armL = new BodyPart(glm::vec3(0, -12, -1), glm::vec3(2, 12, 2), glm::vec2(40, 16));
-		armL->setPos(glm::vec3(4, 9, 0));
+		armL->setPos(glm::vec3(4, 7.4, 0));
 		armR = new BodyPart(glm::vec3(-2, -12, -1), glm::vec3(2, 12, 2), glm::vec2(40, 16));
-		armR->setPos(glm::vec3(-4, 9, 0));
+		armR->setPos(glm::vec3(-4, 7.4, 0));
 		legL = new BodyPart(glm::vec3(-1, -12, -1), glm::vec3(2, 12, 2), glm::vec2(0, 16));
-		legL->setPos(glm::vec3(-2, -3, 0));
+		legL->setPos(glm::vec3(-2, -4.6, 0));
 		legR = new BodyPart(glm::vec3(-1, -12, -1), glm::vec3(2, 12, 2), glm::vec2(0, 16));
-		legR->setPos(glm::vec3(2, -3, 0));
+		legR->setPos(glm::vec3(2, -4.6, 0));
 	}
 
 	Skeleton::Skeleton(World &world)
 	: Entity(world)
 	{
-		this->flying = true;
 		setSize(.6, 1.99, .6);
 	}
 

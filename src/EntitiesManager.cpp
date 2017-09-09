@@ -6,6 +6,7 @@
 #include "Entities/Pigman.h"
 #include "Entities/Human.h"
 #include "Entities/Sheep.h"
+#include "Entities/Slime.h"
 #include "Entities/Pig.h"
 #include "Debug.h"
 #include <libformat/PNG.h>
@@ -38,6 +39,7 @@ namespace voxel
 		Pigman::init();
 		Human::init();
 		Sheep::init();
+		Slime::init();
 		Pig::init();
 		Texture **textures[14] = {&character, &pigzombie, &skeleton, &chicken, &creeper, &pigman, &spider, &zombie, &ghast, &sheep, &slime, &squid, &cow, &pig};
 		std::string names[14] = {"char", "pigzombie", "skeleton", "chicken", "creeper", "pigman", "spider", "zombie", "ghast", "sheep", "slime", "squid", "cow", "pig"};

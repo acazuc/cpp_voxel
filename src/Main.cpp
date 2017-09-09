@@ -1,7 +1,6 @@
 #include "Main.h"
 #include "EntitiesManager.h"
 #include "Utils/readfile.h"
-#include "Entities/Skeleton.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "Debug.h"
@@ -87,8 +86,6 @@ namespace voxel
 		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
-		Skeleton zombie(*world);
-		zombie.setPos(0, 128, 0);
 		while (!window->closeRequested())
 		{
 			nanotime = System::nanotime();
@@ -100,10 +97,6 @@ namespace voxel
 			window->clearScreen();
 			world->tick();
 			world->draw();
-			zombie.tick();
-			glDisable(GL_CULL_FACE);
-			zombie.draw();
-			glEnable(GL_CULL_FACE);
 			window->pollEvents();
 			window->update();
 		}

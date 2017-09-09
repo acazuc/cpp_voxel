@@ -1,5 +1,6 @@
 #include "EntitiesManager.h"
 #include "Entities/Pigzombie.h"
+#include "Entities/Skeleton.h"
 #include "Entities/Creeper.h"
 #include "Entities/Zombie.h"
 #include "Entities/Pigman.h"
@@ -31,6 +32,7 @@ namespace voxel
 	void EntitiesManager::init()
 	{
 		Pigzombie::init();
+		Skeleton::init();
 		Creeper::init();
 		Zombie::init();
 		Pigman::init();

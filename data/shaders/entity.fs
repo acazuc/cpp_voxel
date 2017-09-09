@@ -11,6 +11,8 @@ uniform vec4 color;
 void main()
 {
 	vec4 texCol = texture2D(tex, UV);
+	if (texCol.a < 0.5)
+		discard;
 	vec4 col = texCol * color;
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);

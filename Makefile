@@ -41,6 +41,7 @@ SRCS_NAME = Main.cpp \
 	    Entities/Pigman.cpp \
 	    Entities/Pigzombie.cpp \
 	    Entities/Sheep.cpp \
+	    Entities/Skeleton.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 

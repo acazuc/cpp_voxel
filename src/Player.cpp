@@ -19,9 +19,9 @@ namespace voxel
 	, oldMouseX(0)
 	, oldMouseY(0)
 	{
-		this->flying = false;
+		this->flying = true;
 		setSize(.6, 1.8, .6);
-		setPos(0, 128, 0);
+		setPos(0, 70, 0);
 		this->projMat = glm::perspective(glm::radians(80.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
 	}
 

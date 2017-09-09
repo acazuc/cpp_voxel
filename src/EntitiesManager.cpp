@@ -8,6 +8,7 @@
 #include "Entities/Sheep.h"
 #include "Entities/Slime.h"
 #include "Entities/Pig.h"
+#include "Entities/Cow.h"
 #include "Debug.h"
 #include "Main.h"
 #include <libformat/PNG.h>
@@ -42,6 +43,7 @@ namespace voxel
 		Sheep::init();
 		Slime::init();
 		Pig::init();
+		Cow::init();
 		Texture **textures[14] = {&character, &pigzombie, &skeleton, &chicken, &creeper, &pigman, &spider, &zombie, &ghast, &sheep, &slime, &squid, &cow, &pig};
 		std::string names[14] = {"char", "pigzombie", "skeleton", "chicken", "creeper", "pigman", "spider", "zombie", "ghast", "sheep", "slime", "squid", "cow", "pig"};
 		char *datas;
@@ -90,6 +92,9 @@ namespace voxel
 		Zombie *zombie = new Zombie(this->world);
 		zombie->setPos(40, 128, 0);
 		addEntity(zombie);
+		Cow *cow = new Cow(this->world);
+		cow->setPos(-5, 128, 0);
+		addEntity(cow);
 	}
 
 	EntitiesManager::~EntitiesManager()

@@ -2,6 +2,7 @@
 #include "Entities/Creeper.h"
 #include "Entities/Zombie.h"
 #include "Entities/Human.h"
+#include "Entities/Pig.h"
 #include "Debug.h"
 #include <libformat/PNG.h>
 #include <librender/GL.h>
@@ -29,6 +30,7 @@ namespace voxel
 		Creeper::init();
 		Zombie::init();
 		Human::init();
+		Pig::init();
 		Texture **textures[14] = {&character, &pigzombie, &skeleton, &chicken, &creeper, &pigman, &spider, &zombie, &ghast, &sheep, &slime, &squid, &cow, &pig};
 		std::string names[14] = {"char", "pigzombie", "skeleton", "chicken", "creeper", "pigman", "spider", "zombie", "ghast", "sheep", "slime", "squid", "cow", "pig"};
 		char *datas;

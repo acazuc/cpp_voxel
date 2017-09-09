@@ -93,9 +93,9 @@ namespace voxel
 		if (this->flying)
 		{
 			if (keySpace)
-				addY += frameDelta / 1000000000. * FLY_SPEED;
+				addY += frameDelta / 1000000000. * FLY_SPEED * 2;
 			else if (keyLShift)
-				addY -= frameDelta / 1000000000. * FLY_SPEED;
+				addY -= frameDelta / 1000000000. * FLY_SPEED * 2;
 		}
 		else
 		{

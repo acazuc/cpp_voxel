@@ -165,7 +165,9 @@ namespace voxel
 			Main::getBreakShader().colorsLocation->setVertexBuffer(this->breakColorsBuffer);
 			this->breakIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 			glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_ONE, GL_ZERO);
+			glDepthFunc(GL_LEQUAL);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+			glDepthFunc(GL_LESS);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}

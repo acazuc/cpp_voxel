@@ -27,7 +27,6 @@ namespace voxel
 		uint32_t todoTicks;
 		uint32_t doneTicks;
 		uint8_t face;
-		float light;
 		bool found;
 		void onRightClick(Chunk *chunk, glm::vec3 &pos);
 		void onLeftClick(Chunk *chunk, ChunkBlock *block, glm::vec3 &relative, glm::vec3 &pos);

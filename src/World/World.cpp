@@ -60,10 +60,9 @@ namespace voxel
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(255);
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
-		{
 			(*iter)->draw(0);
+		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 			(*iter)->draw(1);
-		}
 		this->player.draw();
 		this->particlesManager.draw();
 		this->entitiesManager.draw();

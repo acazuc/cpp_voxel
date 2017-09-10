@@ -13,8 +13,9 @@ uniform float timeFactor;
 void main()
 {
 	vec4 texCol = texture2D(tex, UV);
-	if (texCol.r > .498 && texCol.r < .502)
+	if (texCol.r == 127. / 255.)
 		discard;
+	texCol.a *= .5;
 	vec4 col = texCol * vec4(color, 1);
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);

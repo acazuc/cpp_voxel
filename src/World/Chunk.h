@@ -45,6 +45,7 @@ namespace voxel
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool deleted;
+		bool visible;
 		void generateGLBuffer();
 		void generateLightMap();
 		void setBlockLightRec(glm::vec3 pos, uint8_t light);
@@ -52,6 +53,7 @@ namespace voxel
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
+		void tick();
 		void draw(uint8_t layer);
 		void addBlock(glm::vec3 pos, uint8_t type);
 		void destroyBlock(glm::vec3 pos);

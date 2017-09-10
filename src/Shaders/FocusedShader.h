@@ -14,7 +14,6 @@ namespace voxel
 
 	public:
 		ProgramLocation *vertexesLocation;
-		ProgramLocation *colorsLocation;
 		ProgramLocation *mvpLocation;
 		Program *program;
 		void load();

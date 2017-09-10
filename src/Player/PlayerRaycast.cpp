@@ -13,12 +13,9 @@ namespace voxel
 
 	PlayerRaycast::PlayerRaycast(Player &player)
 	: player(player)
+	, destroyed(0)
 	, found(false)
 	{
-		glm::vec4 colors[24];
-		for (uint32_t i = 0; i < 24; ++i)
-			colors[i] = glm::vec4(0, 0, 0, .5);
-		this->colorsBuffer.setData(GL_ARRAY_BUFFER, colors, sizeof(colors), GL_FLOAT, 4, GL_STATIC_DRAW);
 		glm::vec3 vertexes[24];
 		vertexes[0] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
 		vertexes[1] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
@@ -67,7 +64,6 @@ namespace voxel
 		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat() * model;
 		Main::getFocusedShader().mvpLocation->setMat4f(mvp);
 		Main::getFocusedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
-		Main::getFocusedShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
 		glLineWidth(2);
 		glDrawArrays(GL_LINES, 0, 24);
 	}

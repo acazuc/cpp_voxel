@@ -48,6 +48,8 @@ namespace voxel
 		model = glm::scale(model, glm::vec3(.06, .06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
 		glm::vec4 col(1, 1, 1, 1);
+		col *= ChunkBlock::getLightValue(15);
+		col.w = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);
 		head->draw(&this->world, model);
 		body->draw(&this->world, model);

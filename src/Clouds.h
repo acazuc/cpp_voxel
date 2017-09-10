@@ -19,6 +19,7 @@ namespace voxel
 		World &world;
 		std::vector<bool> parts;
 		VertexBuffer vertexesBuffer;
+		VertexBuffer indicesBuffer;
 		VertexBuffer colorsBuffer;
 		uint32_t partsHeight;
 		uint32_t partsWidth;
@@ -27,12 +28,12 @@ namespace voxel
 		float lastPlayerX;
 		float lastPlayerZ;
 		bool isPartFilled(int32_t x, int32_t y);
-		void drawFaceUp(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
-		void drawFaceDown(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
-		void drawFaceLeft(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
-		void drawFaceRight(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
-		void drawFaceFront(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
-		void drawFaceBack(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y);
+		void drawFaceUp(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceDown(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceLeft(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceRight(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceFront(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceBack(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
 
 	public:
 		Clouds(World &world);

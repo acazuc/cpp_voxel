@@ -17,8 +17,8 @@ namespace voxel
 	private:
 		Player &player;
 		VertexBuffer vertexesBuffer;
-		VertexBuffer colorsBuffer;
 		glm::vec3 pos;
+		uint8_t destroyed;
 		uint8_t face;
 		bool found;
 		void raycast();

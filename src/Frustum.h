@@ -2,6 +2,7 @@
 # define FRUSTUM_H
 
 # include "AABB.h"
+# include <glm/vec4.hpp>
 
 namespace voxel
 {
@@ -13,7 +14,7 @@ namespace voxel
 
 	private:
 		World &world;
-		float data[6][4];
+		glm::vec4 data[6];
 
 	public:
 		Frustum(World &world);

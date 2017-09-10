@@ -9,6 +9,12 @@
 #define CLOUD_WIDTH 12
 #define CLOUD_HEIGHT 4
 #define DISPLAY_DISTANCE 16 * 32
+#define FRONT_COLOR .9f
+#define BACK_COLOR .9f
+#define LEFT_COLOR .8f
+#define RIGHT_COLOR .8f
+#define UP_COLOR 1.f
+#define DOWN_COLOR .7f
 
 extern int64_t nanotime;
 
@@ -58,7 +64,13 @@ namespace voxel
 		Main::getCloudsShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getCloudsShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
 		Main::getCloudsShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
-		glDrawArrays(GL_TRIANGLES, 0, this->verticesNb);
+		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		glColorMask(false, false, false, false);
+		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
+		glColorMask(true, true, true, true);
+		glDepthFunc(GL_LEQUAL);
+		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
+		glDepthFunc(GL_LESS);
 	}
 
 	void Clouds::rebuild()
@@ -68,6 +80,7 @@ namespace voxel
 		this->lastPlayerZ = this->world.getPlayer().getPos().z;
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
+		std::vector<GLuint> indices;
 		this->verticesNb = 0;
 		int32_t baseX = this->world.getPlayer().getPos().x - DISPLAY_DISTANCE - CLOUD_WIDTH * 2 + nanotime / 1000000000.;
 		int32_t endX = this->world.getPlayer().getPos().x + DISPLAY_DISTANCE + CLOUD_WIDTH * 2 + nanotime / 1000000000.;
@@ -85,32 +98,33 @@ namespace voxel
 				int32_t relY = y / CLOUD_WIDTH;
 				if (!isPartFilled(relX, relY))
 					continue;
-				drawFaceUp(vertexes, colors, x, y);
-				drawFaceDown(vertexes, colors, x, y);
+				drawFaceUp(vertexes, colors, indices, x, y);
+				drawFaceDown(vertexes, colors, indices, x, y);
 				this->verticesNb += 12;
 				if (!isPartFilled(relX - 1, relY))
 				{
-					drawFaceLeft(vertexes, colors, x, y);
+					drawFaceLeft(vertexes, colors, indices, x, y);
 					this->verticesNb += 6;
 				}
 				if (!isPartFilled(relX + 1, relY))
 				{
-					drawFaceRight(vertexes, colors, x, y);
+					drawFaceRight(vertexes, colors, indices, x, y);
 					this->verticesNb += 6;
 				}
 				if (!isPartFilled(relX, relY - 1))
 				{
-					drawFaceBack(vertexes, colors, x, y);
+					drawFaceBack(vertexes, colors, indices, x, y);
 					this->verticesNb += 6;
 				}
 				if (!isPartFilled(relX, relY + 1))
 				{
-					drawFaceFront(vertexes, colors, x, y);
+					drawFaceFront(vertexes, colors, indices, x, y);
 					this->verticesNb += 6;
 				}
 			}
 		}
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes.data(), vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->indicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
 		this->colorsBuffer.setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 	}
 
@@ -125,100 +139,118 @@ namespace voxel
 		return (this->parts[y * this->partsWidth + x]);
 	}
 
-	void Clouds::drawFaceUp(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y)
+	void Clouds::drawFaceUp(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y));
 		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y));
-		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		colors.push_back(glm::vec3(1, 1, 1));
-		colors.push_back(glm::vec3(1, 1, 1));
-		colors.push_back(glm::vec3(1, 1, 1));
-		colors.push_back(glm::vec3(1, 1, 1));
-		colors.push_back(glm::vec3(1, 1, 1));
-		colors.push_back(glm::vec3(1, 1, 1));
+		colors.push_back(glm::vec3(UP_COLOR, UP_COLOR, UP_COLOR));
+		colors.push_back(glm::vec3(UP_COLOR, UP_COLOR, UP_COLOR));
+		colors.push_back(glm::vec3(UP_COLOR, UP_COLOR, UP_COLOR));
+		colors.push_back(glm::vec3(UP_COLOR, UP_COLOR, UP_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
-	void Clouds::drawFaceDown(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, int32_t x, int32_t y)
+	void Clouds::drawFaceDown(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x              , 0, y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0, y));
 		vertexes.push_back(glm::vec3(x              , 0, y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x              , 0, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0, y));
-		colors.push_back(glm::vec3(.75, .75, .75));
-		colors.push_back(glm::vec3(.75, .75, .75));
-		colors.push_back(glm::vec3(.75, .75, .75));
-		colors.push_back(glm::vec3(.75, .75, .75));
-		colors.push_back(glm::vec3(.75, .75, .75));
-		colors.push_back(glm::vec3(.75, .75, .75));
+		colors.push_back(glm::vec3(DOWN_COLOR, DOWN_COLOR, DOWN_COLOR));
+		colors.push_back(glm::vec3(DOWN_COLOR, DOWN_COLOR, DOWN_COLOR));
+		colors.push_back(glm::vec3(DOWN_COLOR, DOWN_COLOR, DOWN_COLOR));
+		colors.push_back(glm::vec3(DOWN_COLOR, DOWN_COLOR, DOWN_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
-	void Clouds::drawFaceLeft(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> & colors, int32_t x, int32_t y)
+	void Clouds::drawFaceLeft(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x, 0           , y));
 		vertexes.push_back(glm::vec3(x, 0           , y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x, CLOUD_HEIGHT, y));
 		vertexes.push_back(glm::vec3(x, CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x, CLOUD_HEIGHT, y));
-		vertexes.push_back(glm::vec3(x, 0           , y + CLOUD_WIDTH));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
+		colors.push_back(glm::vec3(LEFT_COLOR, LEFT_COLOR, LEFT_COLOR));
+		colors.push_back(glm::vec3(LEFT_COLOR, LEFT_COLOR, LEFT_COLOR));
+		colors.push_back(glm::vec3(LEFT_COLOR, LEFT_COLOR, LEFT_COLOR));
+		colors.push_back(glm::vec3(LEFT_COLOR, LEFT_COLOR, LEFT_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
-	void Clouds::drawFaceRight(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> & colors, int32_t x, int32_t y)
+	void Clouds::drawFaceRight(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
+		colors.push_back(glm::vec3(RIGHT_COLOR, RIGHT_COLOR, RIGHT_COLOR));
+		colors.push_back(glm::vec3(RIGHT_COLOR, RIGHT_COLOR, RIGHT_COLOR));
+		colors.push_back(glm::vec3(RIGHT_COLOR, RIGHT_COLOR, RIGHT_COLOR));
+		colors.push_back(glm::vec3(RIGHT_COLOR, RIGHT_COLOR, RIGHT_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
-	void Clouds::drawFaceFront(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> & colors, int32_t x, int32_t y)
+	void Clouds::drawFaceFront(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x              , 0           , y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y + CLOUD_WIDTH));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y + CLOUD_WIDTH));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y + CLOUD_WIDTH));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
+		colors.push_back(glm::vec3(FRONT_COLOR, FRONT_COLOR, FRONT_COLOR));
+		colors.push_back(glm::vec3(FRONT_COLOR, FRONT_COLOR, FRONT_COLOR));
+		colors.push_back(glm::vec3(FRONT_COLOR, FRONT_COLOR, FRONT_COLOR));
+		colors.push_back(glm::vec3(FRONT_COLOR, FRONT_COLOR, FRONT_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
-	void Clouds::drawFaceBack(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> & colors, int32_t x, int32_t y)
+	void Clouds::drawFaceBack(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y)
 	{
+		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(x              , 0           , y));
 		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y));
 		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, CLOUD_HEIGHT, y));
-		vertexes.push_back(glm::vec3(x + CLOUD_WIDTH, 0           , y));
-		vertexes.push_back(glm::vec3(x              , CLOUD_HEIGHT, y));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
-		colors.push_back(glm::vec3(.9, .9, .9));
+		colors.push_back(glm::vec3(BACK_COLOR, BACK_COLOR, BACK_COLOR));
+		colors.push_back(glm::vec3(BACK_COLOR, BACK_COLOR, BACK_COLOR));
+		colors.push_back(glm::vec3(BACK_COLOR, BACK_COLOR, BACK_COLOR));
+		colors.push_back(glm::vec3(BACK_COLOR, BACK_COLOR, BACK_COLOR));
+		indices.push_back(currentIndice + 0);
+		indices.push_back(currentIndice + 1);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 3);
+		indices.push_back(currentIndice + 2);
+		indices.push_back(currentIndice + 1);
 	}
 
 }

@@ -36,6 +36,8 @@ namespace voxel
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+			(*iter)->tick();
 		this->clouds.tick();
 		this->player.tick();
 		this->entitiesManager.tick();
@@ -57,16 +59,20 @@ namespace voxel
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(5);
-		for (uint8_t layer = 0; layer < 3; ++layer)
+		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
-			for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
-				(*iter)->draw(layer);
+			(*iter)->draw(0);
+			(*iter)->draw(1);
 		}
+		this->player.draw();
 		this->particlesManager.draw();
 		this->entitiesManager.draw();
 		this->skybox.draw();
-		this->player.draw();
 		this->clouds.draw();
+		Main::getBlocksShader().program->use();
+		Main::getTerrain()->bind();
+		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+			(*iter)->draw(2);
 	}
 
 	void World::getAABBs(AABB &aabb, std::vector<AABB> &aabbs)
@@ -127,6 +133,26 @@ namespace voxel
 	void World::addChunk(Chunk *chunk)
 	{
 		this->chunks.push_back(chunk);
+	}
+
+	ChunkBlock *World::getBlockAt(glm::vec3 pos)
+	{
+		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+			return (NULL);
+		Chunk *chunk = getChunk(std::floor(pos.x / 16) * 16, std::floor(pos.z / 16 * 16));
+		if (!chunk)
+			return (NULL);
+		return (chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
+	}
+
+	uint8_t World::getLightAt(glm::vec3 pos)
+	{
+		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+			return (15);
+		Chunk *chunk = getChunk(std::floor(pos.x / 16) * 16, std::floor(pos.z / 16 * 16));
+		if (!chunk)
+			return (15);
+		return (chunk->getLightAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
 	}
 
 }

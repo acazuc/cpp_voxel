@@ -8,7 +8,7 @@ uniform vec4 fogColor;
 
 void main()
 {
-	vec4 col = vec4(color, 1);
+	vec4 col = vec4(color, .8);
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);
 	float fog = clamp(1 / exp(pow(tmp, 2) * 0.01), 0, 1);

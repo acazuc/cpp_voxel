@@ -43,6 +43,8 @@ namespace voxel
 		Chunk *getChunk(int32_t x, int32_t z);
 		void getAABBs(AABB &aabb, std::vector<AABB> &aabbs);
 		void addChunk(Chunk *chunk);
+		ChunkBlock *getBlockAt(glm::vec3 pos);
+		uint8_t getLightAt(glm::vec3 pos);
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};

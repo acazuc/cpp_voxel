@@ -85,9 +85,16 @@ namespace voxel
 			this->chunkZMore->setChunkZLess(NULL);
 	}
 
+	void Chunk::tick()
+	{
+		//
+	}
+
 	void Chunk::draw(uint8_t layer)
 	{
-		if (!this->world.getFrustum().check(this->aabb))
+		if (layer == 0)
+			this->visible = this->world.getFrustum().check(this->aabb);
+		if (!this->visible)
 			return;
 		if (availableRebuilds > 0)
 		{
@@ -114,16 +121,21 @@ namespace voxel
 
 	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
 	{
-		if (pos.y >= this->topBlocks[getXZId(pos.x, pos.z)])
+		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
 		{
 			light = std::max(light, uint8_t(0xf));
+			goto endNearTop;
+		}
+		else if (pos.y == this->topBlocks[getXZId(pos.x, pos.z)])
+		{
+			light = std::max(light, uint8_t(0xe));
 			goto endNearTop;
 		}
 		if (pos.x > 0)
 		{
 			if (pos.y > this->topBlocks[getXZId(pos.x - 1, pos.z)])
 			{
-				light = std::max(light, uint8_t(0xf));
+				light = std::max(light, uint8_t(0xe));
 				goto endNearTop;
 			}
 		}
@@ -133,7 +145,7 @@ namespace voxel
 			{
 				if (pos.y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, pos.z))
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
 				}
 			}
@@ -147,7 +159,7 @@ namespace voxel
 		{
 			if (pos.y > this->topBlocks[getXZId(pos.x + 1, pos.z)])
 			{
-				light = std::max(light, uint8_t(0xf));
+				light = std::max(light, uint8_t(0xe));
 				goto endNearTop;
 			}
 		}
@@ -157,7 +169,7 @@ namespace voxel
 			{
 				if (pos.y > this->chunkXMore->getTopBlockAt(0, pos.z))
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
 				}
 			}
@@ -171,7 +183,7 @@ namespace voxel
 		{
 			if (pos.y > this->topBlocks[getXZId(pos.x, pos.z - 1)])
 			{
-				light = std::max(light, uint8_t(0xf));
+				light = std::max(light, uint8_t(0xe));
 				goto endNearTop;
 			}
 		}
@@ -181,7 +193,7 @@ namespace voxel
 			{
 				if (pos.y > this->chunkZLess->getTopBlockAt(pos.x, CHUNK_WIDTH - 1))
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
 				}
 			}
@@ -195,7 +207,7 @@ namespace voxel
 		{
 			if (pos.y > this->topBlocks[getXZId(pos.x, pos.z + 1)])
 			{
-				light = std::max(light, uint8_t(0xf));
+				light = std::max(light, uint8_t(0xe));
 				goto endNearTop;
 			}
 		}
@@ -205,7 +217,7 @@ namespace voxel
 			{
 				if (pos.y > this->chunkZMore->getTopBlockAt(pos.x, 0))
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
 				}
 			}
@@ -359,7 +371,7 @@ endNearTop:
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();
 		}
-		if (pos.y > this->topBlocks[getXZId(x, pos.z)])
+		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
 			this->topBlocks[getXZId(pos.x, pos.z)] = pos.y;
 		this->blocks[getXYZId(pos)].setType(type);
 		regenerateLightMap();

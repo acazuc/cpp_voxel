@@ -25,8 +25,6 @@ namespace voxel
 		this->program->link();
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");
 		this->vertexesLocation->setVertexAttribArray(true);
-		this->colorsLocation = this->program->getAttribLocation("vertexColor");
-		this->colorsLocation->setVertexAttribArray(true);
 		this->mvpLocation = this->program->getUniformLocation("MVP");
 	}
 

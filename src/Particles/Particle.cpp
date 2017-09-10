@@ -10,7 +10,6 @@ namespace voxel
 	, size(size)
 	, uv(uv)
 	, age(0)
-	, deleted(false)
 	{
 		this->gravity = .04;
 		setSize(glm::vec3(.2, .2, .2));
@@ -23,11 +22,12 @@ namespace voxel
 
 	void Particle::tick()
 	{
-		if (++age > this->duration)
+		if (age > this->duration)
 		{
 			this->deleted = true;
 			return;
 		}
+		age++;
 		Entity::tick();
 		this->posDst *= .98;
 		if (this->isOnFloor)

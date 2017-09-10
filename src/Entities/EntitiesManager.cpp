@@ -108,11 +108,19 @@ namespace voxel
 		for (uint32_t i = 0; i < this->entities.size(); ++i)
 		{
 			this->entities[i]->tick();
+			if (this->entities[i]->isDeleted())
+			{
+				delete (this->entities[i]);
+				this->entities.erase(this->entities.begin() + i);
+				i--;
+			}
 		}
 	}
 
 	void EntitiesManager::draw()
 	{
+		if (!this->entities.size())
+			return;
 		Main::getEntityShader().program->use();
 		glDisable(GL_CULL_FACE);
 		for (uint32_t i = 0; i < this->entities.size(); ++i)

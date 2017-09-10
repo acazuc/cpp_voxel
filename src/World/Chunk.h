@@ -19,6 +19,7 @@ namespace voxel
 	{
 
 	private:
+		static uint8_t availableRebuilds;
 		VertexBuffer *texCoordsBuffer;
 		VertexBuffer *vertexesBuffer;
 		VertexBuffer *indicesBuffer;
@@ -78,6 +79,7 @@ namespace voxel
 		inline VertexBuffer *getColorsBuffer() {return (this->colorsBuffer);};
 		inline int32_t getXYZId(glm::vec3 pos) {return ((pos.x * CHUNK_HEIGHT + pos.y) * CHUNK_WIDTH + pos.z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
+		static inline void setAvailableRebuilds(uint8_t rebuilds) {availableRebuilds = rebuilds;};
 
 	};
 

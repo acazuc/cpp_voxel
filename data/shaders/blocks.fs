@@ -21,6 +21,8 @@ void main()
 		//texCol = vec4(rand, rand, rand, 1);
 		//texCol *= texture2D(tex, UV);
 	}
+	if (texCol.a == 0)
+		discard;
 	vec4 col = texCol * vec4(color, 1);
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);

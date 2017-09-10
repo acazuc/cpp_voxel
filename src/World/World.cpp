@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Blocks/Blocks.h"
 #include "Main.h"
 
 extern int64_t nanotime;
@@ -54,6 +55,7 @@ namespace voxel
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getTerrain()->bind();
+		Chunk::setAvailableRebuilds(5);
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
 			Chunk *chunk = *iter;
@@ -97,6 +99,9 @@ namespace voxel
 						{
 							float s = BLOCK_SIZE;
 							if (!chunk->getBlockAt(glm::vec3(x, y, z))->getType())
+								continue;
+							Block *blockModel = Blocks::getBlock(chunk->getBlockAt(glm::vec3(x, y, z))->getType());
+							if (!blockModel || !blockModel->isSolid())
 								continue;
 							aabbs.push_back(AABB(glm::vec3(chunkX + x, y, chunkZ + z), glm::vec3(chunkX + x + s, y + s, chunkZ + z + s)));
 						}

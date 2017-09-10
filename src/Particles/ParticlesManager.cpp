@@ -35,10 +35,10 @@ namespace voxel
 	{
 		if (!this->particles.size())
 			return;
-		std::vector<glm::vec2> texCoords(this->particles.size() * 4);
-		std::vector<glm::vec3> vertexes(this->particles.size() * 4);
-		std::vector<glm::vec3> colors(this->particles.size() * 4);
-		std::vector<GLuint> indices(this->particles.size() * 6);
+		this->texCoords.clear();
+		this->vertexes.clear();
+		this->indices.clear();
+		this->colors.clear();
 		glm::mat4 playerMat(1);
 		playerMat = glm::rotate(playerMat, glm::vec2(-this->world.getPlayer().getRot().z / 180. * M_PI, 0).x, glm::vec3(0, 0, 1));
 		playerMat = glm::rotate(playerMat, glm::vec2(-this->world.getPlayer().getRot().y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
@@ -68,6 +68,10 @@ namespace voxel
 	void ParticlesManager::addParticle(Particle *particle)
 	{
 		this->particles.push_back(particle);
+		this->texCoords.reserve(this->particles.size() * 4);
+		this->vertexes.reserve(this->particles.size() * 4);
+		this->indices.reserve(this->particles.size() * 6);
+		this->colors.reserve(this->particles.size() * 4);
 	}
 
 }

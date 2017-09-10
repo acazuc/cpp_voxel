@@ -22,6 +22,7 @@ namespace voxel
 		AABB aabb;
 		float gravity;
 		bool isOnFloor;
+		bool deleted;
 		bool flying;
 
 	public:
@@ -37,6 +38,7 @@ namespace voxel
 		inline glm::vec3 &getPos() {return (this->pos);};
 		inline glm::vec3 &getRot() {return (this->rot);};
 		inline AABB &getAABB() {return (this->aabb);};
+		inline bool isDeleted() {return (this->deleted);};
 
 	};
 

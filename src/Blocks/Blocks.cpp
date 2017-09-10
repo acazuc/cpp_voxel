@@ -15,8 +15,8 @@ namespace voxel
 		blocks[2] = (new Block(3))->setDefaultName("dirt")->setTex(2. / 16, 0);
 		blocks[3] = (new Block(4))->setDefaultName("cobblestone")->setTex(0, 1. / 16);
 		blocks[4] = (new Block(5))->setDefaultName("planks")->setTex(4. / 16, 0);
-		blocks[5] = (new Block(6))->setDefaultName("sapling")->setTex(15. / 16, 0);
-		blocks[6] = (new Block(7))->setDefaultName("bedrock")->setTex(1. / 16, 1. / 16)->setUnbreakable(true);
+		blocks[5] = (new Block(6))->setDefaultName("sapling")->setTex(15. / 16, 0)->setSolid(false);
+		blocks[6] = (new Block(7))->setDefaultName("bedrock")->setTex(1. / 16, 1. / 16)->setHardness(true);
 		blocks[7] = (new Block(8))->setDefaultName("flowing_water")->setTex(15. / 16, 13. / 16);
 		blocks[8] = (new Block(9))->setDefaultName("water")->setTex(15. / 16, 13. / 16);
 		blocks[9] = (new Block(10))->setDefaultName("flowing_lava")->setTex(15. / 16, 15. / 16);

@@ -6,7 +6,7 @@
 
 #define WALK_SPEED 1
 #define RUN_SPEED 1.3
-#define FLY_SPEED 20
+#define FLY_SPEED 2
 
 extern int64_t nanotime;
 

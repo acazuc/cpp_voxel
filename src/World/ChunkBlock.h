@@ -64,7 +64,7 @@ namespace voxel
 		ChunkBlock(uint8_t type);
 		ChunkBlock();
 		void fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
-		inline bool isTransparent() {return (this->type == 0 || this->type == 8);};
+		bool isTransparent();
 		inline void setType(uint8_t type) {this->type = type;};
 		inline uint8_t getType() {return (this->type);};
 		static float getLightValue(int8_t light);

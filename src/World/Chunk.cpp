@@ -7,6 +7,8 @@
 namespace voxel
 {
 
+	uint8_t Chunk::availableRebuilds;
+
 	Chunk::Chunk(World &world, int32_t x, int32_t z)
 	: texCoordsBuffer(NULL)
 	, vertexesBuffer(NULL)
@@ -48,7 +50,7 @@ namespace voxel
 				this->topBlocks[getXZId(x, z)] = noiseIndex;
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
-					if (y > noiseIndex)
+					if (y > noiseIndex + 1)
 					{
 						this->lightMap[getXYZId(glm::vec3(x, y, z))] = 0xf;
 						continue;
@@ -58,6 +60,8 @@ namespace voxel
 						blockType = 7;
 					else if (y == noiseIndex)
 						blockType = 2;
+					else if (y == noiseIndex + 1)
+						blockType = 6;
 					else if (y > noiseIndex - 3)
 						blockType = 3;
 					this->blocks[getXYZId(glm::vec3(x, y, z))].setType(blockType);
@@ -90,13 +94,22 @@ namespace voxel
 	{
 		if (!this->world.getFrustum().check(this->aabb))
 			return;
-		if (this->mustGenerateLightMap)
+		if (availableRebuilds > 0)
 		{
-			generateLightMap();
-			generateGLBuffer();
+			if (this->mustGenerateLightMap)
+			{
+				availableRebuilds--;
+				generateLightMap();
+				generateGLBuffer();
+			}
+			if (this->mustGenerateBuffers)
+			{
+				availableRebuilds--;
+				generateGLBuffer();
+			}
 		}
-		if (this->mustGenerateBuffers)
-			generateGLBuffer();
+		if (!this->texCoordsBuffer)
+			return;
 		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->texCoordsBuffer);
 		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->vertexesBuffer);
 		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->colorsBuffer);
@@ -132,7 +145,7 @@ namespace voxel
 				}
 				else
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = 0;
 					goto endNearTop;
 				}
 			}
@@ -156,7 +169,7 @@ namespace voxel
 				}
 				else
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = 0;
 					goto endNearTop;
 				}
 			}
@@ -180,7 +193,7 @@ namespace voxel
 				}
 				else
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = 0;
 					goto endNearTop;
 				}
 			}
@@ -204,7 +217,7 @@ namespace voxel
 				}
 				else
 				{
-					light = std::max(light, uint8_t(0xf));
+					light = 0;
 					goto endNearTop;
 				}
 			}
@@ -326,28 +339,27 @@ namespace voxel
 		if (pos.x == 0)
 		{
 			if (this->chunkXLess)
-				this->chunkXLess->regenerateBuffers();
+				this->chunkXLess->regenerateLightMap();
 		}
 		else if (pos.x == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkXMore)
-				this->chunkXMore->regenerateBuffers();
+				this->chunkXMore->regenerateLightMap();
 		}
 		if (pos.z == 0)
 		{
 			if (this->chunkZLess)
-				this->chunkZLess->regenerateBuffers();
+				this->chunkZLess->regenerateLightMap();
 		}
 		else if (pos.z == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkZMore)
-				this->chunkZMore->regenerateBuffers();
+				this->chunkZMore->regenerateLightMap();
 		}
 		if (pos.y > this->topBlocks[getXZId(x, pos.z)])
 			this->topBlocks[getXZId(pos.x, pos.z)] = pos.y;
 		this->blocks[getXYZId(pos)].setType(type);
 		regenerateLightMap();
-		regenerateBuffers();
 	}
 
 	void Chunk::destroyBlock(glm::vec3 pos)
@@ -355,22 +367,22 @@ namespace voxel
 		if (pos.x == 0)
 		{
 			if (this->chunkXLess)
-				this->chunkXLess->regenerateBuffers();
+				this->chunkXLess->regenerateLightMap();
 		}
 		else if (pos.x == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkXMore)
-				this->chunkXMore->regenerateBuffers();
+				this->chunkXMore->regenerateLightMap();
 		}
 		if (pos.z == 0)
 		{
 			if (this->chunkZLess)
-				this->chunkZLess->regenerateBuffers();
+				this->chunkZLess->regenerateLightMap();
 		}
 		else if (pos.z == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkZMore)
-				this->chunkZMore->regenerateBuffers();
+				this->chunkZMore->regenerateLightMap();
 		}
 		if (pos.y == this->topBlocks[getXZId(pos.x, pos.z)])
 		{
@@ -388,31 +400,30 @@ namespace voxel
 		}
 		this->blocks[getXYZId(pos)].setType(0);
 		regenerateLightMap();
-		regenerateBuffers();
 	}
 
 	void Chunk::setChunkXLess(Chunk *chunk)
 	{
 		this->chunkXLess = chunk;
-		regenerateBuffers();
+		regenerateLightMap();
 	}
 
 	void Chunk::setChunkXMore(Chunk *chunk)
 	{
 		this->chunkXMore = chunk;
-		regenerateBuffers();
+		regenerateLightMap();
 	}
 
 	void Chunk::setChunkZLess(Chunk *chunk)
 	{
 		this->chunkZLess = chunk;
-		regenerateBuffers();
+		regenerateLightMap();
 	}
 
 	void Chunk::setChunkZMore(Chunk *chunk)
 	{
 		this->chunkZMore = chunk;
-		regenerateBuffers();
+		regenerateLightMap();
 	}
 
 }

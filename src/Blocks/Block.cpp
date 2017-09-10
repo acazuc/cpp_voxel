@@ -5,7 +5,9 @@ namespace voxel
 
 	Block::Block(uint8_t id)
 	: opacity(15)
+	, light(0)
 	, id(id)
+	, solid(true)
 	{
 		//Empty
 	}
@@ -202,9 +204,9 @@ namespace voxel
 		return (this);
 	}
 
-	Block *Block::setUnbreakable(bool unbreakable)
+	Block *Block::setSolid(bool solid)
 	{
-		this->unbreakable = unbreakable;
+		this->solid = solid;
 		return (this);
 	}
 

@@ -13,6 +13,7 @@ namespace voxel
 	, aabb()
 	, gravity(.08)
 	, isOnFloor(false)
+	, deleted(false)
 	, flying(false)
 	{
 		//Empty
@@ -83,6 +84,8 @@ namespace voxel
 		if (dir.z != org.z)
 			this->posDst.z = 0;
 		this->isOnFloor = org.y < 0 && dir.y != org.y;
+		if (this->pos.y < -100)
+			this->deleted = true;
 	}
 
 	void Entity::setSize(glm::vec3 size)

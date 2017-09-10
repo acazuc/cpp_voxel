@@ -58,6 +58,9 @@ namespace voxel
 	{
 		if (this->type == 0)
 			return;
+		Block *blockModel = Blocks::getBlock(this->type);
+		if (!blockModel)
+			return;
 		uint8_t visibleFaces;
 		calcVisibleFaces(chunk, pos, visibleFaces);
 		if (!visibleFaces)
@@ -81,12 +84,93 @@ namespace voxel
 		BlockLightsLevels lightsLevels;
 		initLightsLevels(lightsLevels, visibleFaces, blocksLights);
 		std::memset(&lightsLevels, ((blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf) << 4) | (blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf), sizeof(lightsLevels));
-		if (Main::getSsao())
+		if (Main::getSsao() && blockModel->isSolid())
 			calcAmbientOcclusion(pos, lightsLevels, visibleFaces, blocksTransparent);
 		glm::vec3 color(1, 1, 1);
 		float lights[24];
 		smoothLights(lights, visibleFaces, lightsLevels, blocksTransparent, blocksLights);
-		Block *blockModel = Blocks::getBlock(this->type);
+		if (!blockModel->isSolid())
+		{
+			glm::vec3 org(pos.x + BLOCK_SIZE / 6., pos.y, pos.z + BLOCK_SIZE / 6.);
+			glm::vec3 dst(pos.x + BLOCK_SIZE * 5. / 6, pos.y + BLOCK_SIZE * 2. / 3, pos.z + BLOCK_SIZE * 5. / 6);
+			GLuint currentIndice = vertexes.size();
+			vertexes.push_back(glm::vec3(org.x, org.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, org.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, dst.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, dst.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			indices.push_back(currentIndice + 0);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 2);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 1);
+			currentIndice = vertexes.size();
+			vertexes.push_back(glm::vec3(org.x, org.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, org.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, dst.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, dst.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			indices.push_back(currentIndice + 0);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 2);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 3);
+			currentIndice = vertexes.size();
+			vertexes.push_back(glm::vec3(dst.x, org.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, org.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, dst.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, dst.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			indices.push_back(currentIndice + 0);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 2);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 1);
+			currentIndice = vertexes.size();
+			vertexes.push_back(glm::vec3(dst.x, org.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, org.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY() + texSize));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(org.x, dst.y, dst.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX(), blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			vertexes.push_back(glm::vec3(dst.x, dst.y, org.z));
+			texCoords.push_back(glm::vec2(blockModel->getTexFrontX() + texSize, blockModel->getTexFrontY()));
+			colors.push_back(glm::vec3(lights[F1P1] * color.x, lights[F1P1] * color.y, lights[F1P1] * color.z));
+			indices.push_back(currentIndice + 0);
+			indices.push_back(currentIndice + 3);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 2);
+			indices.push_back(currentIndice + 1);
+			indices.push_back(currentIndice + 3);
+			return;
+		}
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			GLuint currentIndice = vertexes.size();
@@ -737,7 +821,8 @@ namespace voxel
 
 	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blocksLights)
 	{
-		if (!Main::getSmooth())
+		Block *block = Blocks::getBlock(this->type);
+		if (!Main::getSmooth() || !block->isSolid())
 		{
 			lights[F1P1] = getLightValue(lightsLevels.f1p1);
 			lights[F1P2] = getLightValue(lightsLevels.f1p2);
@@ -1220,6 +1305,18 @@ namespace voxel
 	float ChunkBlock::getLightValue(int8_t level)
 	{
 		return (lightsLevelsValues[level] * LIGHT_RANGE + LIGHT_MIN);
+	}
+
+	bool ChunkBlock::isTransparent()
+	{
+		if (this->type == 0)
+			return (true);
+		Block *block = Blocks::getBlock(this->type);
+		if (!block)
+			return (true);
+		if (!block->isSolid())
+			return (true);
+		return (false);
 	}
 
 }

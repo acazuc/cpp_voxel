@@ -28,7 +28,7 @@ namespace voxel
 		float texTopY;
 		float texBotX;
 		float texBotY;
-		bool unbreakable;
+		bool solid;
 
 	public:
 		Block(uint8_t id);
@@ -78,8 +78,8 @@ namespace voxel
 		Block *setTex(float texX, float texY);
 		Block *setTexX(float texX);
 		Block *setTexY(float texY);
-		Block *setUnbreakable(bool unbreakable);
-		inline bool isUnbreakable() {return (this->unbreakable);};
+		inline bool isSolid() {return (this->solid);};
+		Block *setSolid(bool solid);
 
 	};
 

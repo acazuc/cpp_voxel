@@ -7,6 +7,7 @@
 #include <cstring>
 
 #define OFFSET .002
+#define BREAK_OFFSET .0005
 
 namespace voxel
 {
@@ -47,35 +48,35 @@ namespace voxel
 		{
 			glm::vec3 vertexes[24];
 			//Front
-			vertexes[0]  = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[1]  = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[2]  = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[3]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+			vertexes[0]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[1]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[2]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[3]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
 			//Back
-			vertexes[4]  = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[5]  = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[6]  = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[7]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
+			vertexes[4]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[5]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[6]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[7]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
 			//Left
-			vertexes[8]  = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[9]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[10] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[11] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+			vertexes[8]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[9]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[10] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[11] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
 			//Right
-			vertexes[12] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[13] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[14] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[15] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+			vertexes[12] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[13] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[14] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[15] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
 			//Up
-			vertexes[16] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[17] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[18] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[19] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
+			vertexes[16] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[17] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[18] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[19] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
 			//Down
-			vertexes[20] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[21] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[22] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[23] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
+			vertexes[20] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[21] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[22] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[23] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
 			this->breakVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 			GLuint indices[36];
 			//Front
@@ -163,7 +164,7 @@ namespace voxel
 			Main::getBreakShader().vertexesLocation->setVertexBuffer(this->breakVertexesBuffer);
 			Main::getBreakShader().colorsLocation->setVertexBuffer(this->breakColorsBuffer);
 			this->breakIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
-			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+			glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_ONE, GL_ZERO);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}

@@ -40,7 +40,7 @@
 #define UP_COLOR_FACTOR 1.f
 #define DOWN_COLOR_FACTOR .6f
 
-#define LIGHT_SSAO_TEST(light, ssao) if (light <= ssao) {light = 0;} else {light -= ssao;}
+#define LIGHT_SSAO_TEST(light, ssao) if (light < ssao) {light = 0;} else {light -= ssao;}
 
 namespace voxel
 {
@@ -764,72 +764,66 @@ namespace voxel
 				ssao.f4p2 += SSAO_FACTOR;
 			}
 		}
-		if (visibleFaces & BLOCK_FACE_UP)
+		if (visibleFaces & BLOCK_FACE_UP && pos.y < CHUNK_HEIGHT - 1)
 		{
-			if (pos.y < CHUNK_HEIGHT - 1)
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
+				ssao.f5p2 += SSAO_FACTOR;
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
 			{
-				if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
-					ssao.f5p2 += SSAO_FACTOR;
-				if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
-				{
-					ssao.f5p1 += SSAO_FACTOR;
-					ssao.f5p2 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
-					ssao.f5p1 += SSAO_FACTOR;
-				if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
-					ssao.f5p3 += SSAO_FACTOR;
-				if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
-				{
-					ssao.f5p3 += SSAO_FACTOR;
-					ssao.f5p4 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
-					ssao.f5p4 += SSAO_FACTOR;
-				if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
-				{
-					ssao.f5p2 += SSAO_FACTOR;
-					ssao.f5p3 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
-				{
-					ssao.f5p4 += SSAO_FACTOR;
-					ssao.f5p1 += SSAO_FACTOR;
-				}
+				ssao.f5p1 += SSAO_FACTOR;
+				ssao.f5p2 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
+				ssao.f5p1 += SSAO_FACTOR;
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
+				ssao.f5p3 += SSAO_FACTOR;
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
+			{
+				ssao.f5p3 += SSAO_FACTOR;
+				ssao.f5p4 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
+				ssao.f5p4 += SSAO_FACTOR;
+			if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
+			{
+				ssao.f5p2 += SSAO_FACTOR;
+				ssao.f5p3 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
+			{
+				ssao.f5p4 += SSAO_FACTOR;
+				ssao.f5p1 += SSAO_FACTOR;
 			}
 		}
-		if (visibleFaces & BLOCK_FACE_DOWN)
+		if (visibleFaces & BLOCK_FACE_DOWN && pos.y > 0)
 		{
-			if (pos.y > 0)
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
+				ssao.f6p1 += SSAO_FACTOR;
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
 			{
-				if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
-					ssao.f6p1 += SSAO_FACTOR;
-				if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
-				{
-					ssao.f6p1 += SSAO_FACTOR;
-					ssao.f6p2 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
-					ssao.f6p2 += SSAO_FACTOR;
-				if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
-					ssao.f6p3 += SSAO_FACTOR;
-				if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
-				{
-					ssao.f6p3 += SSAO_FACTOR;
-					ssao.f6p4 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
-					ssao.f6p4 += SSAO_FACTOR;
-				if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
-				{
-					ssao.f6p2 += SSAO_FACTOR;
-					ssao.f6p3 += SSAO_FACTOR;
-				}
-				if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
-				{
-					ssao.f6p4 += SSAO_FACTOR;
-					ssao.f6p1 += SSAO_FACTOR;
-				}
+				ssao.f6p1 += SSAO_FACTOR;
+				ssao.f6p2 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
+				ssao.f6p2 += SSAO_FACTOR;
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
+				ssao.f6p3 += SSAO_FACTOR;
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
+			{
+				ssao.f6p3 += SSAO_FACTOR;
+				ssao.f6p4 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
+				ssao.f6p4 += SSAO_FACTOR;
+			if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
+			{
+				ssao.f6p2 += SSAO_FACTOR;
+				ssao.f6p3 += SSAO_FACTOR;
+			}
+			if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
+			{
+				ssao.f6p4 += SSAO_FACTOR;
+				ssao.f6p1 += SSAO_FACTOR;
 			}
 		}
 		LIGHT_SSAO_TEST(lights.f1p1, ssao.f1p1);
@@ -1343,6 +1337,10 @@ namespace voxel
 
 	float ChunkBlock::getLightValue(int8_t level)
 	{
+		if (level < 0)
+			return (lightsLevelsValues[0]);
+		if (level > 15)
+			return (lightsLevelsValues[15]);
 		return (lightsLevelsValues[level] * LIGHT_RANGE + LIGHT_MIN);
 	}
 

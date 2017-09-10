@@ -27,6 +27,7 @@ namespace voxel
 	CloudsShader Main::cloudsShader;
 	SkyboxShader Main::skyboxShader;
 	EntityShader Main::entityShader;
+	BreakShader Main::breakShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
@@ -52,13 +53,14 @@ namespace voxel
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
-		window->setVSync(true);
+		window->setVSync(false);
 		particlesShader.load();
 		focusedShader.load();
 		skyboxShader.load();
 		cloudsShader.load();
 		blocksShader.load();
 		entityShader.load();
+		breakShader.load();
 		{
 			glm::mat4 osef(1);
 			blocksShader.program->use();
@@ -75,6 +77,8 @@ namespace voxel
 			entityShader.fogDistanceLocation->setVec1f(16 * 14);
 			particlesShader.program->use();
 			particlesShader.fogDistanceLocation->setVec1f(16 * 14);
+			breakShader.program->use();
+			breakShader.fogDistanceLocation->setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;
@@ -92,11 +96,20 @@ namespace voxel
 		Blocks::init();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
+		int64_t fpsCount = 0;
+		int64_t lastFps = System::nanotime();
 		nanotime = lastFrame;
 		TickManager::init();
 		while (!window->closeRequested())
 		{
+			++fpsCount;
 			nanotime = System::nanotime();
+			if (nanotime - lastFps > 1000000000)
+			{
+				lastFps += 1000000000;
+				LOG("FPS: " << fpsCount);
+				fpsCount = 0;
+			}
 			float bgFactor = std::abs(cos(-nanotime / 1000000000. / 60 / 20 * M_PI + M_PI / 4));
 			skyColor = glm::vec4(.662 * bgFactor, .796 * bgFactor, .0125 + .875 * bgFactor, 1);
 			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);

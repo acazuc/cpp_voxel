@@ -58,7 +58,7 @@ namespace voxel
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getTerrain()->bind();
-		Chunk::setAvailableRebuilds(5);
+		Chunk::setAvailableRebuilds(255);
 		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
 		{
 			(*iter)->draw(0);

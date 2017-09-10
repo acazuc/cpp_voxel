@@ -29,6 +29,7 @@ SRCS_NAME = Main.cpp \
 	    Shaders/FocusedShader.cpp \
 	    Shaders/EntityShader.cpp \
 	    Shaders/ParticlesShader.cpp \
+	    Shaders/BreakShader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
 	    Entities/Creeper.cpp \

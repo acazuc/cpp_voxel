@@ -7,6 +7,8 @@ namespace voxel
 	: opacity(15)
 	, light(0)
 	, id(id)
+	, resistance(0)
+	, hardness(0)
 	, layer(0)
 	, solid(true)
 	{

@@ -1,4 +1,5 @@
 #include "TickManager.h"
+#include "Debug.h"
 #include <algorithm>
 
 extern int64_t nanotime;

@@ -129,7 +129,7 @@ namespace voxel
 			indices.push_back(currentIndice + 1);
 			currentIndice = vertexes.size();
 			vertexes.push_back(glm::vec3(org.x, org.y, org.z));
-			texCoords.push_back(glm::vec2(texDst.x, texOrg.y));
+			texCoords.push_back(glm::vec2(texDst.x, texDst.y));
 			colors.push_back(color * lights[F1P1]);
 			vertexes.push_back(glm::vec3(dst.x, org.y, dst.z));
 			texCoords.push_back(glm::vec2(texOrg.x, texDst.y));

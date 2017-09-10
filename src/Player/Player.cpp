@@ -133,6 +133,7 @@ namespace voxel
 	{
 		handleMovement();
 		Entity::tick();
+		this->raycast.tick();
 	}
 
 	void Player::draw()
@@ -143,7 +144,6 @@ namespace voxel
 	void Player::update()
 	{
 		handleRotation();
-		this->raycast.tick();
 		this->viewMat = glm::mat4(1.);
 		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.01, 0, 0));
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010, 0).x, glm::vec3(0, 0, 1));
@@ -153,6 +153,7 @@ namespace voxel
 		glm::vec3 realPos = getRealPos();
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-realPos.x, -realPos.y - 0.72, -realPos.z));
 		this->world.getFrustum().update();
+		this->raycast.raycast();
 	}
 
 }

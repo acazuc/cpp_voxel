@@ -37,6 +37,7 @@ namespace voxel
 	public:
 		Clouds(World &world);
 		~Clouds();
+		void tick();
 		void draw();
 		void rebuild();
 

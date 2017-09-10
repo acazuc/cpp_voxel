@@ -128,7 +128,7 @@ namespace voxel
 								return;
 							float texX = blockModel->getTexTopX();
 							float texY = blockModel->getTexTopY();
-							int32_t nb = 2;
+							int32_t nb = 3;
 							uint8_t light = chunk->getLightAt(relative);
 							for (int32_t x = 0; x < nb; ++x)
 							{
@@ -137,12 +137,11 @@ namespace voxel
 									for (int32_t z = 0; z < nb; ++z)
 									{
 										glm::vec3 pos2(pos.x + (x + .5) / nb, pos.y + (y + .5) / nb, pos.z + (z + .5) / nb);
-										pos.x += std::rand() * .2 / RAND_MAX - .1;
-										pos.y += std::rand() * .2 / RAND_MAX - .1;
-										pos.z += std::rand() * .2 / RAND_MAX - .1;
-										glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .15, 0);
-										size.y = size.x;
-										glm::vec3 dir(std::rand() * .1 / RAND_MAX - .05, std::rand() * .2 / RAND_MAX, std::rand() * .1 / RAND_MAX - .05);
+										pos.x += std::rand() * .1 / RAND_MAX - .05;
+										pos.y += std::rand() * .1 / RAND_MAX - .05;
+										pos.z += std::rand() * .1 / RAND_MAX - .05;
+										glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .15, (std::rand() * .5 / RAND_MAX + .5) * .15);
+										glm::vec3 dir(std::rand() * .2 / RAND_MAX - .1, std::rand() * .2 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
 										glm::vec2 uv(texX, texY);
 										uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 										uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;

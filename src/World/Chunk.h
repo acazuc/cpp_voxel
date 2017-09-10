@@ -15,15 +15,21 @@ namespace voxel
 
 	class World;
 
+	struct ChunkLayer
+	{
+		VertexBuffer *texCoordsBuffer;
+		VertexBuffer *vertexesBuffer;
+		VertexBuffer *indicesBuffer;
+		VertexBuffer *colorsBuffer;
+		uint32_t verticesNb;
+	};
+
 	class Chunk
 	{
 
 	private:
 		static uint8_t availableRebuilds;
-		VertexBuffer *texCoordsBuffer;
-		VertexBuffer *vertexesBuffer;
-		VertexBuffer *indicesBuffer;
-		VertexBuffer *colorsBuffer;
+		ChunkLayer layers[3];
 		ChunkBlock *blocks;
 		glm::mat4 modelMat;
 		Chunk *chunkXLess;
@@ -32,7 +38,6 @@ namespace voxel
 		Chunk *chunkZMore;
 		World &world;
 		AABB aabb;
-		uint32_t verticesNb;
 		uint8_t *topBlocks;
 		uint8_t *lightMap;
 		int32_t x;
@@ -47,7 +52,7 @@ namespace voxel
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
-		void draw();
+		void draw(uint8_t layer);
 		void addBlock(glm::vec3 pos, uint8_t type);
 		void destroyBlock(glm::vec3 pos);
 		inline ChunkBlock **getBlocks() {return (&this->blocks);};
@@ -69,14 +74,7 @@ namespace voxel
 		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
-		inline void setTexCoordsBuffer(VertexBuffer *texCoordsBuffer) {this->texCoordsBuffer = texCoordsBuffer;};
-		inline VertexBuffer *getTexCoordsBuffer() {return (this->texCoordsBuffer);};
-		inline void setVertexesBuffer(VertexBuffer *vertexesBuffer) {this->vertexesBuffer = vertexesBuffer;};
-		inline VertexBuffer *getVertexesBuffer() {return (this->vertexesBuffer);};
-		inline void setIndicesBuffer(VertexBuffer *indicesBuffer) {this->indicesBuffer = indicesBuffer;};
-		inline VertexBuffer *getIndicesBuffer() {return (this->indicesBuffer);};
-		inline void setColorsBuffer(VertexBuffer *colorsBuffer) {this->colorsBuffer = colorsBuffer;};
-		inline VertexBuffer *getColorsBuffer() {return (this->colorsBuffer);};
+		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
 		inline int32_t getXYZId(glm::vec3 pos) {return ((pos.x * CHUNK_HEIGHT + pos.y) * CHUNK_WIDTH + pos.z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		static inline void setAvailableRebuilds(uint8_t rebuilds) {availableRebuilds = rebuilds;};

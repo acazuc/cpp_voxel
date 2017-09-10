@@ -54,12 +54,14 @@ namespace voxel
 		//Empty
 	}
 
-	void ChunkBlock::fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices)
+	void ChunkBlock::fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer)
 	{
 		if (this->type == 0)
 			return;
 		Block *blockModel = Blocks::getBlock(this->type);
 		if (!blockModel)
+			return;
+		if (blockModel->getLayer() != layer)
 			return;
 		uint8_t visibleFaces;
 		calcVisibleFaces(chunk, pos, visibleFaces);
@@ -75,7 +77,7 @@ namespace voxel
 				{
 					for (int8_t z = -1; z <= 1; ++z)
 					{
-						blocksTransparent[i] = calcLightsLevelsIsTransparent(chunk, pos, x, y, z);
+						blocksTransparent[i] = calcTransparent(chunk, pos, x, y, z);
 						blocksLights[i++] = calcLightLevel(chunk, pos, x, y, z);
 					}
 				}
@@ -89,6 +91,10 @@ namespace voxel
 		glm::vec3 color(1, 1, 1);
 		float lights[24];
 		smoothLights(lights, visibleFaces, lightsLevels, blocksTransparent, blocksLights);
+		std::vector<glm::vec2> &texCoords = tessellator.texCoords;
+		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
+		std::vector<glm::vec3> &colors = tessellator.colors;
+		std::vector<GLuint> &indices = tessellator.indices;
 		if (!blockModel->isSolid())
 		{
 			glm::vec3 org(pos.x + BLOCK_SIZE / 6., pos.y, pos.z + BLOCK_SIZE / 6.);
@@ -510,7 +516,7 @@ namespace voxel
 		return (chunk->getLightAt(newPos));
 	}
 
-	bool ChunkBlock::calcLightsLevelsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
+	bool ChunkBlock::calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
 			return (true);
@@ -822,7 +828,7 @@ namespace voxel
 	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blocksLights)
 	{
 		Block *block = Blocks::getBlock(this->type);
-		if (!Main::getSmooth() || !block->isSolid())
+		if (!Main::getSmooth() || !block->isSolid() || isTransparent())
 		{
 			lights[F1P1] = getLightValue(lightsLevels.f1p1);
 			lights[F1P2] = getLightValue(lightsLevels.f1p2);
@@ -859,7 +865,7 @@ namespace voxel
 				{
 					for (int8_t y = 0; y <= 1; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -877,7 +883,7 @@ namespace voxel
 				{
 					for (int8_t y = 0; y <= 1; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -895,7 +901,7 @@ namespace voxel
 				{
 					for (int8_t y = 1; y <= 2; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -913,7 +919,7 @@ namespace voxel
 				{
 					for (int8_t y = 1; y <= 2; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -934,7 +940,7 @@ namespace voxel
 				{
 					for (int8_t y = 0; y <= 1; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -952,7 +958,7 @@ namespace voxel
 				{
 					for (int8_t y = 0; y <= 1; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -970,7 +976,7 @@ namespace voxel
 				{
 					for (int8_t y = 1; y <= 2; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -988,7 +994,7 @@ namespace voxel
 				{
 					for (int8_t y = 1; y <= 2; ++y)
 					{
-						if (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1])
+						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
 							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
 							lightsPoints++;
@@ -1009,7 +1015,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1027,7 +1033,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1045,7 +1051,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1063,7 +1069,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1084,7 +1090,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1102,7 +1108,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1120,7 +1126,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1138,7 +1144,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z])
+						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
 							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
 							lightsPoints++;
@@ -1159,7 +1165,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
@@ -1177,7 +1183,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
@@ -1195,7 +1201,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
@@ -1213,7 +1219,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
@@ -1234,7 +1240,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
 							lightsPoints++;
@@ -1252,7 +1258,7 @@ namespace voxel
 				{
 					for (int8_t z = 0; z <= 1; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
 							lightsPoints++;
@@ -1270,7 +1276,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
 							lightsPoints++;
@@ -1288,7 +1294,7 @@ namespace voxel
 				{
 					for (int8_t z = 1; z <= 2; ++z)
 					{
-						if (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z])
+						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
 							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
 							lightsPoints++;
@@ -1313,6 +1319,8 @@ namespace voxel
 			return (true);
 		Block *block = Blocks::getBlock(this->type);
 		if (!block)
+			return (true);
+		if (block->getOpacity() != 15)
 			return (true);
 		if (!block->isSolid())
 			return (true);

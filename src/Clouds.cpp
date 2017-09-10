@@ -36,7 +36,7 @@ namespace voxel
 		//Empty
 	}
 
-	void Clouds::draw()
+	void Clouds::tick()
 	{
 		float offsetDiff = (-nanotime / 1000000000.) - this->lastXOffset;
 		float playerXDiff = this->world.getPlayer().getPos().x - this->lastPlayerX;
@@ -44,6 +44,10 @@ namespace voxel
 		float playerDiff = sqrt(playerXDiff * playerXDiff + playerZDiff * playerZDiff);
 		if (offsetDiff + playerDiff > CLOUD_WIDTH * 3 || offsetDiff + playerDiff < -CLOUD_WIDTH * 3)
 			rebuild();
+	}
+
+	void Clouds::draw()
+	{
 		Main::getCloudsShader().program->use();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(-nanotime / 1000000000., CLOUD_Y, 0));

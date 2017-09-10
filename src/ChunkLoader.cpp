@@ -63,14 +63,18 @@ namespace voxel
 							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 							chunks.erase(chunks.begin() + i);
 						}
-						world.getBuffersToDelete().push_back(chunk->getTexCoordsBuffer());
-						world.getBuffersToDelete().push_back(chunk->getVertexesBuffer());
-						world.getBuffersToDelete().push_back(chunk->getIndicesBuffer());
-						world.getBuffersToDelete().push_back(chunk->getColorsBuffer());
-						chunk->setTexCoordsBuffer(NULL);
-						chunk->setVertexesBuffer(NULL);
-						chunk->setIndicesBuffer(NULL);
-						chunk->setColorsBuffer(NULL);
+						for (uint8_t i = 0; i < 3; ++i)
+						{
+							ChunkLayer &layer = chunk->getLayer(i);
+							world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
+							world.getBuffersToDelete().push_back(layer.vertexesBuffer);
+							world.getBuffersToDelete().push_back(layer.indicesBuffer);
+							world.getBuffersToDelete().push_back(layer.colorsBuffer);
+							layer.texCoordsBuffer = NULL;
+							layer.vertexesBuffer = NULL;
+							layer.indicesBuffer = NULL;
+							layer.colorsBuffer = NULL;
+						}
 						delete (chunk);
 						i--;
 					}

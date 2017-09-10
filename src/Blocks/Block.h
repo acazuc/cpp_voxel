@@ -28,6 +28,7 @@ namespace voxel
 		float texTopY;
 		float texBotX;
 		float texBotY;
+		uint8_t layer;
 		bool solid;
 
 	public:
@@ -78,6 +79,8 @@ namespace voxel
 		Block *setTex(float texX, float texY);
 		Block *setTexX(float texX);
 		Block *setTexY(float texY);
+		inline uint8_t getLayer() {return (this->layer);};
+		Block *setLayer(uint8_t layer);
 		inline bool isSolid() {return (this->solid);};
 		Block *setSolid(bool solid);
 

@@ -1,6 +1,7 @@
 #ifndef CHUNK_BLOCK_H
 # define CHUNK_BLOCK_H
 
+# include "ChunkTessellator.h"
 # include "AABB.h"
 # include <librender/GL.h>
 # include <glm/glm.hpp>
@@ -53,7 +54,7 @@ namespace voxel
 
 	private:
 		uint8_t type;
-		bool calcLightsLevelsIsTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
+		bool calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		uint8_t calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		void calcAmbientOcclusion(glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent);
 		void calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces);
@@ -63,7 +64,7 @@ namespace voxel
 	public:
 		ChunkBlock(uint8_t type);
 		ChunkBlock();
-		void fillBuffers(Chunk *chunk, glm::vec3 &pos, std::vector<glm::vec3> &vertexes, std::vector<glm::vec2> &texCoords, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices);
+		void fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer);
 		bool isTransparent();
 		inline void setType(uint8_t type) {this->type = type;};
 		inline uint8_t getType() {return (this->type);};

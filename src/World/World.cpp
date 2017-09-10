@@ -36,6 +36,7 @@ namespace voxel
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		this->clouds.tick();
 		this->player.tick();
 		this->entitiesManager.tick();
 		this->particlesManager.tick();
@@ -56,16 +57,16 @@ namespace voxel
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(5);
-		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		for (uint8_t layer = 0; layer < 3; ++layer)
 		{
-			Chunk *chunk = *iter;
-			chunk->draw();
+			for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+				(*iter)->draw(layer);
 		}
 		this->particlesManager.draw();
 		this->entitiesManager.draw();
-		this->clouds.draw();
 		this->skybox.draw();
 		this->player.draw();
+		this->clouds.draw();
 	}
 
 	void World::getAABBs(AABB &aabb, std::vector<AABB> &aabbs)

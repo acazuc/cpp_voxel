@@ -48,6 +48,7 @@ namespace voxel
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
@@ -83,7 +84,7 @@ namespace voxel
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
 		glBindTexture(GL_TEXTURE_2D, terrain->getId());
-		glGenerateMipmap(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);

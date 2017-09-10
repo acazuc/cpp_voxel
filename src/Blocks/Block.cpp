@@ -7,6 +7,7 @@ namespace voxel
 	: opacity(15)
 	, light(0)
 	, id(id)
+	, layer(0)
 	, solid(true)
 	{
 		//Empty
@@ -201,6 +202,12 @@ namespace voxel
 		setTexSideY(texY);
 		setTexTopY(texY);
 		setTexBotY(texY);
+		return (this);
+	}
+
+	Block *Block::setLayer(uint8_t layer)
+	{
+		this->layer = layer;
 		return (this);
 	}
 

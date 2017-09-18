@@ -1,7 +1,6 @@
 #include "PlayerRaycast.h"
 #include "Blocks/Blocks.h"
 #include "World/World.h"
-#include "Debug.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
@@ -164,7 +163,10 @@ namespace voxel
 			Main::getBreakShader().vertexesLocation->setVertexBuffer(this->breakVertexesBuffer);
 			Main::getBreakShader().colorsLocation->setVertexBuffer(this->breakColorsBuffer);
 			this->breakIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
-			glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_ONE, GL_ZERO);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
+			glBlendEquation(GL_FUNC_ADD);
+			//glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_ONE, GL_ZERO);
 			glDepthFunc(GL_LEQUAL);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 			glDepthFunc(GL_LESS);
@@ -202,15 +204,23 @@ namespace voxel
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
 		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y + 0.72, dir.y), intbound(this->player.getPos().z, dir.z));
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
-		float radius = 500;
+		float radius = 5;
 		uint8_t face = 0;
+		int32_t oldChunkX = -1;
+		int32_t oldChunkZ = -1;
+		Chunk *chunk = NULL;
 		while (true)
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
 			{
 				int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
 				int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
-				Chunk *chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
+				if (chunkX != oldChunkX || chunkZ != oldChunkZ)
+				{
+					oldChunkX = chunkX;
+					oldChunkZ = chunkZ;
+					chunk = this->player.getWorld().getChunk(chunkX, chunkZ);
+				}
 				if (!chunk)
 					goto nextStep;
 				glm::vec3 relative(pos.x - chunkX, pos.y, pos.z - chunkZ);

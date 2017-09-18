@@ -1,8 +1,13 @@
 #ifndef CHUNK_LOADER_H
 # define CHUNK_LOADER_H
 
+# include "Platform.h"
 # include <cstdint>
-# include <thread>
+# ifdef PLATFORM_WINDOWS
+#  include <thread.h>
+# else
+#  include <thread>
+# endif
 
 namespace voxel
 {

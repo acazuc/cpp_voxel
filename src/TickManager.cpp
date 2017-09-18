@@ -21,7 +21,7 @@ namespace voxel
 	{
 		int64_t passedTime = nanotime - lastUpdate;
 		int64_t ticks = passedTime / (1000000000 / 20);
-		ticksToDo = std::min(10l, ticks);
+		ticksToDo = std::min((int64_t)10, ticks);
 		lastUpdate += ticks * (1000000000 / 20);
 		delta = (nanotime - lastUpdate) / (float)(1000000000 / 20);
 	}

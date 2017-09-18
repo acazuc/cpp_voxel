@@ -22,7 +22,7 @@ namespace voxel
 		this->flying = true;
 		setSize(glm::vec3(.6, 1.8, .6));
 		setPos(glm::vec3(0, 70, 0));
-		this->projMat = glm::perspective(glm::radians(90.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1000.);
+		this->projMat = glm::perspective(glm::radians(90.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1500.);
 	}
 
 	void Player::handleMovement()

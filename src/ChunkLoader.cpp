@@ -1,6 +1,5 @@
 #include "ChunkLoader.h"
 #include "World/World.h"
-#include <ctime>
 
 #define LOAD_DISTANCE 16
 
@@ -41,8 +40,6 @@ namespace voxel
 	void ChunkLoader::_run(void *data)
 	{
 		World &world = *reinterpret_cast<World*>(data);
-		struct timespec ts;
-		ts.tv_sec = 0;
 		while (running)
 		{
 			float playerX = world.getPlayer().getPos().x;
@@ -113,12 +110,9 @@ namespace voxel
 						goto end;
 				}
 			}
-			ts.tv_nsec = 100000000;
-			nanosleep(&ts, NULL);
+			std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
 		end:
 			continue;
-			ts.tv_nsec = 10000000;
-			nanosleep(&ts, NULL);
 		}
 	}
 

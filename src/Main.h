@@ -3,6 +3,7 @@
 
 # include "Shaders/ParticlesShader.h"
 # include "Shaders/FocusedShader.h"
+# include "Shaders/SunMoonShader.h"
 # include "Shaders/BlocksShader.h"
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
@@ -26,6 +27,7 @@ namespace voxel
 	private:
 		static ParticlesShader particlesShader;
 		static FocusedShader focusedShader;
+		static SunMoonShader sunMoonShader;
 		static BlocksShader blocksShader;
 		static CloudsShader cloudsShader;
 		static SkyboxShader skyboxShader;
@@ -45,6 +47,7 @@ namespace voxel
 		static void glErrors(std::string str);
 		static ParticlesShader &getParticlesShader() {return (particlesShader);};
 		static FocusedShader &getFocusedShader() {return (focusedShader);};
+		static SunMoonShader &getSunMoonShader() {return (sunMoonShader);};
 		static BlocksShader &getBlocksShader() {return (blocksShader);};
 		static CloudsShader &getCloudsShader() {return (cloudsShader);};
 		static SkyboxShader &getSkyboxShader() {return (skyboxShader);};

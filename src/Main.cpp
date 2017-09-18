@@ -23,6 +23,7 @@ namespace voxel
 
 	ParticlesShader Main::particlesShader;
 	FocusedShader Main::focusedShader;
+	SunMoonShader Main::sunMoonShader;
 	BlocksShader Main::blocksShader;
 	CloudsShader Main::cloudsShader;
 	SkyboxShader Main::skyboxShader;
@@ -38,7 +39,7 @@ namespace voxel
 
 	void Main::main()
 	{
-		glfwWindowHint(GLFW_SAMPLES, 16);
+		glfwWindowHint(GLFW_SAMPLES, 32);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -56,6 +57,7 @@ namespace voxel
 		window->setVSync(true);
 		particlesShader.load();
 		focusedShader.load();
+		sunMoonShader.load();
 		skyboxShader.load();
 		cloudsShader.load();
 		blocksShader.load();
@@ -71,8 +73,8 @@ namespace voxel
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
 			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);
-			skyboxShader.program->use();
-			skyboxShader.texLocation->setVec1i(0);
+			sunMoonShader.program->use();
+			sunMoonShader.texLocation->setVec1i(0);
 			entityShader.program->use();
 			entityShader.fogDistanceLocation->setVec1f(16 * 14);
 			particlesShader.program->use();
@@ -174,17 +176,18 @@ namespace voxel
 
 int main(int ac, char **av)
 {
-	if (ac < 1)
-		ERROR("Error while receiving relative path");
-	char sep = '/';
+	if (ac >= 1)
+	{
+		char sep = '/';
 #ifdef PLATFORM_WINDOWS
-	sep = '\\';
+		sep = '\\';
 #endif
-	char *lastSlash = std::strrchr(av[0], sep);
-	if (lastSlash)
-		*lastSlash = '\0';
-	if (chdir(av[0]))
-		ERROR("Failed to change relative path");
+		char *lastSlash = std::strrchr(av[0], sep);
+		if (lastSlash)
+			*lastSlash = '\0';
+		if (chdir(av[0]))
+			LOG("Failed to change relative path");
+	}
 	if (!glfwInit())
 		ERROR("Failed to init glfw");
 	voxel::Main::main();

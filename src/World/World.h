@@ -6,13 +6,18 @@
 # include "Noise/SimplexNoise.h"
 # include "Player/Player.h"
 # include "ChunkLoader.h"
+# include "Platform.h"
 # include "Frustum.h"
 # include "Clouds.h"
 # include "Skybox.h"
 # include "Region.h"
 # include "Chunk.h"
 # include <vector>
-# include <mutex>
+# ifdef PLATFORM_WINDOWS
+#  include <mutex.h>
+# else
+#  include <mutex>
+# endif
 
 namespace voxel
 {

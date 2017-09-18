@@ -16,9 +16,12 @@ namespace voxel
 	{
 
 	private:
+		VertexBuffer skyboxVertexesBuffer;
 		VertexBuffer moonTexCoordsBuffer;
+		VertexBuffer skyboxIndicesBuffer;
 		VertexBuffer sunTexCoordsBuffer;
 		VertexBuffer moonVertexesBuffer;
+		VertexBuffer skyboxColorsBuffer;
 		VertexBuffer sunVertexesBuffer;
 		VertexBuffer moonColorsBuffer;
 		VertexBuffer sunColorsBuffer;

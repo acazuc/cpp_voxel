@@ -5,6 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <libformat/PNG.h>
 
+#define SKYBOX_PARTS 10
+#define SKYBOX_DIST 1000
+
 extern int64_t nanotime;
 
 namespace voxel
@@ -72,20 +75,30 @@ namespace voxel
 	{
 		Main::getSkyboxShader().program->use();
 		glm::mat4 model(1);
-		model = glm::translate(model, glm::vec3(this->world.getPlayer().getPos().x, this->world.getPlayer().getPos().y, this->world.getPlayer().getPos().z));
+		model = glm::translate(model, glm::vec3(0, 0, 0));
+		model = glm::translate(model, this->world.getPlayer().getPos());
+		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
+		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
+		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->skyboxVertexesBuffer);
+		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->skyboxColorsBuffer);
+		this->skyboxIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		glDrawElements(GL_TRIANGLES, SKYBOX_PARTS * SKYBOX_PARTS * 6, GL_UNSIGNED_INT, (void*)0);
+		Main::getSunMoonShader().program->use();
+		model = glm::mat4(1);
+		model = glm::translate(model, this->world.getPlayer().getPos());
 		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
-		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
+		mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
 		sun->bind();
-		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
-		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->sunTexCoordsBuffer);
-		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->sunVertexesBuffer);
-		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->sunColorsBuffer);
+		Main::getSunMoonShader().mvpLocation->setMat4f(mvp);
+		Main::getSunMoonShader().texCoordsLocation->setVertexBuffer(this->sunTexCoordsBuffer);
+		Main::getSunMoonShader().vertexesLocation->setVertexBuffer(this->sunVertexesBuffer);
+		Main::getSunMoonShader().colorsLocation->setVertexBuffer(this->sunColorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		moon->bind();
-		Main::getSkyboxShader().texCoordsLocation->setVertexBuffer(this->moonTexCoordsBuffer);
-		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->moonVertexesBuffer);
-		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->moonColorsBuffer);
+		Main::getSunMoonShader().texCoordsLocation->setVertexBuffer(this->moonTexCoordsBuffer);
+		Main::getSunMoonShader().vertexesLocation->setVertexBuffer(this->moonVertexesBuffer);
+		Main::getSunMoonShader().colorsLocation->setVertexBuffer(this->moonColorsBuffer);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
@@ -103,6 +116,38 @@ namespace voxel
 		this->sunVertexesBuffer.setData(GL_ARRAY_BUFFER, sunVertexes, sizeof(sunVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_STATIC_DRAW);
+		glm::vec3 skyboxVertexes[SKYBOX_PARTS * SKYBOX_PARTS];
+		glm::vec3 skyboxColors[SKYBOX_PARTS * SKYBOX_PARTS];
+		GLuint skyboxIndices[6 * (SKYBOX_PARTS * SKYBOX_PARTS)];
+		for (uint8_t x = 0; x < SKYBOX_PARTS; ++x)
+		{
+			for (uint8_t y = 0; y < SKYBOX_PARTS; ++y)
+			{
+				GLuint index = x * SKYBOX_PARTS + y;
+				float fac = M_PI * 2 / (SKYBOX_PARTS);
+				float yFac = std::sin(y * M_PI / (SKYBOX_PARTS - 1));
+				skyboxVertexes[index].x = std::cos(x * fac) * SKYBOX_DIST * yFac;
+				skyboxVertexes[index].y = -std::cos(y * fac / 2) * SKYBOX_DIST;
+				skyboxVertexes[index].z = std::sin(x * fac) * SKYBOX_DIST * yFac;
+				skyboxColors[x * SKYBOX_PARTS + y] = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
+				if (y == SKYBOX_PARTS - 1)
+					continue;
+				GLuint pos = (x * SKYBOX_PARTS + y) * 6;
+				GLuint xOrg = x * SKYBOX_PARTS;
+				GLuint xDst = ((x + 1) % SKYBOX_PARTS) * SKYBOX_PARTS;
+				GLuint yOrg = y;
+				GLuint yDst = y + 1;
+				skyboxIndices[pos + 0] = xOrg + yOrg;
+				skyboxIndices[pos + 1] = xDst + yOrg;
+				skyboxIndices[pos + 2] = xOrg + yDst;
+				skyboxIndices[pos + 3] = xDst + yDst;
+				skyboxIndices[pos + 4] = xOrg + yDst;
+				skyboxIndices[pos + 5] = xDst + yOrg;
+			}
+		}
+		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(skyboxVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(skyboxIndices), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
+		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(skyboxColors), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 	}
 
 }

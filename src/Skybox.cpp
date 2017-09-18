@@ -82,7 +82,7 @@ namespace voxel
 		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->skyboxVertexesBuffer);
 		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->skyboxColorsBuffer);
 		this->skyboxIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
-		glDrawElements(GL_TRIANGLES, SKYBOX_PARTS * SKYBOX_PARTS * 6, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, (void*)0);
 		Main::getSunMoonShader().program->use();
 		model = glm::mat4(1);
 		model = glm::translate(model, this->world.getPlayer().getPos());
@@ -116,38 +116,54 @@ namespace voxel
 		this->sunVertexesBuffer.setData(GL_ARRAY_BUFFER, sunVertexes, sizeof(sunVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_STATIC_DRAW);
-		glm::vec3 skyboxVertexes[SKYBOX_PARTS * SKYBOX_PARTS];
-		glm::vec3 skyboxColors[SKYBOX_PARTS * SKYBOX_PARTS];
-		GLuint skyboxIndices[6 * (SKYBOX_PARTS * SKYBOX_PARTS)];
-		for (uint8_t x = 0; x < SKYBOX_PARTS; ++x)
+		glm::vec3 *skyboxVertexes = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
+		glm::vec3 *skyboxColors = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
+		GLuint *skyboxIndices = new GLuint[6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1))];
+		GLuint pos = 0;
+		for (uint32_t y = 0; y < SKYBOX_PARTS; ++y)
 		{
-			for (uint8_t y = 0; y < SKYBOX_PARTS; ++y)
+			for (uint32_t x = 0; x < SKYBOX_PARTS; ++x)
 			{
-				GLuint index = x * SKYBOX_PARTS + y;
-				float fac = M_PI * 2 / (SKYBOX_PARTS);
-				float yFac = std::sin(y * M_PI / (SKYBOX_PARTS - 1));
-				skyboxVertexes[index].x = std::cos(x * fac) * SKYBOX_DIST * yFac;
-				skyboxVertexes[index].y = -std::cos(y * fac / 2) * SKYBOX_DIST;
-				skyboxVertexes[index].z = std::sin(x * fac) * SKYBOX_DIST * yFac;
-				skyboxColors[x * SKYBOX_PARTS + y] = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
+				if ((y == 0 && x == 1) || (y > 0 && y < SKYBOX_PARTS - 1) || (y == SKYBOX_PARTS - 1 && x == 0))
+				{
+					GLuint index = getSkyboxIndex(x, y);
+					float fac = M_PI * 2 / (SKYBOX_PARTS);
+					float yFac = std::sin(y * M_PI / (SKYBOX_PARTS - 1));
+					skyboxVertexes[index].x = std::cos(x * fac) * SKYBOX_DIST * yFac;
+					skyboxVertexes[index].y = -std::cos(y * fac / 2) * SKYBOX_DIST;
+					skyboxVertexes[index].z = std::sin(x * fac) * SKYBOX_DIST * yFac;
+					skyboxColors[index] = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
+				}
 				if (y == SKYBOX_PARTS - 1)
 					continue;
-				GLuint pos = (x * SKYBOX_PARTS + y) * 6;
-				GLuint xOrg = x * SKYBOX_PARTS;
-				GLuint xDst = ((x + 1) % SKYBOX_PARTS) * SKYBOX_PARTS;
-				GLuint yOrg = y;
-				GLuint yDst = y + 1;
-				skyboxIndices[pos + 0] = xOrg + yOrg;
-				skyboxIndices[pos + 1] = xDst + yOrg;
-				skyboxIndices[pos + 2] = xOrg + yDst;
-				skyboxIndices[pos + 3] = xDst + yDst;
-				skyboxIndices[pos + 4] = xOrg + yDst;
-				skyboxIndices[pos + 5] = xDst + yOrg;
+				GLuint p1 = getSkyboxIndex(x, y);
+				GLuint p2 = getSkyboxIndex((x + 1) % SKYBOX_PARTS, y);
+				GLuint p3 = getSkyboxIndex((x + 1) % SKYBOX_PARTS, (y + 1) % SKYBOX_PARTS);
+				GLuint p4 = getSkyboxIndex(x, (y + 1) % SKYBOX_PARTS);
+				skyboxIndices[pos++] = p1;
+				skyboxIndices[pos++] = p2;
+				skyboxIndices[pos++] = p4;
+				skyboxIndices[pos++] = p3;
+				skyboxIndices[pos++] = p4;
+				skyboxIndices[pos++] = p2;
 			}
 		}
-		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(skyboxVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
-		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(skyboxIndices), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
-		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(skyboxColors), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		LOG("pos: " << pos);
+		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(*skyboxVertexes) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(*skyboxIndices) * 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
+		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		delete[] (skyboxVertexes);
+		delete[] (skyboxIndices);
+		delete[] (skyboxColors);
+	}
+
+	uint32_t Skybox::getSkyboxIndex(uint32_t x, uint32_t y)
+	{
+		if (y == 0)
+			return (0);
+		if (y == SKYBOX_PARTS - 1)
+			return (1 + (SKYBOX_PARTS - 2) * SKYBOX_PARTS);
+		return (1 + (y - 1) * SKYBOX_PARTS + x);
 	}
 
 }

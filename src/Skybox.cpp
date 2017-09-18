@@ -148,7 +148,6 @@ namespace voxel
 				skyboxIndices[pos++] = p2;
 			}
 		}
-		LOG("pos: " << pos);
 		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(*skyboxVertexes) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(*skyboxIndices) * 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
 		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_DYNAMIC_DRAW);

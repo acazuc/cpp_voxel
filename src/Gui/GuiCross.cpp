@@ -21,7 +21,7 @@ namespace voxel
 	{
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 		this->sprite.setPos((Main::getWindow()->getWidth() - 9 * 4) / 2, (Main::getWindow()->getHeight() - 9 * 4) / 2);
-		this->sprite.draw(Main::getGui()->getMat());
+		this->sprite.draw(Gui::getMat());
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 

@@ -16,10 +16,12 @@ namespace voxel
 	{
 
 	private:
+		static glm::mat4 mat;
 		static Texture *inventoryTex;
 		static Texture *iconsTex;
+		static Texture *logoTex;
 		static Texture *guiTex;
-		glm::mat4 mat;
+		static Texture *bgTex;
 		GuiInventory inventory;
 		GuiHearts hearts;
 		GuiCross cross;
@@ -29,11 +31,14 @@ namespace voxel
 		Gui();
 		~Gui();
 		void draw();
-		inline glm::mat4 &getMat() {return (this->mat);};
 		static void init();
+		static void updateMat();
+		static inline glm::mat4 &getMat() {return (mat);};
 		static inline Texture *getInventoryTex() {return (inventoryTex);};
 		static inline Texture *getIconsTex() {return (iconsTex);};
+		static inline Texture *getLogoTex() {return (logoTex);};
 		static inline Texture *getGuiTex() {return (guiTex);};
+		static inline Texture *getBgTex() {return (bgTex);};
 	};
 
 }

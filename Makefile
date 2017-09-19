@@ -64,6 +64,9 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiBar.cpp \
 	    Gui/GuiHearts.cpp \
 	    Gui/GuiInventory.cpp \
+	    Gui/GuiButton.cpp \
+	    WorldScreen/WorldScreen.cpp \
+	    TitleScreen/TitleScreen.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -77,6 +80,7 @@ LIBRARY = -L lib/glfw/src -l:libglfw3.a
 LIBRARY+= -L lib/glad -l:libglad.a
 LIBRARY+= -L lib/librender -l:librender.a
 LIBRARY+= -L lib/libformat -l:libformat.a
+LIBRARY+= -L lib/freetype/objs/.libs -l:libfreetype.a
 LIBRARY+= -L lib/libpng -l:libpng16.a
 LIBRARY+= -L lib/zlib -l:libz.a
 LIBRARY+= -L lib/harfbuzz/src/.libs -l:libharfbuzz.a
@@ -105,6 +109,8 @@ odir:
 	@mkdir -p $(OBJS_PATH)/World
 	@mkdir -p $(OBJS_PATH)/Particles
 	@mkdir -p $(OBJS_PATH)/Gui
+	@mkdir -p $(OBJS_PATH)/WorldScreen
+	@mkdir -p $(OBJS_PATH)/TitleScreen
 
 clean:
 	@echo " - Cleaning objs"

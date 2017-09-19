@@ -10,15 +10,16 @@
 # include "Shaders/EntityShader.h"
 # include "Shaders/BreakShader.h"
 # include "Shaders/GuiShader.h"
-# include "World/World.h"
 # include "Gui/Gui.h"
+# include "Screen.h"
 # include <librender/Window/Window.h>
+# include <librender/Font/Font.h>
 # include <librender/Texture.h>
 
 using librender::KeyEvent;
 using librender::Texture;
 using librender::Window;
-using librender::Color;
+using librender::Font;
 
 namespace voxel
 {
@@ -39,7 +40,8 @@ namespace voxel
 		static glm::vec4 skyColor;
 		static Texture *terrain;
 		static Window *window;
-		static World *world;
+		static Screen *screen;
+		static Font *font;
 		static Gui *gui;
 		static bool smooth;
 		static bool ssao;
@@ -61,7 +63,8 @@ namespace voxel
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
 		static Window *getWindow() {return (window);};
-		static World *getWorld() {return (world);};
+		static Screen *getScreen() {return (screen);};
+		static Font *getFont() {return (font);};
 		static Gui *getGui() {return (gui);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};

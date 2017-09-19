@@ -1,21 +1,20 @@
 #include "Main.h"
 #include "Entities/EntitiesManager.h"
+#include "WorldScreen/WorldScreen.h"
+#include "TitleScreen/TitleScreen.h"
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "TickManager.h"
-#include "Debug.h"
 #include "World/World.h"
+#include "Debug.h"
 #include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
-#include <librender/Shader/VertexShader.h>
-#include <librender/Shader/FragmentShader.h>
+#include <librender/Font/FontModel.h>
 #include <libformat/PNG.h>
 
-using librender::VertexShader;
-using librender::FragmentShader;
+using librender::FontModel;
 
-int64_t frameDelta;
 int64_t nanotime;
 
 namespace voxel
@@ -33,7 +32,8 @@ namespace voxel
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
-	World *Main::world;
+	Screen *Main::screen;
+	Font *Main::font;
 	Gui *Main::gui;
 	bool Main::smooth = true;
 	bool Main::ssao = true;
@@ -45,7 +45,7 @@ namespace voxel
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
-		glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		//glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glDisable(GL_POLYGON_SMOOTH);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
@@ -95,19 +95,20 @@ namespace voxel
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
 		glBindTexture(GL_TEXTURE_2D, terrain->getId());
-		//glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);
+		FontModel *fontModel = new FontModel("./data/minecraftia.ttf");
+		font = fontModel->derive(32);
 		EntitiesManager::init();
 		Blocks::init();
 		Gui::init();
 		gui = new Gui();
-		Main::world = new World();
-		int64_t lastFrame = System::nanotime();
+		//screen = new WorldScreen(new World());
+		screen = new TitleScreen();
 		int64_t fpsCount = 0;
 		int64_t lastFps = System::nanotime();
-		nanotime = lastFrame;
+		nanotime = System::nanotime();
 		TickManager::init();
 		while (!window->closeRequested())
 		{
@@ -121,18 +122,16 @@ namespace voxel
 			}
 			skyColor = glm::vec4(.71, .82, 1, 1);
 			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);
-			frameDelta = nanotime - lastFrame;
-			lastFrame = nanotime;
 			window->clearScreen();
 			TickManager::update();
 			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
-				world->tick();
-			world->draw();
-			gui->draw();
+				screen->tick();
+			screen->draw();
+			//gui->draw();
 			window->pollEvents();
 			window->update();
 		}
-		delete (world);
+		delete (screen);
 		delete (window);
 	}
 
@@ -141,12 +140,12 @@ namespace voxel
 		if (event.key == GLFW_KEY_P)
 		{
 			Main::ssao = !Main::ssao;
-			Main::world->update();
+			//Main::world->update();
 		}
 		if (event.key == GLFW_KEY_O)
 		{
 			Main::smooth = !Main::smooth;
-			Main::world->update();
+			//Main::world->update();
 		}
 		if (event.key == GLFW_KEY_I)
 		{

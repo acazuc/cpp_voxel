@@ -4,12 +4,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <libformat/PNG.h>
 
+using librender::TEXTURE_FILTER_NEAREST;
+using librender::TEXTURE_WRAP_REPEAT;
+
 namespace voxel
 {
 
+	glm::mat4 Gui::mat;
 	Texture *Gui::inventoryTex;
 	Texture *Gui::iconsTex;
+	Texture *Gui::logoTex;
 	Texture *Gui::guiTex;
+	Texture *Gui::bgTex;
 
 	void Gui::init()
 	{
@@ -20,22 +26,32 @@ namespace voxel
 			ERROR("Failed to read sun.png");
 		guiTex = new Texture(data, width, height);
 		guiTex->bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		guiTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
 		if (!libformat::PNG::read("data/textures/gui/icons.png", data, width, height))
-			ERROR("Failed to read sun.png");
+			ERROR("Failed to read icons.png");
 		iconsTex = new Texture(data, width, height);
 		iconsTex->bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		iconsTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
 		if (!libformat::PNG::read("data/textures/gui/inventory.png", data, width, height))
-			ERROR("Failed to read sun.png");
+			ERROR("Failed to read inventory.png");
 		inventoryTex = new Texture(data, width, height);
 		inventoryTex->bind();
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		inventoryTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
+		delete[] (data);
+		if (!libformat::PNG::read("data/textures/gui/logo.png", data, width, height))
+			ERROR("Failed to read logo.png");
+		logoTex = new Texture(data, width, height);
+		logoTex->bind();
+		logoTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
+		delete[] (data);
+		if (!libformat::PNG::read("data/textures/gui/background.png", data, width, height))
+			ERROR("Failed to read background.png");
+		bgTex = new Texture(data, width, height);
+		bgTex->bind();
+		bgTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
+		bgTex->setWrap(TEXTURE_WRAP_REPEAT, TEXTURE_WRAP_REPEAT);
 		delete[] (data);
 	}
 
@@ -51,7 +67,6 @@ namespace voxel
 
 	void Gui::draw()
 	{
-		this->mat = glm::ortho(0.f, (float)Main::getWindow()->getWidth(), (float)Main::getWindow()->getHeight(), 0.f, -2.f, 2.f);
 		glDisable(GL_CULL_FACE);
 		glDepthFunc(GL_LEQUAL);
 		this->inventory.draw();
@@ -60,6 +75,11 @@ namespace voxel
 		this->bar.draw();
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
+	}
+
+	void Gui::updateMat()
+	{
+		mat = glm::ortho(0.f, (float)Main::getWindow()->getWidth(), (float)Main::getWindow()->getHeight(), 0.f, -2.f, 2.f);
 	}
 
 }

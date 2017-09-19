@@ -21,7 +21,7 @@ namespace voxel
 	{
 		return;
 		this->background.setPos((Main::getWindow()->getWidth() - 176 * 4) / 2, (Main::getWindow()->getHeight() - 166 * 4) / 2);
-		this->background.draw(Main::getGui()->getMat());
+		this->background.draw(Gui::getMat());
 	}
 
 }

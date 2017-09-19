@@ -154,6 +154,7 @@ namespace voxel
 		this->viewMat = glm::translate(this->viewMat, glm::vec3(-realPos.x, -realPos.y - 0.72, -realPos.z));
 		this->world.getFrustum().update();
 		this->raycast.raycast();
+		this->viewProjMat = this->projMat * this->viewMat;
 	}
 
 }

@@ -51,8 +51,8 @@ namespace voxel
 		uint32_t height;
 		for (uint8_t  i = 0; i < 14; ++i)
 		{
-			if (!libformat::PNG::read("data/textures/" + names[i] + ".png", datas, width, height))
-				ERROR("Failed to read " << names[i] << ".png");
+			if (!libformat::PNG::read("data/textures/mob/" + names[i] + ".png", datas, width, height))
+				ERROR("Failed to read mob/" << names[i] << ".png");
 			*textures[i] = new Texture(datas, width, height);
 			delete[] (datas);
 			(*textures[i])->bind();

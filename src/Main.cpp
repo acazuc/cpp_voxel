@@ -29,10 +29,12 @@ namespace voxel
 	SkyboxShader Main::skyboxShader;
 	EntityShader Main::entityShader;
 	BreakShader Main::breakShader;
+	GuiShader Main::guiShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
 	World *Main::world;
+	Gui *Main::gui;
 	bool Main::smooth = true;
 	bool Main::ssao = true;
 	int Main::disableTex = 0;
@@ -63,6 +65,7 @@ namespace voxel
 		blocksShader.load();
 		entityShader.load();
 		breakShader.load();
+		guiShader.load();
 		{
 			glm::mat4 osef(1);
 			blocksShader.program->use();
@@ -81,6 +84,8 @@ namespace voxel
 			particlesShader.fogDistanceLocation->setVec1f(16 * 14);
 			breakShader.program->use();
 			breakShader.fogDistanceLocation->setVec1f(16 * 14);
+			guiShader.program->use();
+			guiShader.texLocation->setVec1i(0);
 		}
 		char *datas;
 		uint32_t width;
@@ -96,6 +101,8 @@ namespace voxel
 		glActiveTexture(GL_TEXTURE0);
 		EntitiesManager::init();
 		Blocks::init();
+		Gui::init();
+		gui = new Gui();
 		Main::world = new World();
 		int64_t lastFrame = System::nanotime();
 		int64_t fpsCount = 0;
@@ -112,8 +119,7 @@ namespace voxel
 				LOG("FPS: " << fpsCount);
 				fpsCount = 0;
 			}
-			float bgFactor = std::abs(cos(-nanotime / 1000000000. / 60 / 20 * M_PI + M_PI / 4));
-			skyColor = glm::vec4(.662 * bgFactor, .796 * bgFactor, .0125 + .875 * bgFactor, 1);
+			skyColor = glm::vec4(.71, .82, 1, 1);
 			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);
 			frameDelta = nanotime - lastFrame;
 			lastFrame = nanotime;
@@ -122,6 +128,7 @@ namespace voxel
 			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
 				world->tick();
 			world->draw();
+			gui->draw();
 			window->pollEvents();
 			window->update();
 		}

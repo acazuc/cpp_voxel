@@ -14,6 +14,7 @@ namespace voxel
 
 	private:
 		PlayerRaycast raycast;
+		glm::mat4 viewProjMat;
 		glm::mat4 projMat;
 		glm::mat4 viewMat;
 		int32_t oldMouseX;
@@ -26,6 +27,7 @@ namespace voxel
 		void update();
 		void tick();
 		void draw();
+		inline glm::mat4 &getViewProjMat() {return (this->viewProjMat);};
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
 		inline World &getWorld() {return (this->world);};

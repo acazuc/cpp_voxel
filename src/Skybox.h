@@ -29,6 +29,7 @@ namespace voxel
 		Texture *sun;
 		World &world;
 		void initBuffers();
+		void updateSkyboxColors();
 		uint32_t getSkyboxIndex(uint32_t x, uint32_t y);
 
 	public:

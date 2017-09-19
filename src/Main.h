@@ -9,7 +9,9 @@
 # include "Shaders/SkyboxShader.h"
 # include "Shaders/EntityShader.h"
 # include "Shaders/BreakShader.h"
+# include "Shaders/GuiShader.h"
 # include "World/World.h"
+# include "Gui/Gui.h"
 # include <librender/Window/Window.h>
 # include <librender/Texture.h>
 
@@ -33,10 +35,12 @@ namespace voxel
 		static SkyboxShader skyboxShader;
 		static EntityShader entityShader;
 		static BreakShader breakShader;
+		static GuiShader guiShader;
 		static glm::vec4 skyColor;
 		static Texture *terrain;
 		static Window *window;
 		static World *world;
+		static Gui *gui;
 		static bool smooth;
 		static bool ssao;
 		static int disableTex;
@@ -53,9 +57,12 @@ namespace voxel
 		static SkyboxShader &getSkyboxShader() {return (skyboxShader);};
 		static EntityShader &getEntityShader() {return (entityShader);};
 		static BreakShader &getBreakShader() {return (breakShader);};
+		static GuiShader &getGuiShader() {return (guiShader);};
 		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getTerrain() {return (terrain);};
 		static Window *getWindow() {return (window);};
+		static World *getWorld() {return (world);};
+		static Gui *getGui() {return (gui);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};
 

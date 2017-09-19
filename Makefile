@@ -39,6 +39,7 @@ SRCS_NAME = Main.cpp \
 	    Shaders/ParticlesShader.cpp \
 	    Shaders/BreakShader.cpp \
 	    Shaders/SunMoonShader.cpp \
+	    Shaders/GuiShader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
 	    Entities/Creeper.cpp \
@@ -58,6 +59,9 @@ SRCS_NAME = Main.cpp \
 	    World/Region.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
+	    Gui/Gui.cpp \
+	    Gui/GuiCross.cpp \
+	    Gui/GuiBar.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -98,6 +102,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Entities
 	@mkdir -p $(OBJS_PATH)/World
 	@mkdir -p $(OBJS_PATH)/Particles
+	@mkdir -p $(OBJS_PATH)/Gui
 
 clean:
 	@echo " - Cleaning objs"

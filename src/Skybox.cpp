@@ -73,6 +73,7 @@ namespace voxel
 
 	void Skybox::draw()
 	{
+		updateSkyboxColors();
 		Main::getSkyboxShader().program->use();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(0, 0, 0));
@@ -117,7 +118,6 @@ namespace voxel
 		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 		glm::vec3 *skyboxVertexes = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
-		glm::vec3 *skyboxColors = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
 		GLuint *skyboxIndices = new GLuint[6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1))];
 		GLuint pos = 0;
 		for (uint32_t y = 0; y < SKYBOX_PARTS; ++y)
@@ -132,7 +132,6 @@ namespace voxel
 					skyboxVertexes[index].x = std::cos(x * fac) * SKYBOX_DIST * yFac;
 					skyboxVertexes[index].y = -std::cos(y * fac / 2) * SKYBOX_DIST;
 					skyboxVertexes[index].z = std::sin(x * fac) * SKYBOX_DIST * yFac;
-					skyboxColors[index] = glm::vec3(static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX, static_cast<float>(rand()) / RAND_MAX);
 				}
 				if (y == SKYBOX_PARTS - 1)
 					continue;
@@ -150,10 +149,8 @@ namespace voxel
 		}
 		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(*skyboxVertexes) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(*skyboxIndices) * 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
-		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		delete[] (skyboxVertexes);
 		delete[] (skyboxIndices);
-		delete[] (skyboxColors);
 	}
 
 	uint32_t Skybox::getSkyboxIndex(uint32_t x, uint32_t y)
@@ -163,6 +160,29 @@ namespace voxel
 		if (y == SKYBOX_PARTS - 1)
 			return (1 + (SKYBOX_PARTS - 2) * SKYBOX_PARTS);
 		return (1 + (y - 1) * SKYBOX_PARTS + x);
+	}
+
+	void Skybox::updateSkyboxColors()
+	{
+		glm::vec3 *skyboxColors = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
+		glm::vec3 col;
+		for (uint32_t y = 0; y < SKYBOX_PARTS; ++y)
+		{
+			if (y <= SKYBOX_PARTS / 2)
+				col = glm::vec3(.71, .82, 1);
+			else
+				col = glm::vec3(.51, .68, 1);
+			for (uint32_t x = 0; x < SKYBOX_PARTS; ++x)
+			{
+				if ((y == 0 && x == 1) || (y > 0 && y < SKYBOX_PARTS - 1) || (y == SKYBOX_PARTS - 1 && x == 0))
+				{
+					GLuint index = getSkyboxIndex(x, y);
+					skyboxColors[index] = col;
+				}
+			}
+		}
+		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		delete[] (skyboxColors);
 	}
 
 }

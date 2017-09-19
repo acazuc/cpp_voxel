@@ -51,7 +51,7 @@ namespace voxel
 			delete (this->buffersToDelete[i]);
 		this->buffersToDelete.clear();
 		this->player.update();
-		glm::mat4 mvp = this->player.getProjMat() * this->player.getViewMat();
+		glm::mat4 mvp = this->player.getViewProjMat();
 		Main::getBlocksShader().program->use();
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);

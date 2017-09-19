@@ -62,6 +62,8 @@ SRCS_NAME = Main.cpp \
 	    Gui/Gui.cpp \
 	    Gui/GuiCross.cpp \
 	    Gui/GuiBar.cpp \
+	    Gui/GuiHearts.cpp \
+	    Gui/GuiInventory.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 

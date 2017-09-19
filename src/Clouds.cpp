@@ -57,7 +57,7 @@ namespace voxel
 		Main::getCloudsShader().program->use();
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(-nanotime / 1000000000., CLOUD_Y, 0));
-		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
+		glm::mat4 mvp = this->world.getPlayer().getViewProjMat() * model;
 		Main::getCloudsShader().mvpLocation->setMat4f(mvp);
 		Main::getCloudsShader().mLocation->setMat4f(model);
 		Main::getCloudsShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());

@@ -78,7 +78,7 @@ namespace voxel
 		glm::mat4 model(1);
 		model = glm::translate(model, glm::vec3(0, 0, 0));
 		model = glm::translate(model, this->world.getPlayer().getPos());
-		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
+		glm::mat4 mvp = this->world.getPlayer().getViewProjMat() * model;
 		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
 		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->skyboxVertexesBuffer);
 		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->skyboxColorsBuffer);
@@ -89,7 +89,7 @@ namespace voxel
 		model = glm::translate(model, this->world.getPlayer().getPos());
 		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
-		mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat() * model;
+		mvp = this->world.getPlayer().getViewProjMat() * model;
 		sun->bind();
 		Main::getSunMoonShader().mvpLocation->setMat4f(mvp);
 		Main::getSunMoonShader().texCoordsLocation->setVertexBuffer(this->sunTexCoordsBuffer);

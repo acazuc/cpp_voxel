@@ -1,5 +1,5 @@
-#ifndef GUI_BAR_H
-# define GUI_BAR_H
+#ifndef GUI_HEARTS_H
+# define GUI_HEARTS_H
 
 # include <librender/Shader/Sprite/ShaderSpriteBatchEntry.h>
 # include <librender/Shader/Sprite/ShaderSpriteBatch.h>
@@ -10,16 +10,16 @@ using librender::ShaderSpriteBatch;
 namespace voxel
 {
 
-	class GuiBar
+	class GuiHearts
 	{
 
 	private:
-		ShaderSpriteBatchEntry background;
-		ShaderSpriteBatchEntry selected;
+		ShaderSpriteBatchEntry heartsBackgrounds[10];
+		ShaderSpriteBatchEntry hearts[10];
 		ShaderSpriteBatch spriteBatch;
 
 	public:
-		GuiBar();
+		GuiHearts();
 		void draw();
 
 	};

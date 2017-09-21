@@ -14,7 +14,7 @@ namespace voxel
 	{
 
 	private:
-		Chunk *chunks[REGION_WIDTH * REGION_WIDTH];
+		Chunk **chunks;
 		World &world;
 		int32_t x;
 		int32_t z;

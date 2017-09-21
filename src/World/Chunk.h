@@ -22,6 +22,7 @@ namespace voxel
 		VertexBuffer *indicesBuffer;
 		VertexBuffer *colorsBuffer;
 		uint32_t verticesNb;
+		ChunkLayer() : texCoordsBuffer(NULL), vertexesBuffer(NULL), indicesBuffer(NULL), colorsBuffer(NULL), verticesNb(0) {};
 	};
 
 	class Chunk

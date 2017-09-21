@@ -70,10 +70,8 @@ namespace voxel
 						int distance = sqrt(part1 * part1 + part2 * part2);
 						if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
 						{
-							{
-								std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
-								regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
-							}
+							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+							regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
 							for (uint8_t i = 0; i < 3; ++i)
 							{
 								ChunkLayer &layer = chunk->getLayer(i);
@@ -86,7 +84,6 @@ namespace voxel
 								layer.indicesBuffer = NULL;
 								layer.colorsBuffer = NULL;
 							}
-							delete (chunk);
 						}
 					}
 				}

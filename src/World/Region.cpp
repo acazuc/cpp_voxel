@@ -9,13 +9,15 @@ namespace voxel
 	, x(x)
 	, z(z)
 	{
-		std::memset(this->chunks, 0, sizeof(this->chunks));
+		this->chunks = new Chunk*[REGION_WIDTH * REGION_WIDTH];
+		std::memset(this->chunks, 0, sizeof(*this->chunks) * REGION_WIDTH * REGION_WIDTH);
 	}
 
 	Region::~Region()
 	{
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 			delete (this->chunks[i]);
+		delete[] (this->chunks);
 	}
 
 	void Region::tick()

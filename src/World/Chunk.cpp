@@ -20,7 +20,6 @@ namespace voxel
 	, mustGenerateBuffers(true)
 	, deleted(false)
 	{
-		std::memset(this->layers, 0, sizeof(this->layers));
 		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
 			this->chunkXLess->setChunkXMore(this);
 		if ((this->chunkXMore = this->world.getChunk(this->x + CHUNK_WIDTH, this->z)))

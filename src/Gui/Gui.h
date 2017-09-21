@@ -8,6 +8,7 @@
 # include <librender/Texture.h>
 
 using librender::Texture;
+using librender::Color;
 
 namespace voxel
 {
@@ -39,6 +40,8 @@ namespace voxel
 		static inline Texture *getLogoTex() {return (logoTex);};
 		static inline Texture *getGuiTex() {return (guiTex);};
 		static inline Texture *getBgTex() {return (bgTex);};
+		static Color &getTextColor(char i);
+		static Color &getTextShadowColor(char i);
 	};
 
 }

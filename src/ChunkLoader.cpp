@@ -1,7 +1,8 @@
 #include "ChunkLoader.h"
 #include "World/World.h"
+#include "Debug.h"
 
-#define LOAD_DISTANCE 16
+#define LOAD_DISTANCE 32
 
 namespace voxel
 {
@@ -44,36 +45,42 @@ namespace voxel
 		{
 			float playerX = world.getPlayer().getPos().x;
 			float playerZ = world.getPlayer().getPos().z;
-			int32_t playerChunkX = playerX - (int32_t)playerX % CHUNK_WIDTH;
-			int32_t playerChunkZ = playerZ - (int32_t)playerZ % CHUNK_WIDTH;
+			int32_t playerChunkX = std::floor(playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t playerChunkZ = std::floor(playerZ / CHUNK_WIDTH) *  CHUNK_WIDTH;
 			{
-				std::vector<Chunk*> &chunks = world.getChunks();
-				for (uint32_t i = 0; i < chunks.size(); ++i)
+				std::vector<Region*> &regions = world.getRegions();
+				for (uint32_t i = 0; i < regions.size(); ++i)
 				{
-					Chunk *chunk = chunks[i];
-					double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
-					double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
-					int distance = sqrt(part1 * part1 + part2 * part2);
-					if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
+					Region *region = regions[i];
+					Chunk **chunks = region->getChunks();
+					for (uint32_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
 					{
+						Chunk *chunk = chunks[i];
+						if (!chunk)
+							continue;
+						double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
+						double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
+						int distance = sqrt(part1 * part1 + part2 * part2);
+						if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
 						{
-							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
-							chunks.erase(chunks.begin() + i);
+							{
+								std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+								regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+							}
+							for (uint8_t i = 0; i < 3; ++i)
+							{
+								ChunkLayer &layer = chunk->getLayer(i);
+								world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
+								world.getBuffersToDelete().push_back(layer.vertexesBuffer);
+								world.getBuffersToDelete().push_back(layer.indicesBuffer);
+								world.getBuffersToDelete().push_back(layer.colorsBuffer);
+								layer.texCoordsBuffer = NULL;
+								layer.vertexesBuffer = NULL;
+								layer.indicesBuffer = NULL;
+								layer.colorsBuffer = NULL;
+							}
+							delete (chunk);
 						}
-						for (uint8_t i = 0; i < 3; ++i)
-						{
-							ChunkLayer &layer = chunk->getLayer(i);
-							world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
-							world.getBuffersToDelete().push_back(layer.vertexesBuffer);
-							world.getBuffersToDelete().push_back(layer.indicesBuffer);
-							world.getBuffersToDelete().push_back(layer.colorsBuffer);
-							layer.texCoordsBuffer = NULL;
-							layer.vertexesBuffer = NULL;
-							layer.indicesBuffer = NULL;
-							layer.colorsBuffer = NULL;
-						}
-						delete (chunk);
-						i--;
 					}
 				}
 			}

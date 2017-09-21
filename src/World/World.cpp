@@ -17,26 +17,24 @@ namespace voxel
 	, clouds(*this)
 	, skybox(*this)
 	{
-		this->chunks.reserve(16 * 16);
+		this->regions.reserve(2 * 2);
 	}
 
 	World::~World()
 	{
-		for (uint32_t i = 0; i < this->chunks.size(); ++i)
-			delete (this->chunks[i]);
+		for (uint32_t i = 0; i < this->regions.size(); ++i)
+			delete (this->regions[i]);
 	}
 
 	void World::update()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
-		for (uint32_t i = 0; i < this->chunks.size(); ++i)
-			this->chunks[i]->regenerateLightMap();
 	}
 
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
-		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->tick();
 		this->clouds.tick();
 		this->player.tick();
@@ -59,9 +57,9 @@ namespace voxel
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(10);
-		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(0);
-		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(1);
 		this->player.draw();
 		this->particlesManager.draw();
@@ -70,7 +68,7 @@ namespace voxel
 		this->clouds.draw();
 		Main::getBlocksShader().program->use();
 		Main::getTerrain()->bind();
-		for (std::vector<Chunk*>::iterator iter = this->chunks.begin(); iter != this->chunks.end(); ++iter)
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(2);
 	}
 
@@ -84,9 +82,9 @@ namespace voxel
 		int32_t chunkEndX = std::floor(p1.x / CHUNK_WIDTH) * CHUNK_WIDTH;
 		int32_t chunkStartZ = std::floor(p0.z / CHUNK_WIDTH) * CHUNK_WIDTH;
 		int32_t chunkEndZ = std::floor(p1.z / CHUNK_WIDTH) * CHUNK_WIDTH;
-		for (int32_t chunkX = chunkStartX; chunkX <= chunkEndX; ++chunkX)
+		for (int32_t chunkX = chunkStartX; chunkX <= chunkEndX; chunkX += CHUNK_WIDTH)
 		{
-			for (int32_t chunkZ = chunkStartZ; chunkZ <= chunkEndZ; ++chunkZ)
+			for (int32_t chunkZ = chunkStartZ; chunkZ <= chunkEndZ; chunkZ += CHUNK_WIDTH)
 			{
 				Chunk *chunk = getChunk(chunkX, chunkZ);
 				if (!chunk)
@@ -120,25 +118,43 @@ namespace voxel
 	Chunk *World::getChunk(int32_t x, int32_t z)
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
-		for (uint32_t i = 0; i < this->chunks.size(); ++i)
+		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
-			Chunk *chunk = this->chunks[i];
-			if (chunk->getX() == x && chunk->getZ() == z)
-				return (chunk);
+			Region *region = this->regions[i];
+			int32_t regionX = region->getX();
+			int32_t regionZ = region->getZ();
+			if (x >= regionX && x < regionX + REGION_WIDTH
+					&& z >= regionZ && z < regionZ + REGION_WIDTH)
+				return (region->getChunk((x - region->getX()) / CHUNK_WIDTH, (z - region->getZ()) / CHUNK_WIDTH));
 		}
 		return (NULL);
 	}
 
 	void World::addChunk(Chunk *chunk)
 	{
-		this->chunks.push_back(chunk);
+		int32_t regionX = std::floor((float)chunk->getX() / REGION_WIDTH) * REGION_WIDTH;
+		int32_t regionZ = std::floor((float)chunk->getZ() / REGION_WIDTH) * REGION_WIDTH;
+		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		{
+			Region *region = this->regions[i];
+			if (region->getX() == regionX && region->getZ() == regionZ)
+			{
+				region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, chunk);
+				return;
+			}
+		}
+		Region *region = new Region(*this, regionX, regionZ);
+		region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, chunk);
+		this->regions.push_back(region);
 	}
 
 	ChunkBlock *World::getBlockAt(glm::vec3 pos)
 	{
 		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
 			return (NULL);
-		Chunk *chunk = getChunk(std::floor(pos.x / 16) * 16, std::floor(pos.z / 16 * 16));
+		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (NULL);
 		return (chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
@@ -148,7 +164,9 @@ namespace voxel
 	{
 		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
 			return (15);
-		Chunk *chunk = getChunk(std::floor(pos.x / 16) * 16, std::floor(pos.z / 16 * 16));
+		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (15);
 		return (chunk->getLightAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));

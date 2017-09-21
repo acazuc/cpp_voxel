@@ -1,6 +1,7 @@
 #ifndef GUI_BUTTON_H
 # define GUI_BUTTON_H
 
+# include "./GuiLabel.h"
 # include <librender/Shader/Sprite/ShaderSprite.h>
 # include <librender/Shader/Text/ShaderText.h>
 # include <string>
@@ -16,7 +17,7 @@ namespace voxel
 
 	private:
 		ShaderSprite background;
-		ShaderText text;
+		GuiLabel text;
 		int32_t height;
 		int32_t width;
 		int32_t x;

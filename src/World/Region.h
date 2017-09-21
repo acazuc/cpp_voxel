@@ -14,14 +14,21 @@ namespace voxel
 	{
 
 	private:
-		Chunk *chunks[32][32];
+		Chunk *chunks[REGION_WIDTH * REGION_WIDTH];
 		World &world;
 		int32_t x;
-		int32_t y;
+		int32_t z;
 
 	public:
-		Region(World &world);
+		Region(World &world, int32_t x, int32_t z);
 		~Region();
+		void tick();
+		void draw(uint8_t layer);
+		void setChunk(int32_t x, int32_t z, Chunk *chunk);
+		Chunk *getChunk(int32_t x, int32_t z);
+		inline Chunk **getChunks() {return (this->chunks);};
+		inline int32_t getX() {return (this->x);};
+		inline int32_t getZ() {return (this->z);};
 
 	};
 

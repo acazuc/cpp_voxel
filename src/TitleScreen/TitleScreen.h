@@ -17,6 +17,10 @@ namespace voxel
 		ShaderSprite background;
 		ShaderSprite logo;
 		GuiButton singleplayer;
+		GuiButton multiplayer;
+		GuiButton texturePack;
+		GuiButton options;
+		GuiButton quit;
 
 	public:
 		TitleScreen();

@@ -65,6 +65,7 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiHearts.cpp \
 	    Gui/GuiInventory.cpp \
 	    Gui/GuiButton.cpp \
+	    Gui/GuiLabel.cpp \
 	    WorldScreen/WorldScreen.cpp \
 	    TitleScreen/TitleScreen.cpp \
 

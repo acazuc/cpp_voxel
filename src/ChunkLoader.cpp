@@ -1,8 +1,11 @@
 #include "ChunkLoader.h"
+#include "Utils/System.h"
 #include "World/World.h"
 #include "Debug.h"
 
-#define LOAD_DISTANCE 32
+#define LOAD_DISTANCE 16
+
+#define ON_LOADED {if (++loadedChunks > 5) {goto end;}}
 
 namespace voxel
 {
@@ -41,13 +44,17 @@ namespace voxel
 	void ChunkLoader::_run(void *data)
 	{
 		World &world = *reinterpret_cast<World*>(data);
+		int64_t lastCheck = 0;
 		while (running)
 		{
 			float playerX = world.getPlayer().getPos().x;
 			float playerZ = world.getPlayer().getPos().z;
 			int32_t playerChunkX = std::floor(playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
 			int32_t playerChunkZ = std::floor(playerZ / CHUNK_WIDTH) *  CHUNK_WIDTH;
+			int64_t nanotime = System::nanotime();
+			if (nanotime - lastCheck > 2000000000)
 			{
+				lastCheck = nanotime;
 				std::vector<Region*> &regions = world.getRegions();
 				for (uint32_t i = 0; i < regions.size(); ++i)
 				{
@@ -84,37 +91,38 @@ namespace voxel
 					}
 				}
 			}
+			uint8_t loadedChunks = 0;
 			if (checkChunk(world, playerChunkX, playerChunkZ))
-				goto end;
+				ON_LOADED;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
 			{
 				int32_t chunkX = playerChunkX - i * CHUNK_WIDTH;
 				int32_t chunkZ = playerChunkZ - i * CHUNK_WIDTH;
 				if (checkChunk(world, chunkX, chunkZ))
-					goto end;
+					ON_LOADED;
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkZ += CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2 - 1; ++j)
 				{
 					chunkZ -= CHUNK_WIDTH;
 					if (checkChunk(world, chunkX, chunkZ))
-						goto end;
+						ON_LOADED;
 				}
 			}
 			std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));

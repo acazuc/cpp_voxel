@@ -56,7 +56,7 @@ namespace voxel
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
-		window->setVSync(true);
+		window->setVSync(false);
 		particlesShader.load();
 		focusedShader.load();
 		sunMoonShader.load();

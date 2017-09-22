@@ -2,7 +2,9 @@
 #include "Noise/WorleyNoise.h"
 #include "ChunkTessellator.h"
 #include "Blocks/Blocks.h"
+#include "Utils/System.h"
 #include "World.h"
+#include "Debug.h"
 #include "Main.h"
 #include <cstring>
 

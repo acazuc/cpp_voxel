@@ -18,6 +18,8 @@ namespace voxel
 		glm::mat4 viewMat;
 		int32_t oldMouseX;
 		int32_t oldMouseY;
+		uint8_t eyeLight;
+		bool inWater;
 		void handleMovement();
 		void handleRotation();
 
@@ -30,6 +32,8 @@ namespace voxel
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
 		inline World &getWorld() {return (this->world);};
+		inline uint8_t getEyeLight() {return (this->eyeLight);};
+		inline bool isInWater() {return (this->inWater);};
 
 	};
 

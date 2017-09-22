@@ -11,7 +11,7 @@ uniform mat4 MVP;
 
 void main()
 {
-	vec4 newVertex = vec4(vertexPosition, 1, 1);
+	vec4 newVertex = vec4(vertexPosition, 0, 1);
 	UV = vertexUV;
 	color = vertexColor;
 	gl_Position = MVP * newVertex;

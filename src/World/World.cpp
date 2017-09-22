@@ -54,8 +54,19 @@ namespace voxel
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
-		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-		Main::getBlocksShader().fogDensityLocation->setVec1f(0.1);
+		if (this->player.isInWater())
+		{
+			glm::vec4 color(0, 0, .075, 1);
+			Main::getBlocksShader().fogColorLocation->setVec4f(color);
+			Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
+			Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+		}
+		else
+		{
+			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
+			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 12);
+			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
+		}
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(5);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)

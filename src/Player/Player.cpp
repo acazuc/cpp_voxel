@@ -18,6 +18,7 @@ namespace voxel
 	, raycast(*this)
 	, oldMouseX(0)
 	, oldMouseY(0)
+	, inWater(false)
 	{
 		this->flying = true;
 		setSize(glm::vec3(.6, 1.8, .6));
@@ -142,8 +143,18 @@ namespace voxel
 
 	void Player::update()
 	{
+		glm::vec3 pos(this->world.getPlayer().getPos());
+		pos.y += .72 + 2. / 16;
+		ChunkBlock *block = this->world.getBlockAt(pos);
+		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
+		this->eyeLight = this->world.getLightAt(pos);
 		handleRotation();
-		this->projMat = glm::perspective(glm::radians(90.), Main::getWindow()->getWidth() / static_cast<double>(Main::getWindow()->getHeight()), .019, 1500.);
+		float fov = 90;
+		if (this->inWater)
+			fov -= 10;
+		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
+			fov += 10;
+		this->projMat = glm::perspective(glm::radians(fov), Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .019f, 1500.f);
 		this->viewMat = glm::mat4(1.);
 		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.01, 0, 0));
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010, 0).x, glm::vec3(0, 0, 1));

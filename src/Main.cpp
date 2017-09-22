@@ -41,7 +41,7 @@ namespace voxel
 
 	void Main::main()
 	{
-		//glfwWindowHint(GLFW_SAMPLES, 32);
+		glfwWindowHint(GLFW_SAMPLES, 2);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -71,7 +71,7 @@ namespace voxel
 			blocksShader.program->use();
 			blocksShader.mLocation->setMat4f(osef);
 			blocksShader.texLocation->setVec1i(0);
-			blocksShader.fogDistanceLocation->setVec1f(16 * 30);
+			blocksShader.fogDistanceLocation->setVec1f(16 * 12);
 			blocksShader.disableTexLocation->setVec1i(0);
 			cloudsShader.program->use();
 			cloudsShader.mLocation->setMat4f(osef);
@@ -79,11 +79,11 @@ namespace voxel
 			sunMoonShader.program->use();
 			sunMoonShader.texLocation->setVec1i(0);
 			entityShader.program->use();
-			entityShader.fogDistanceLocation->setVec1f(16 * 30);
+			entityShader.fogDistanceLocation->setVec1f(16 * 12);
 			particlesShader.program->use();
-			particlesShader.fogDistanceLocation->setVec1f(16 * 30);
+			particlesShader.fogDistanceLocation->setVec1f(16 * 12);
 			breakShader.program->use();
-			breakShader.fogDistanceLocation->setVec1f(16 * 30);
+			breakShader.fogDistanceLocation->setVec1f(16 * 12);
 			guiShader.program->use();
 			guiShader.texLocation->setVec1i(0);
 		}

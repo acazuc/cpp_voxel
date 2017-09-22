@@ -18,7 +18,6 @@ SRCS_PATH = src/
 
 SRCS_NAME = Main.cpp \
 	    Frustum.cpp \
-	    ChunkLoader.cpp \
 	    Clouds.cpp \
 	    Skybox.cpp \
 	    AABB.cpp \
@@ -57,6 +56,7 @@ SRCS_NAME = Main.cpp \
 	    World/ChunkBlock.cpp \
 	    World/Chunk.cpp \
 	    World/Region.cpp \
+	    World/ChunkLoader.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
 	    Gui/Gui.cpp \

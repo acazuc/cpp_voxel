@@ -3,7 +3,7 @@
 #include "World/World.h"
 #include "Debug.h"
 
-#define LOAD_DISTANCE 32
+#define LOAD_DISTANCE 16
 
 #define ON_LOADED {if (++loadedChunks > 5) {goto end;}}
 

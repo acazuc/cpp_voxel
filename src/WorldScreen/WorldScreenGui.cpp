@@ -21,16 +21,13 @@ namespace voxel
 
 	void WorldScreenGui::draw()
 	{
-		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
-		glm::vec3 pos(this->worldScreen.getWorld()->getPlayer().getPos());
-		pos.y += .72 + 2. / 16;
-		ChunkBlock *block = this->worldScreen.getWorld()->getBlockAt(pos);
-		if (block && (block->getType() == 8 || block->getType() == 9))
+		if (this->worldScreen.getWorld()->getPlayer().isInWater())
 		{
-			uint8_t light = this->worldScreen.getWorld()->getLightAt(pos);
-			Color color(ChunkBlock::getLightValue(light), .5);
+			uint8_t light = this->worldScreen.getWorld()->getPlayer().getEyeLight();
+			Color color(ChunkBlock::getLightValue(light), .25 - .25 * ((15 - light) / 15.));
 			this->water.setColor(color);
 			this->water.setSize(Main::getWindow()->getWidth(), Main::getWindow()->getHeight());
 			this->water.draw(Gui::getMat());
@@ -39,7 +36,7 @@ namespace voxel
 		this->cross.draw();
 		this->bar.draw();
 		glDepthFunc(GL_LESS);
-		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 	}
 
 }

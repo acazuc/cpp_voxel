@@ -24,7 +24,7 @@ namespace voxel
 		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
-		if (this->worldScreen.getWorld()->getPlayer().isInWater())
+		if (this->worldScreen.getWorld()->getPlayer().isEyeInWater())
 		{
 			uint8_t light = this->worldScreen.getWorld()->getPlayer().getEyeLight();
 			Color color(ChunkBlock::getLightValue(light), .25 - .25 * ((15 - light) / 15.));

@@ -13,6 +13,7 @@ namespace voxel
 	{
 
 	protected:
+		glm::vec3 sliperness;
 		glm::vec3 posOrg;
 		glm::vec3 posDst;
 		glm::vec3 size;
@@ -23,6 +24,7 @@ namespace voxel
 		float gravity;
 		bool isOnFloor;
 		bool deleted;
+		bool inWater;
 		bool flying;
 
 	public:
@@ -39,6 +41,7 @@ namespace voxel
 		inline glm::vec3 &getRot() {return (this->rot);};
 		inline AABB &getAABB() {return (this->aabb);};
 		inline bool isDeleted() {return (this->deleted);};
+		inline bool isInWater() {return (this->inWater);};
 
 	};
 

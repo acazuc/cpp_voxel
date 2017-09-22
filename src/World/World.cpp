@@ -54,7 +54,7 @@ namespace voxel
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
-		if (this->player.isInWater())
+		if (this->player.isEyeInWater())
 		{
 			glm::vec4 color(0, 0, .075, 1);
 			Main::getBlocksShader().fogColorLocation->setVec4f(color);

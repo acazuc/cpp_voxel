@@ -7,6 +7,7 @@
 #define WALK_SPEED 1
 #define RUN_SPEED 1.3
 #define FLY_SPEED 20
+#define SWIM_SPEED 0.02
 
 extern int64_t nanotime;
 
@@ -18,9 +19,9 @@ namespace voxel
 	, raycast(*this)
 	, oldMouseX(0)
 	, oldMouseY(0)
-	, inWater(false)
+	, eyeInWater(false)
 	{
-		this->flying = true;
+		this->flying = false;
 		setSize(glm::vec3(.6, 1.8, .6));
 		setPos(glm::vec3(0, 70, 0));
 	}
@@ -72,7 +73,12 @@ namespace voxel
 				angle += 0;
 			add.x = std::cos(angle / 180. * M_PI);
 			add.z = std::sin(angle / 180. * M_PI);
-			if (this->flying)
+			if (this->inWater)
+			{
+				add.x *= SWIM_SPEED;
+				add.z *= SWIM_SPEED;
+			}
+			else if (this->flying)
 			{
 				add.x *= FLY_SPEED;
 				add.z *= FLY_SPEED;
@@ -97,16 +103,21 @@ namespace voxel
 		}
 		else
 		{
-			if (this->isOnFloor)
+			if (keySpace)
 			{
-				if (keySpace)
-					jump();
+				if (this->inWater)
+					add.y += .04;
+				else if (this->isOnFloor)
+						jump();
 			}
 		}
-		if (this->isOnFloor || this->flying)
-			add *= 0.1;
-		else
-			add *= 0.02;
+		if (!this->inWater)
+		{
+			if (this->isOnFloor || this->flying)
+				add *= 0.1;
+			else
+				add *= 0.02;
+		}
 		this->posDst += add;
 	}
 
@@ -146,11 +157,11 @@ namespace voxel
 		glm::vec3 pos(this->world.getPlayer().getPos());
 		pos.y += .72 + 2. / 16;
 		ChunkBlock *block = this->world.getBlockAt(pos);
-		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
+		this->eyeInWater = block && (block->getType() == 8 || block->getType() == 9);
 		this->eyeLight = this->world.getLightAt(pos);
 		handleRotation();
 		float fov = 90;
-		if (this->inWater)
+		if (this->eyeInWater)
 			fov -= 10;
 		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			fov += 10;

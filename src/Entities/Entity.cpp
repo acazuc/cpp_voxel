@@ -16,7 +16,7 @@ namespace voxel
 	, deleted(false)
 	, flying(false)
 	{
-		//Empty
+		this->sliperness = glm::vec3(.91, .98, .91);
 	}
 
 	Entity::~Entity()
@@ -30,9 +30,7 @@ namespace voxel
 		if (!this->flying)
 			this->posDst.y -= this->gravity;
 		move(this->posDst);
-		this->posDst.x *= .91;
-		this->posDst.y *= .98;
-		this->posDst.z *= .91;
+		this->posDst *= this->sliperness;
 		if (this->flying || this->isOnFloor)
 		{
 			this->posDst.x *= .7;
@@ -63,6 +61,20 @@ namespace voxel
 
 	void Entity::move(glm::vec3 dir)
 	{
+		glm::vec3 pos(this->world.getPlayer().getPos());
+		pos.y -= this->size.y / 2 - .4;
+		ChunkBlock *block = this->world.getBlockAt(pos);
+		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
+		if (this->inWater)
+		{
+			this->sliperness = glm::vec3(.8);
+			this->gravity = 0.02;
+		}
+		else
+		{
+			this->sliperness = glm::vec3(.91, .98, .91);
+			this->gravity = 0.08;
+		}
 		glm::vec3 org = dir;
 		AABB newAabb = this->aabb.expand(dir);
 		std::vector<AABB> aabbs;
@@ -83,6 +95,15 @@ namespace voxel
 			this->posDst.y = 0;
 		if (dir.z != org.z)
 			this->posDst.z = 0;
+		if (this->inWater && (dir.x != org.x || dir.z != org.z))
+		{
+			AABB tmp = this->aabb;
+			tmp.move(glm::vec3(this->posDst.x, this->posDst.y + .6f, this->posDst.z));
+			std::vector<AABB> tmp2;
+			this->world.getAABBs(tmp, tmp2);
+			if (tmp2.size() == 0)
+				this->posDst.y = .3;
+		}
 		this->isOnFloor = org.y < 0 && dir.y != org.y;
 		if (this->pos.y < -100)
 			this->deleted = true;

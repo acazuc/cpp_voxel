@@ -78,7 +78,7 @@ namespace voxel
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
 		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
-		inline int32_t getXYZId(glm::vec3 pos) {return ((pos.x * CHUNK_HEIGHT + pos.y) * CHUNK_WIDTH + pos.z);};
+		inline int32_t getXYZId(glm::vec3 pos) {return (((int32_t)pos.x * CHUNK_HEIGHT + (int32_t)pos.y) * CHUNK_WIDTH + (int32_t)pos.z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		static inline void setAvailableRebuilds(uint8_t rebuilds) {availableRebuilds = rebuilds;};
 

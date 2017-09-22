@@ -55,6 +55,7 @@ namespace voxel
 		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
+		Main::getBlocksShader().fogDensityLocation->setVec1f(0.1);
 		Main::getTerrain()->bind();
 		Chunk::setAvailableRebuilds(5);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
@@ -68,8 +69,10 @@ namespace voxel
 		this->clouds.draw();
 		Main::getBlocksShader().program->use();
 		Main::getTerrain()->bind();
+		glDisable(GL_CULL_FACE);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(2);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void World::getAABBs(AABB &aabb, std::vector<AABB> &aabbs)
@@ -123,8 +126,7 @@ namespace voxel
 			Region *region = this->regions[i];
 			int32_t regionX = region->getX();
 			int32_t regionZ = region->getZ();
-			if (x >= regionX && x < regionX + REGION_WIDTH
-					&& z >= regionZ && z < regionZ + REGION_WIDTH)
+			if (x >= regionX && x < regionX + REGION_WIDTH && z >= regionZ && z < regionZ + REGION_WIDTH)
 				return (region->getChunk((x - region->getX()) / CHUNK_WIDTH, (z - region->getZ()) / CHUNK_WIDTH));
 		}
 		return (NULL);

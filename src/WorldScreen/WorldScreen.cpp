@@ -5,7 +5,8 @@ namespace voxel
 {
 
 	WorldScreen::WorldScreen(World *world)
-	: world(world)
+	: gui(*this)
+	, world(world)
 	{
 		//
 	}
@@ -22,8 +23,8 @@ namespace voxel
 
 	void WorldScreen::draw()
 	{
-		Gui::updateMat();
 		this->world->draw();
+		this->gui.draw();
 	}
 
 }

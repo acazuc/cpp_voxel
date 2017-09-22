@@ -3,7 +3,7 @@
 #include "World/World.h"
 #include "Debug.h"
 
-#define LOAD_DISTANCE 16
+#define LOAD_DISTANCE 32
 
 #define ON_LOADED {if (++loadedChunks > 5) {goto end;}}
 
@@ -33,6 +33,12 @@ namespace voxel
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
+		if (distance > 2 * 16)
+		{
+			AABB aabb(glm::vec3(chunkX, 0, chunkZ), glm::vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
+			if (!world.getFrustum().check(aabb))
+				return (false);
+		}
 		if (world.getChunk(chunkX, chunkZ))
 			return (false);
 		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
@@ -62,16 +68,15 @@ namespace voxel
 					Chunk **chunks = region->getChunks();
 					for (uint32_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
 					{
-						Chunk *chunk = chunks[i];
+						Chunk *chunk = chunks[j];
 						if (!chunk)
 							continue;
 						double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
 						double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
-						int distance = sqrt(part1 * part1 + part2 * part2);
+						int32_t distance = sqrt(part1 * part1 + part2 * part2);
 						if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
 						{
 							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
-							regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
 							for (uint8_t i = 0; i < 3; ++i)
 							{
 								ChunkLayer &layer = chunk->getLayer(i);
@@ -84,6 +89,7 @@ namespace voxel
 								layer.indicesBuffer = NULL;
 								layer.colorsBuffer = NULL;
 							}
+							regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
 						}
 					}
 				}

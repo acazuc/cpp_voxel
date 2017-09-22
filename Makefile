@@ -67,6 +67,7 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiButton.cpp \
 	    Gui/GuiLabel.cpp \
 	    WorldScreen/WorldScreen.cpp \
+	    WorldScreen/WorldScreenGui.cpp \
 	    TitleScreen/TitleScreen.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))

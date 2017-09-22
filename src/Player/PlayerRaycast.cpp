@@ -7,6 +7,7 @@
 
 #define OFFSET .002
 #define BREAK_OFFSET .0005
+#define PICK_DISTANCE 500
 
 namespace voxel
 {
@@ -166,7 +167,6 @@ namespace voxel
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			glBlendEquation(GL_FUNC_ADD);
-			//glBlendFuncSeparate(GL_DST_COLOR, GL_SRC_COLOR, GL_ONE, GL_ZERO);
 			glDepthFunc(GL_LEQUAL);
 			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
 			glDepthFunc(GL_LESS);
@@ -204,7 +204,7 @@ namespace voxel
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
 		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y + 0.72, dir.y), intbound(this->player.getPos().z, dir.z));
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
-		float radius = 5;
+		float radius = PICK_DISTANCE;
 		uint8_t face = 0;
 		int32_t oldChunkX = -1;
 		int32_t oldChunkZ = -1;
@@ -226,6 +226,9 @@ namespace voxel
 				glm::vec3 relative(pos.x - chunkX, pos.y, pos.z - chunkZ);
 				ChunkBlock *block = chunk->getBlockAt(glm::vec3(relative));
 				if (!block || !block->getType())
+					goto nextStep;
+				Block *blockModel = Blocks::getBlock(block->getType());
+				if (!blockModel || !blockModel->isFocusable())
 					goto nextStep;
 				if (this->pos != pos)
 					doneTicks = 0;

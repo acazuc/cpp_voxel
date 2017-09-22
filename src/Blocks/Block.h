@@ -13,6 +13,7 @@ namespace voxel
 		std::string defaultName;
 		uint8_t opacity;
 		uint8_t light;
+		uint8_t layer;
 		uint8_t id;
 		float resistance;
 		float hardness;
@@ -28,7 +29,7 @@ namespace voxel
 		float texTopY;
 		float texBotX;
 		float texBotY;
-		uint8_t layer;
+		bool focusable;
 		bool solid;
 
 	public:
@@ -81,6 +82,8 @@ namespace voxel
 		Block *setTexY(float texY);
 		inline uint8_t getLayer() {return (this->layer);};
 		Block *setLayer(uint8_t layer);
+		inline bool isFocusable() {return (this->focusable);};
+		Block *setFocusable(bool focusable);
 		inline bool isSolid() {return (this->solid);};
 		Block *setSolid(bool solid);
 

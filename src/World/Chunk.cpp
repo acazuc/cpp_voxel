@@ -305,7 +305,7 @@ endNearTop:
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				int16_t topBlock = this->topBlocks[x * CHUNK_WIDTH + z];
+				int16_t topBlock = this->topBlocks[getXZId(x, z)];
 				setBlockLightRec(glm::vec3(x, topBlock, z), 0xf);
 			}
 		}
@@ -320,9 +320,10 @@ endNearTop:
 			glm::vec3 pos(1);
 			for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 			{
-				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
+				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
+					int32_t topBlock = this->topBlocks[getXZId(x, z)];
+					for (int32_t y = 0; y <= topBlock; ++y)
 					{
 						ChunkBlock *block = &this->blocks[getXYZId(glm::vec3(x, y, z))];
 						pos.x = this->x + x;

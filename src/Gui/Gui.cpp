@@ -13,6 +13,7 @@ namespace voxel
 	glm::mat4 Gui::mat;
 	Texture *Gui::inventoryTex;
 	Texture *Gui::iconsTex;
+	Texture *Gui::waterTex;
 	Texture *Gui::logoTex;
 	Texture *Gui::guiTex;
 	Texture *Gui::bgTex;
@@ -55,6 +56,13 @@ namespace voxel
 		bgTex->bind();
 		bgTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		bgTex->setWrap(TEXTURE_WRAP_REPEAT, TEXTURE_WRAP_REPEAT);
+		delete[] (data);
+		if (!libformat::PNG::read("data/textures/misc/water.png", data, width, height))
+			ERROR("Failed to read water.png");
+		waterTex = new Texture(data, width, height);
+		waterTex->bind();
+		waterTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
+		waterTex->setWrap(TEXTURE_WRAP_REPEAT, TEXTURE_WRAP_REPEAT);
 		delete[] (data);
 		textShadowColors[0] = new Color(0.00, 0.00, 0.00);
 		textShadowColors[1] = new Color(0.00, 0.00, .165);

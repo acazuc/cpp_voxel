@@ -17,11 +17,11 @@ namespace voxel
 		blocks[4] = (new Block(4))->setDefaultName("cobblestone")->setHardness(2)->setTex(0, 1. / 16);
 		blocks[5] = (new Block(5))->setDefaultName("planks")->setHardness(2)->setTex(4. / 16, 0);
 		blocks[6] = (new Block(6))->setDefaultName("sapling")->setHardness(0)->setTex(15. / 16, 0)->setSolid(false)->setLayer(1)->setOpacity(1);
-		blocks[7] = (new Block(7))->setDefaultName("bedrock")->setHardness(6000000)->setTex(1. / 16, 1. / 16)->setHardness(true);
-		blocks[8] = (new Block(8))->setDefaultName("flowing_water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1);
-		blocks[9] = (new Block(9))->setDefaultName("water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1);
-		blocks[10] = (new Block(10))->setDefaultName("flowing_lava")->setHardness(100)->setTex(15. / 16, 15. / 16)->setLayer(2);
-		blocks[11] = (new Block(11))->setDefaultName("lava")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2);
+		blocks[7] = (new Block(7))->setDefaultName("bedrock")->setHardness(6000000)->setTex(1. / 16, 1. / 16);
+		blocks[8] = (new Block(8))->setDefaultName("flowing_water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1)->setFocusable(false)->setSolid(false);
+		blocks[9] = (new Block(9))->setDefaultName("water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1)->setFocusable(false)->setSolid(false);
+		blocks[10] = (new Block(10))->setDefaultName("flowing_lava")->setHardness(100)->setTex(15. / 16, 15. / 16)->setLayer(2)->setFocusable(false)->setSolid(false);
+		blocks[11] = (new Block(11))->setDefaultName("lava")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setFocusable(false)->setSolid(false);
 		blocks[12] = (new Block(12))->setDefaultName("sand")->setHardness(.5)->setTex(2. / 16, 1. / 16);
 		blocks[13] = (new Block(13))->setDefaultName("gravel")->setHardness(.6)->setTex(3. / 16, 1. / 16);
 		blocks[14] = (new Block(14))->setDefaultName("gold_ore")->setHardness(3)->setTex(0, 2. / 16);

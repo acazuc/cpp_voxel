@@ -95,6 +95,7 @@ namespace voxel
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
 		glBindTexture(GL_TEXTURE_2D, terrain->getId());
+		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glActiveTexture(GL_TEXTURE0);

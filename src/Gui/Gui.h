@@ -20,6 +20,7 @@ namespace voxel
 		static glm::mat4 mat;
 		static Texture *inventoryTex;
 		static Texture *iconsTex;
+		static Texture *waterTex;
 		static Texture *logoTex;
 		static Texture *guiTex;
 		static Texture *bgTex;
@@ -37,6 +38,7 @@ namespace voxel
 		static inline glm::mat4 &getMat() {return (mat);};
 		static inline Texture *getInventoryTex() {return (inventoryTex);};
 		static inline Texture *getIconsTex() {return (iconsTex);};
+		static inline Texture *getWaterTex() {return (waterTex);};
 		static inline Texture *getLogoTex() {return (logoTex);};
 		static inline Texture *getGuiTex() {return (guiTex);};
 		static inline Texture *getBgTex() {return (bgTex);};

@@ -40,7 +40,7 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		delete[] (data);
-		if (!libformat::PNG::read("data/textures/moon_phases.png", fakeData, width, height))
+		if (!libformat::PNG::read("data/textures/moon.png", fakeData, width, height))
 			ERROR("Failed to read moon_phases.png");
 		data = reinterpret_cast<uint8_t*>(fakeData);
 		for (uint32_t i = 0; i < width * height; ++i)
@@ -105,7 +105,7 @@ namespace voxel
 
 	void Skybox::initBuffers()
 	{
-		GLfloat moonTexCoords[] = {0, 0, 0, .5, .25, 0, .25, .5, .25, 0, 0, .5};
+		GLfloat moonTexCoords[] = {0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1};
 		GLfloat sunTexCoords[] = {0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1};
 		GLfloat moonVertexes[] = {-100, 100, -500, -100, -100, -500, 100, 100, -500, 100, -100, -500, 100, 100, -500, -100, -100, -500};
 		GLfloat sunVertexes[] = {-100, -100, 500, -100, 100, 500, 100, -100, 500, 100, 100, 500, 100, -100, 500, -100, 100, 500};
@@ -147,7 +147,7 @@ namespace voxel
 				skyboxIndices[pos++] = p2;
 			}
 		}
-		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(*skyboxVertexes) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_STATIC_DRAW);
+		this->skyboxVertexesBuffer.setData(GL_ARRAY_BUFFER, skyboxVertexes, sizeof(*skyboxVertexes) * (SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->skyboxIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, skyboxIndices, sizeof(*skyboxIndices) * 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
 		delete[] (skyboxVertexes);
 		delete[] (skyboxIndices);
@@ -181,7 +181,7 @@ namespace voxel
 				}
 			}
 		}
-		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2, GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->skyboxColorsBuffer.setData(GL_ARRAY_BUFFER, skyboxColors, sizeof(*skyboxColors) * (SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		delete[] (skyboxColors);
 	}
 

@@ -26,6 +26,7 @@ namespace voxel
 		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
 		this->timeFactorLocation = this->program->getUniformLocation("timeFactor");
 		this->disableTexLocation = this->program->getUniformLocation("disableTex");
+		this->fogDensityLocation = this->program->getUniformLocation("fogDensity");
 		this->texCoordsLocation = this->program->getAttribLocation("vertexUV");
 		this->texCoordsLocation->setVertexAttribArray(true);
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");

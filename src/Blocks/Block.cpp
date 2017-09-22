@@ -6,10 +6,11 @@ namespace voxel
 	Block::Block(uint8_t id)
 	: opacity(15)
 	, light(0)
+	, layer(0)
 	, id(id)
 	, resistance(0)
 	, hardness(0)
-	, layer(0)
+	, focusable(true)
 	, solid(true)
 	{
 		//Empty
@@ -210,6 +211,12 @@ namespace voxel
 	Block *Block::setLayer(uint8_t layer)
 	{
 		this->layer = layer;
+		return (this);
+	}
+
+	Block *Block::setFocusable(bool focusable)
+	{
+		this->focusable = focusable;
 		return (this);
 	}
 

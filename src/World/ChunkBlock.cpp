@@ -101,7 +101,7 @@ namespace voxel
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
 		std::vector<glm::vec3> &colors = tessellator.colors;
 		std::vector<GLuint> &indices = tessellator.indices;
-		if (!blockModel->isSolid())
+		if (this->type == 6)
 		{
 			glm::vec3 org(pos.x + BLOCK_SIZE / 6., pos.y, pos.z + BLOCK_SIZE / 6.);
 			glm::vec3 dst(pos.x + BLOCK_SIZE * 5. / 6, pos.y + BLOCK_SIZE * 2. / 3, pos.z + BLOCK_SIZE * 5. / 6);
@@ -190,7 +190,11 @@ namespace voxel
 		glm::vec3 dst(pos);
 		dst += BLOCK_SIZE;
 		if (this->type == 8 || this->type == 9)
-			dst.y -= 2. / 16;
+		{
+			uint8_t topType = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()))->getType();
+			if (topType != 8 && topType != 9)
+				dst.y -= 2. / 16;
+		}
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			glm::vec2 texOrg(blockModel->getTexFrontX(), blockModel->getTexFrontY());
@@ -1343,10 +1347,7 @@ namespace voxel
 
 	float ChunkBlock::getLightValue(int8_t level)
 	{
-		if (level < 0)
-			return (lightsLevelsValues[0] * LIGHT_RANGE + LIGHT_MIN);
-		if (level > 15)
-			return (lightsLevelsValues[15] * LIGHT_RANGE + LIGHT_MIN);
+		level = std::max((int8_t)0, std::min((int8_t)15, level));
 		return (lightsLevelsValues[level] * LIGHT_RANGE + LIGHT_MIN);
 	}
 

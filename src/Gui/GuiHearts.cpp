@@ -29,7 +29,7 @@ namespace voxel
 
 	void GuiHearts::draw()
 	{
-		this->spriteBatch.setPos((Main::getWindow()->getWidth() - 182 * 4) / 2, Main::getWindow()->getHeight() - 22 * 4 - 2 * 4 - 9 * 4);
+		this->spriteBatch.setPos((Main::getWindow()->getWidth() - 182 * 4) / 2, Main::getWindow()->getHeight() - 22 * 4 - 1 * 4 - 9 * 4);
 		this->spriteBatch.draw(Gui::getMat());
 	}
 

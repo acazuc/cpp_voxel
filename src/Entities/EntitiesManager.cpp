@@ -53,11 +53,11 @@ namespace voxel
 		{
 			if (!libformat::PNG::read("data/textures/mob/" + names[i] + ".png", datas, width, height))
 				ERROR("Failed to read mob/" << names[i] << ".png");
-			*textures[i] = new Texture(datas, width, height);
+			*(textures[i]) = new Texture();
+			(*(textures[i]))->setData(datas, width, height);
 			delete[] (datas);
-			(*textures[i])->bind();
-			glGenerateMipmap(GL_TEXTURE_2D);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			(*(textures[i]))->bind();
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		}
 	}

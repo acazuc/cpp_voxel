@@ -31,7 +31,6 @@ namespace voxel
 
 	private:
 		ChunkStorage *storages[16];
-		//ChunkBlock *blocks;
 		ChunkLayer layers[3];
 		glm::mat4 modelMat;
 		Chunk *chunkXLess;

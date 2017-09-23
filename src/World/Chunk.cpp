@@ -29,8 +29,6 @@ namespace voxel
 			this->chunkZMore->setChunkZLess(this);
 		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
 		std::memset(this->storages, 0, sizeof(this->storages));
-		/*this->blocks = new ChunkBlock[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
-		std::memset(this->blocks, 0, sizeof(*this->blocks) * CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);*/
 		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
@@ -356,22 +354,6 @@ endNearTop:
 					continue;
 				this->storages[i]->fillBuffers(this, this->layers[layer].tessellator, layer);
 			}
-			/*for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
-			{
-				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
-				{
-					int32_t topBlock = this->topBlocks[getXZId(x, z)];
-					for (int32_t y = 0; y <= topBlock; ++y)
-					{
-						glm::vec3 pos;
-						ChunkBlock *block = &this->blocks[getXYZId(glm::vec3(x, y, z))];
-						pos.x = this->x + x;
-						pos.y = y;
-						pos.z = this->z + z;
-						block->fillBuffers(this, pos, this->layers[layer].tessellator, layer);
-					}
-				}
-			}*/
 		}
 		this->mustUpdateBuffers = true;
 	}
@@ -413,7 +395,6 @@ endNearTop:
 		if (!this->storages[storageY])
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
 		this->storages[storageY]->setBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), type);
-		//this->blocks[getXYZId(pos)].setType(type);
 		regenerateLightMap();
 		if (pos.x == 0)
 		{
@@ -443,7 +424,6 @@ endNearTop:
 		if (!this->storages[storageY])
 			return (NULL);
 		return (this->storages[storageY]->getBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
-		//return (&this->blocks[getXYZId(pos)]);
 	}
 
 	void Chunk::destroyBlock(glm::vec3 pos)

@@ -49,18 +49,6 @@ namespace voxel
 	//static float lightsLevelsValues[] = {.0625, .125, .1875, .25, .3125, .375, .4375, .5, .5625, .625, .6875, .75, .8125, .875, .9375, 1};
 	static const float texSize = 1. / 16;
 
-	ChunkBlock::ChunkBlock(uint8_t type)
-	: type(type)
-	{
-		//Empty
-	}
-
-	ChunkBlock::ChunkBlock()
-	: type(0)
-	{
-		//Empty
-	}
-
 	void ChunkBlock::fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer)
 	{
 		if (this->type == 0)
@@ -191,9 +179,15 @@ namespace voxel
 		dst += BLOCK_SIZE;
 		if (this->type == 8 || this->type == 9)
 		{
-			uint8_t topType = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()))->getType();
-			if (topType != 8 && topType != 9)
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()));
+			if (!block)
 				dst.y -= 2. / 16;
+			else
+			{
+				uint8_t topType = block->getType();
+				if (topType != 8 && topType != 9)
+					dst.y -= 2. / 16;
+			}
 		}
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
@@ -436,14 +430,14 @@ namespace voxel
 			}
 			else
 			{
-				ChunkBlock *block = chunk->getChunkZMore()->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, 0));
+				ChunkBlock *block = chunk->getChunkZMore()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, 0));
 				if (!block || (block->isTransparent() && block->getType() != this->type))
 					visibleFaces |= BLOCK_FACE_FRONT;
 			}
 		}
 		else
 		{
-			ChunkBlock *block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1));
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_FRONT;
 		}
@@ -455,14 +449,14 @@ namespace voxel
 			}
 			else
 			{
-				ChunkBlock *block = chunk->getChunkZLess()->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1));
+				ChunkBlock *block = chunk->getChunkZLess()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1));
 				if (!block || (block->isTransparent() && block->getType() != this->type))
 					visibleFaces |= BLOCK_FACE_BACK;
 			}
 		}
 		else
 		{
-			ChunkBlock *block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1));
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_BACK;
 		}
@@ -474,14 +468,14 @@ namespace voxel
 			}
 			else
 			{
-				ChunkBlock *block = chunk->getChunkXLess()->getBlockAt(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ()));
+				ChunkBlock *block = chunk->getChunkXLess()->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ()));
 				if (!block || (block->isTransparent() && block->getType() != this->type))
 					visibleFaces |= BLOCK_FACE_LEFT;
 			}
 		}
 		else
 		{
-			ChunkBlock *block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ()));
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ()));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_LEFT;
 		}
@@ -493,14 +487,14 @@ namespace voxel
 			}
 			else
 			{
-				ChunkBlock *block = chunk->getChunkXMore()->getBlockAt(glm::vec3(0, pos.y, pos.z - chunk->getZ()));
+				ChunkBlock *block = chunk->getChunkXMore()->getBlock(glm::vec3(0, pos.y, pos.z - chunk->getZ()));
 				if (!block || (block->isTransparent() && block->getType() != this->type))
 					visibleFaces |= BLOCK_FACE_RIGHT;
 			}
 		}
 		else
 		{
-			ChunkBlock *block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ()));
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ()));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_RIGHT;
 		}
@@ -510,7 +504,7 @@ namespace voxel
 		}
 		else
 		{
-			ChunkBlock *block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()));
+			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_UP;
 		}
@@ -520,7 +514,7 @@ namespace voxel
 		}
 		else
 		{
-			ChunkBlock * block = chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ()));
+			ChunkBlock * block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ()));
 			if (!block || (block->isTransparent() && block->getType() != this->type))
 				visibleFaces |= BLOCK_FACE_DOWN;
 		}
@@ -589,7 +583,9 @@ namespace voxel
 			if (!(chunk = chunk->getChunkZMore()))
 				return (true);
 		}
-		ChunkBlock *block = chunk->getBlockAt(glm::vec3(newX, newY, newZ));
+		ChunkBlock *block = chunk->getBlock(glm::vec3(newX, newY, newZ));
+		if (!block)
+			return (true);
 		return (block->isTransparent());
 	}
 

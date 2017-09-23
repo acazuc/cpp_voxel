@@ -59,11 +59,11 @@ namespace voxel
 		this->aabb.set(pos - semiSize, pos + semiSize);
 	}
 
-	void Entity::move(glm::vec3 dir)
+	void Entity::updateGravitySliperness()
 	{
 		glm::vec3 pos(this->world.getPlayer().getPos());
 		pos.y -= this->size.y / 2 - .4;
-		ChunkBlock *block = this->world.getBlockAt(pos);
+		ChunkBlock *block = this->world.getBlock(pos);
 		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
 		if (this->inWater)
 		{
@@ -75,6 +75,11 @@ namespace voxel
 			this->sliperness = glm::vec3(.91, .98, .91);
 			this->gravity = 0.08;
 		}
+	}
+
+	void Entity::move(glm::vec3 dir)
+	{
+		updateGravitySliperness();
 		glm::vec3 org = dir;
 		AABB newAabb = this->aabb.expand(dir);
 		std::vector<AABB> aabbs;
@@ -113,7 +118,11 @@ namespace voxel
 	{
 		this->size = size;
 		glm::vec3 semiSize = size / 2.f;
-		this->aabb.set(this->pos - semiSize, this->pos + semiSize);
+		glm::vec3 org = this->pos - semiSize;
+		//org.y = this->pos.y;
+		glm::vec3 dst = this->pos + semiSize;
+		//dst.y = this->pos.y + size.y;
+		this->aabb.set(org, dst);
 	}
 
 	glm::vec3 Entity::getRealPos()

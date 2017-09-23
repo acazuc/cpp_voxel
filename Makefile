@@ -58,6 +58,7 @@ SRCS_NAME = Main.cpp \
 	    World/Region.cpp \
 	    World/ChunkLoader.cpp \
 	    World/ChunkUpdater.cpp \
+	    World/ChunkStorage.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
 	    Gui/Gui.cpp \
@@ -67,6 +68,7 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiInventory.cpp \
 	    Gui/GuiButton.cpp \
 	    Gui/GuiLabel.cpp \
+	    Gui/GuiLagometer.cpp \
 	    WorldScreen/WorldScreen.cpp \
 	    WorldScreen/WorldScreenGui.cpp \
 	    TitleScreen/TitleScreen.cpp \

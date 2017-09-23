@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Blocks/Blocks.h"
+#include "Debug.h"
 #include "Main.h"
 
 extern int64_t nanotime;
@@ -19,7 +20,9 @@ namespace voxel
 	, skybox(*this)
 	, lastRegionCheck(nanotime)
 	{
-		//Empty
+		this->random.seed(1337);
+		this->chunkUpdater.start();
+		this->chunkLoader.start();
 	}
 
 	World::~World()
@@ -139,9 +142,10 @@ nextRegion:
 						for (int32_t z = startZ; z <= endZ; ++z)
 						{
 							float s = BLOCK_SIZE;
-							if (!chunk->getBlockAt(glm::vec3(x, y, z))->getType())
+							ChunkBlock *block = chunk->getBlock(glm::vec3(x, y, z));
+							if (!block || !block->getType())
 								continue;
-							Block *blockModel = Blocks::getBlock(chunk->getBlockAt(glm::vec3(x, y, z))->getType());
+							Block *blockModel = Blocks::getBlock(block->getType());
 							if (!blockModel || !blockModel->isSolid())
 								continue;
 							aabbs.push_back(AABB(glm::vec3(chunkX + x, y, chunkZ + z), glm::vec3(chunkX + x + s, y + s, chunkZ + z + s)));
@@ -154,7 +158,6 @@ nextRegion:
 
 	Chunk *World::getChunk(int32_t x, int32_t z)
 	{
-		//std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
@@ -184,7 +187,7 @@ nextRegion:
 		this->regions.push_back(region);
 	}
 
-	ChunkBlock *World::getBlockAt(glm::vec3 pos)
+	ChunkBlock *World::getBlock(glm::vec3 pos)
 	{
 		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
 			return (NULL);
@@ -193,10 +196,10 @@ nextRegion:
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (NULL);
-		return (chunk->getBlockAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
+		return (chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
 	}
 
-	uint8_t World::getLightAt(glm::vec3 pos)
+	uint8_t World::getLight(glm::vec3 pos)
 	{
 		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
 			return (15);

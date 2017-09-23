@@ -1,26 +1,35 @@
 #include "ChunkLoader.h"
 #include "Utils/System.h"
 #include "World/World.h"
+#include "Debug.h"
 
 #define LOAD_DISTANCE 16
 
-#define ON_LOADED {if (false && ++loadedChunks > 100) {goto end;}}
+#define ON_LOADED {};//if (++loadedChunks > 50) {goto end;}}
 
 namespace voxel
 {
 
-	bool ChunkLoader::running;
+	bool ChunkLoader::running = false;
 
 	ChunkLoader::ChunkLoader(World *world)
+	: thread(NULL)
+	, world(world)
 	{
-		running = true;
-		this->thread = new std::thread(run, world);
+		//Empty
 	}
 
 	ChunkLoader::~ChunkLoader()
 	{
 		running = false;
-		this->thread->join();
+		if (this->thread)
+			this->thread->join();
+	}
+
+	void ChunkLoader::start()
+	{
+		running = true;
+		this->thread = new std::thread(run, this->world);
 	}
 
 	bool ChunkLoader::checkChunk(World &world, int32_t chunkX, int32_t chunkZ)
@@ -55,7 +64,7 @@ namespace voxel
 			float playerX = world.getPlayer().getPos().x;
 			float playerZ = world.getPlayer().getPos().z;
 			int32_t playerChunkX = std::floor(playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
-			int32_t playerChunkZ = std::floor(playerZ / CHUNK_WIDTH) *  CHUNK_WIDTH;
+			int32_t playerChunkZ = std::floor(playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
 			int64_t nanotime = System::nanotime();
 			if (nanotime - lastCheck > 2000000000)
 			{
@@ -93,7 +102,7 @@ namespace voxel
 					}
 				}
 			}
-			uint8_t loadedChunks = 0;
+			//uint8_t loadedChunks = 0;
 			if (checkChunk(world, playerChunkX, playerChunkZ))
 				ON_LOADED;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
@@ -127,8 +136,8 @@ namespace voxel
 						ON_LOADED;
 				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		end:
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		//end:
 			continue;
 		}
 	}

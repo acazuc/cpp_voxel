@@ -50,6 +50,7 @@ namespace voxel
 		this->multiplayer.draw(Gui::getMat());
 		this->texturePack.setPos((Main::getWindow()->getWidth() - this->texturePack.getWidth() * 4) / 2, offset + 48 * 4);
 		this->texturePack.draw(Gui::getMat());
+		this->lagometer.draw();
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
 	}

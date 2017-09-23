@@ -26,6 +26,7 @@ namespace voxel
 		bool deleted;
 		bool inWater;
 		bool flying;
+		void updateGravitySliperness();
 
 	public:
 		Entity(World &world);

@@ -13,6 +13,7 @@
 # include "Skybox.h"
 # include "Region.h"
 # include "Chunk.h"
+# include <random>
 # include <vector>
 # include <list>
 # ifdef PLATFORM_WINDOWS
@@ -28,6 +29,7 @@ namespace voxel
 	{
 
 	private:
+		std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> random;
 		std::vector<VertexBuffer*> buffersToDelete;
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
@@ -53,8 +55,9 @@ namespace voxel
 		void getAABBs(AABB &aabb, std::vector<AABB> &aabbs);
 		void addChunk(Chunk *chunk);
 		Chunk *getChunk(int32_t x, int32_t z);
-		ChunkBlock *getBlockAt(glm::vec3 pos);
-		uint8_t getLightAt(glm::vec3 pos);
+		ChunkBlock *getBlock(glm::vec3 pos);
+		uint8_t getLight(glm::vec3 pos);
+		inline std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> &getRandom() {return (this->random);};
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};

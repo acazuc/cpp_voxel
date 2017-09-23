@@ -68,8 +68,8 @@ namespace voxel
 					}
 				}
 			}
+			delete (currentChunk);
 		}
-		delete (currentChunk);
 		this->chunks[x * REGION_WIDTH + z] = chunk;
 	}
 

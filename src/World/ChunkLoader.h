@@ -22,10 +22,12 @@ namespace voxel
 		static bool checkChunk(World &world, int32_t x, int32_t z);
 		static void run(void *data);
 		std::thread *thread;
+		World *world;
 
 	public:
 		ChunkLoader(World *world);
 		~ChunkLoader();
+		void start();
 
 	};
 

@@ -224,7 +224,7 @@ namespace voxel
 				if (!chunk)
 					goto nextStep;
 				glm::vec3 relative(pos.x - chunkX, pos.y, pos.z - chunkZ);
-				ChunkBlock *block = chunk->getBlockAt(glm::vec3(relative));
+				ChunkBlock *block = chunk->getBlock(glm::vec3(relative));
 				if (!block || !block->getType())
 					goto nextStep;
 				Block *blockModel = Blocks::getBlock(block->getType());
@@ -377,10 +377,10 @@ nextStep:
 			newChunk = chunk->getChunkZMore();
 			newPos.z = 0;
 		}
-		ChunkBlock *block = newChunk->getBlockAt(newPos);
-		if (block->getType())
+		ChunkBlock *block = newChunk->getBlock(newPos);
+		if (block && block->getType())
 			return;
-		newChunk->addBlock(newPos, 2);
+		newChunk->setBlock(newPos, 2);
 	}
 
 	void PlayerRaycast::buildBreakTexCoords()

@@ -43,6 +43,8 @@ namespace voxel
 		static Screen *screen;
 		static Font *font;
 		static Gui *gui;
+		static int64_t chunkUpdates;
+		static int64_t fps;
 		static bool smooth;
 		static bool ssao;
 		static int disableTex;
@@ -66,6 +68,9 @@ namespace voxel
 		static Screen *getScreen() {return (screen);};
 		static Font *getFont() {return (font);};
 		static Gui *getGui() {return (gui);};
+		static void setChunkUpdates(int64_t chunkUpdates) {Main::chunkUpdates = chunkUpdates;};
+		static int64_t getChunkUpdates() {return (chunkUpdates);};
+		static int64_t getFps() {return (fps);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};
 

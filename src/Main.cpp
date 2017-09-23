@@ -2,6 +2,7 @@
 #include "Entities/EntitiesManager.h"
 #include "WorldScreen/WorldScreen.h"
 #include "TitleScreen/TitleScreen.h"
+#include "Gui/GuiLagometer.h"
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
@@ -35,13 +36,15 @@ namespace voxel
 	Screen *Main::screen;
 	Font *Main::font;
 	Gui *Main::gui;
+	int64_t Main::chunkUpdates = 0;
+	int64_t Main::fps = 0;
 	bool Main::smooth = true;
 	bool Main::ssao = true;
 	int Main::disableTex = 0;
 
 	void Main::main()
 	{
-		glfwWindowHint(GLFW_SAMPLES, 2);
+		glfwWindowHint(GLFW_SAMPLES, 4);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -107,17 +110,18 @@ namespace voxel
 		gui = new Gui();
 		screen = new WorldScreen(new World());
 		//screen = new TitleScreen();
-		int64_t fpsCount = 0;
-		int64_t lastFps = System::nanotime();
 		nanotime = System::nanotime();
+		int64_t fpsCount = 0;
+		int64_t lastFps = nanotime / 1000000000 * 1000000000;
 		TickManager::init();
 		while (!window->closeRequested())
 		{
 			++fpsCount;
 			nanotime = System::nanotime();
-			if (nanotime - lastFps > 1000000000)
+			if (nanotime - lastFps >= 1000000000)
 			{
 				lastFps += 1000000000;
+				fps = fpsCount;
 				LOG("FPS: " << fpsCount);
 				fpsCount = 0;
 			}
@@ -128,8 +132,9 @@ namespace voxel
 			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
 				screen->tick();
 			screen->draw();
-			//gui->draw();
 			window->pollEvents();
+			int64_t ended = System::nanotime();
+			GuiLagometer::addValue((ended - nanotime) / 1000000.);
 			window->update();
 		}
 		delete (screen);

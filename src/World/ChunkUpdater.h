@@ -21,10 +21,12 @@ namespace voxel
 		static bool running;
 		static void run(void *data);
 		std::thread *thread;
+		World *world;
 
 	public:
 		ChunkUpdater(World *world);
 		~ChunkUpdater();
+		void start();
 
 	};
 

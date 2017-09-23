@@ -156,9 +156,9 @@ namespace voxel
 	{
 		glm::vec3 pos(this->world.getPlayer().getPos());
 		pos.y += .72 + 2. / 16;
-		ChunkBlock *block = this->world.getBlockAt(pos);
+		ChunkBlock *block = this->world.getBlock(pos);
 		this->eyeInWater = block && (block->getType() == 8 || block->getType() == 9);
-		this->eyeLight = this->world.getLightAt(pos);
+		this->eyeLight = this->world.getLight(pos);
 		handleRotation();
 		float fov = 90;
 		if (this->eyeInWater)

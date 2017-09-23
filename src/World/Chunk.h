@@ -1,7 +1,7 @@
 #ifndef CHUNK_H
 # define CHUNK_H
 
-# include "ChunkBlock.h"
+# include "ChunkStorage.h"
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
 
@@ -30,8 +30,9 @@ namespace voxel
 	{
 
 	private:
+		ChunkStorage *storages[16];
+		//ChunkBlock *blocks;
 		ChunkLayer layers[3];
-		ChunkBlock *blocks;
 		glm::mat4 modelMat;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
@@ -54,15 +55,16 @@ namespace voxel
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
+		void generate();
 		void tick();
 		void draw(uint8_t layer);
 		void generateBuffers();
 		void regenerateBuffers();
 		void generateLightMap();
 		void regenerateLightMap();
-		void addBlock(glm::vec3 pos, uint8_t type);
+		void setBlock(glm::vec3 pos, uint8_t type);
+		ChunkBlock *getBlock(glm::vec3 pos);
 		void destroyBlock(glm::vec3 pos);
-		inline ChunkBlock **getBlocks() {return (&this->blocks);};
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
 		inline void setChunkXMore(Chunk *chunk);
@@ -71,7 +73,6 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline ChunkBlock *getBlockAt(glm::vec3 pos) {return (&this->blocks[getXYZId(pos)]);};
 		inline uint8_t getLightAt(glm::vec3 pos) {return (this->lightMap[getXYZId(pos)]);};
 		inline uint16_t getTopBlockAt(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};

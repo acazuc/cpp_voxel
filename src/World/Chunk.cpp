@@ -16,6 +16,7 @@ namespace voxel
 	, aabb(glm::vec3(x, 0, z), glm::vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
 	, x(x)
 	, z(z)
+	, mustUpdateBuffers(false)
 	, deleted(false)
 	{
 		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
@@ -27,43 +28,69 @@ namespace voxel
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
 		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
-		this->blocks = new ChunkBlock[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		std::memset(this->storages, 0, sizeof(this->storages));
+		/*this->blocks = new ChunkBlock[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
+		std::memset(this->blocks, 0, sizeof(*this->blocks) * CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);*/
 		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				//float noiseIndex = 0;
+				//float noiseIndex = -1;
 				float noiseIndex = this->world.getNoise().get2((this->x + x), (this->z + z));
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
 				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 3;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 6 + CHUNK_HEIGHT / 4;
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 12 + CHUNK_HEIGHT / 8;
 				noiseIndex = std::round(noiseIndex);
-				this->topBlocks[getXZId(x, z)] = std::max(noiseIndex, CHUNK_HEIGHT / 4.f);
+				this->topBlocks[getXZId(x, z)] = std::max(noiseIndex, CHUNK_HEIGHT / 8.f);
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
-					if (y > noiseIndex && y > CHUNK_HEIGHT / 4)
-					{
-						this->lightMap[getXYZId(glm::vec3(x, y, z))] = 0xf;
+					if (y > noiseIndex && y > CHUNK_HEIGHT / 8)
 						continue;
-					}
 					uint8_t blockType = 1;
 					if (y == 0)
 						blockType = 7;
 					else if (y == noiseIndex)
-						blockType = 2;
+					{
+						if (y <= CHUNK_HEIGHT / 8)
+							blockType = 12;
+						else
+							blockType = 2;
+					}
 					else if (y > noiseIndex)
 						blockType = 8;
 					else if (y > noiseIndex - 3)
-						blockType = 3;
-					this->blocks[getXYZId(glm::vec3(x, y, z))].setType(blockType);
+					{
+						if (y <= CHUNK_HEIGHT / 8)
+							blockType = 12;
+						else
+							blockType = 3;
+					}
+					setBlock(glm::vec3(x, y, z), blockType);
 				}
 			}
 		}
+		/*for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
+		{
+			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
+			{
+				int32_t top = this->topBlocks[getXZId(x, z)];
+				ChunkBlock *block = getBlock(glm::vec3(x, top, z));
+				if (block && block->getType() == 2 && this->world.getRandom()() < UINT_MAX / 50)
+				{
+					setBlock(glm::vec3(x, top, z), 3);
+					for (int32_t y = top + 1; y < top + 6; ++y)
+					{
+						setBlock(glm::vec3(x, y, z), 17);
+					}
+					this->topBlocks[getXZId(x, z)] = top + 5;
+				}
+			}
+		}*/
 		generateLightMap();
 		regenerateBuffers();
 		if (this->chunkXLess)
@@ -78,9 +105,11 @@ namespace voxel
 
 	Chunk::~Chunk()
 	{
+		for (uint8_t i = 0; i < 16; ++i)
+			delete (this->storages[i]);
+		//delete[] (this->blocks);
 		delete[] (this->topBlocks);
 		delete[] (this->lightMap);
-		delete[] (this->blocks);
 		if (this->chunkXLess)
 			this->chunkXLess->setChunkXMore(NULL);
 		if (this->chunkXMore)
@@ -89,6 +118,11 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(NULL);
 		if (this->chunkZMore)
 			this->chunkZMore->setChunkZLess(NULL);
+	}
+
+	void Chunk::generate()
+	{
+		//
 	}
 
 	void Chunk::tick()
@@ -113,7 +147,7 @@ namespace voxel
 		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
 		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
 		this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
-		glDrawElements(GL_TRIANGLES, this->layers[layer].verticesNb, GL_UNSIGNED_INT, (void*)0);
+		glDrawElements(GL_TRIANGLES, this->layers[layer].verticesNb, GL_UNSIGNED_INT, NULL);
 	}
 
 	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
@@ -255,17 +289,18 @@ endNearTop:
 		this->lightMap[getXYZId(pos)] = light;
 		if (light <= 1)
 			return;
-		if (this->blocks[getXYZId(pos)].getType())
+		ChunkBlock *block = getBlock(pos);
+		if (block && block->getType())
 		{
-			Block *block = Blocks::getBlock(this->blocks[getXYZId(pos)].getType());
-			if (block)
+			Block *blockModel = Blocks::getBlock(block->getType());
+			if (blockModel)
 			{
-				if (block->getOpacity() > light)
+				if (blockModel->getOpacity() > light)
 					return;
-				light -= block->getOpacity();
+				light -= blockModel->getOpacity();
 			}
 		}
-		if (!this->blocks[getXYZId(pos)].isTransparent())
+		if (block && !block->isTransparent())
 		{
 			if (pos.x > 0)
 				setBlockLightRec(glm::vec3(pos.x - 1, pos.y, pos.z), 0);
@@ -315,14 +350,20 @@ endNearTop:
 		this->mustGenerateBuffers = false;
 		for (uint8_t layer = 0; layer < 3; ++layer)
 		{
-			glm::vec3 pos(1);
-			for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
+			for (uint8_t i = 0; i < 16; ++i)
+			{
+				if (!this->storages[i])
+					continue;
+				this->storages[i]->fillBuffers(this, this->layers[layer].tessellator, layer);
+			}
+			/*for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 			{
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
 					int32_t topBlock = this->topBlocks[getXZId(x, z)];
 					for (int32_t y = 0; y <= topBlock; ++y)
 					{
+						glm::vec3 pos;
 						ChunkBlock *block = &this->blocks[getXYZId(glm::vec3(x, y, z))];
 						pos.x = this->x + x;
 						pos.y = y;
@@ -330,7 +371,7 @@ endNearTop:
 						block->fillBuffers(this, pos, this->layers[layer].tessellator, layer);
 					}
 				}
-			}
+			}*/
 		}
 		this->mustUpdateBuffers = true;
 	}
@@ -364,8 +405,16 @@ endNearTop:
 		}
 	}
 
-	void Chunk::addBlock(glm::vec3 pos, uint8_t type)
+	void Chunk::setBlock(glm::vec3 pos, uint8_t type)
 	{
+		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
+			this->topBlocks[getXZId(pos.x, pos.z)] = pos.y;
+		int32_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			this->storages[storageY] = new ChunkStorage(storageY * 16);
+		this->storages[storageY]->setBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), type);
+		//this->blocks[getXYZId(pos)].setType(type);
+		regenerateLightMap();
 		if (pos.x == 0)
 		{
 			if (this->chunkXLess)
@@ -386,10 +435,15 @@ endNearTop:
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();
 		}
-		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
-			this->topBlocks[getXZId(pos.x, pos.z)] = pos.y;
-		this->blocks[getXYZId(pos)].setType(type);
-		regenerateLightMap();
+	}
+
+	ChunkBlock *Chunk::getBlock(glm::vec3 pos)
+	{
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return (NULL);
+		return (this->storages[storageY]->getBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		//return (&this->blocks[getXYZId(pos)]);
 	}
 
 	void Chunk::destroyBlock(glm::vec3 pos)
@@ -418,7 +472,7 @@ endNearTop:
 		{
 			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
 			{
-				ChunkBlock *block = getBlockAt(glm::vec3(pos.x, i, pos.z));
+				ChunkBlock *block = getBlock(glm::vec3(pos.x, i, pos.z));
 				if (block->getType())
 				{
 					if (i == pos.y)
@@ -428,7 +482,7 @@ endNearTop:
 				}
 			}
 		}
-		this->blocks[getXYZId(pos)].setType(0);
+		setBlock(pos, 0);
 		regenerateLightMap();
 	}
 

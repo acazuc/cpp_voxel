@@ -62,8 +62,6 @@ namespace voxel
 		void initLightsLevels(BlockLightsLevels &levels, uint8_t visibleFaces, int8_t *blocksLights);
 
 	public:
-		ChunkBlock(uint8_t type);
-		ChunkBlock();
 		void fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer);
 		bool isTransparent();
 		inline void setType(uint8_t type) {this->type = type;};

@@ -55,7 +55,6 @@ namespace voxel
 		col *= ChunkBlock::getLightValue(15);
 		col.w = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);
-		head->setRot(glm::vec3(0, 0, .1));
 		head->draw(&this->world, model);
 		body->draw(&this->world, model);
 		legFL->draw(&this->world, model);

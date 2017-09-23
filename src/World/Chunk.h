@@ -40,7 +40,6 @@ namespace voxel
 		World &world;
 		AABB aabb;
 		uint8_t *topBlocks;
-		uint8_t *lightMap;
 		int32_t x;
 		int32_t z;
 		bool mustGenerateLightMap;
@@ -72,7 +71,6 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline uint8_t getLightAt(glm::vec3 pos) {return (this->lightMap[getXYZId(pos)]);};
 		inline uint16_t getTopBlockAt(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};

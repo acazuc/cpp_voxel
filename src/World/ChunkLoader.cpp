@@ -36,18 +36,18 @@ namespace voxel
 	{
 		if (!running)
 			return (true);
-		double part1 = (world.getPlayer().getPos().z - ((int32_t)world.getPlayer().getPos().z % CHUNK_WIDTH)) - chunkZ;
-		double part2 = (world.getPlayer().getPos().x - ((int32_t)world.getPlayer().getPos().x % CHUNK_WIDTH)) - chunkX;
+		double part1 = world.getPlayer().getPos().x - (chunkX + CHUNK_WIDTH / 2);
+		double part2 = world.getPlayer().getPos().z - (chunkZ + CHUNK_WIDTH / 2);
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
+		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		if (distance > 2 * 16)
 		{
 			AABB aabb(glm::vec3(chunkX, 0, chunkZ), glm::vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
 			if (!world.getFrustum().check(aabb))
 				return (false);
 		}
-		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		if (world.getChunk(chunkX, chunkZ))
 			return (false);
 		Chunk *chunk = new Chunk(world, chunkX, chunkZ);
@@ -79,25 +79,61 @@ namespace voxel
 						Chunk *chunk = chunks[j];
 						if (!chunk)
 							continue;
-						double part1 = playerChunkZ - (chunk->getZ() + CHUNK_WIDTH / 2);
-						double part2 = playerChunkX - (chunk->getX() + CHUNK_WIDTH / 2);
+						double part1 = playerX - (chunk->getX() + CHUNK_WIDTH / 2);
+						double part2 = playerZ - (chunk->getZ() + CHUNK_WIDTH / 2);
 						int32_t distance = sqrt(part1 * part1 + part2 * part2);
 						if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
 						{
-							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
-							for (uint8_t i = 0; i < 3; ++i)
+							Chunk *currentChunk = NULL;
 							{
-								ChunkLayer &layer = chunk->getLayer(i);
-								world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
-								world.getBuffersToDelete().push_back(layer.vertexesBuffer);
-								world.getBuffersToDelete().push_back(layer.indicesBuffer);
-								world.getBuffersToDelete().push_back(layer.colorsBuffer);
-								layer.texCoordsBuffer = NULL;
-								layer.vertexesBuffer = NULL;
-								layer.indicesBuffer = NULL;
-								layer.colorsBuffer = NULL;
+
+								{
+									std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+									currentChunk = regions[i]->getChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH);
+									for (uint8_t i = 0; i < 3; ++i)
+									{
+										ChunkLayer &layer = chunk->getLayer(i);
+										world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
+										world.getBuffersToDelete().push_back(layer.vertexesBuffer);
+										world.getBuffersToDelete().push_back(layer.indicesBuffer);
+										world.getBuffersToDelete().push_back(layer.colorsBuffer);
+										layer.texCoordsBuffer = NULL;
+										layer.vertexesBuffer = NULL;
+										layer.indicesBuffer = NULL;
+										layer.colorsBuffer = NULL;
+									}
+									regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+								}
+								if (currentChunk)
+								{
+								begin:
+									std::lock_guard<std::recursive_mutex> lock(world.getChunksToUpdateMutex());
+									for (std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin(); iter != world.getChunksToUpdate().end(); ++iter)
+									{
+										if (*iter == currentChunk)
+										{
+											if (iter == world.getChunksToUpdate().begin())
+											{
+												world.getChunksToUpdate().erase(iter);
+												goto begin;
+											}
+											else if (iter == world.getChunksToUpdate().end())
+											{
+												world.getChunksToUpdate().erase(iter);
+												break;
+											}
+											else
+											{
+												std::list<Chunk*>::iterator prev = iter;
+												--prev;
+												world.getChunksToUpdate().erase(iter);
+												iter = prev;
+											}
+										}
+									}
+								}
 							}
-							regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+							delete (currentChunk);
 						}
 					}
 				}
@@ -137,7 +173,7 @@ namespace voxel
 				}
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-		//end:
+			//end:
 			continue;
 		}
 	}

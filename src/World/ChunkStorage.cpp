@@ -36,6 +36,12 @@ namespace voxel
 		}
 	}
 
+	void ChunkStorage::resetLights()
+	{
+		for (uint32_t i = 0; i < CHUNK_WIDTH * 16 * CHUNK_WIDTH; ++i)
+			this->blocks[i].setLight(0);
+	}
+
 	void ChunkStorage::setBlock(glm::vec3 pos, uint8_t type)
 	{
 		this->blocks[getXYZId(pos)].setType(type);

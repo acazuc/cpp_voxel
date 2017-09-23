@@ -549,7 +549,10 @@ namespace voxel
 			if (!(chunk = chunk->getChunkZMore()))
 				return (15);
 		}
-		return (chunk->getLightAt(newPos));
+		ChunkBlock *block = chunk->getBlock(newPos);
+		if (!block)
+			return (0);
+		return (block->getLight());
 	}
 
 	bool ChunkBlock::calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)

@@ -201,14 +201,18 @@ nextRegion:
 
 	uint8_t World::getLight(glm::vec3 pos)
 	{
-		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+		ChunkBlock *block = getBlock(pos);
+		if (!block)
+			return (15);
+		return (block->getLight());
+		/*if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
 			return (15);
 		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
 		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (15);
-		return (chunk->getLightAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
+		return (chunk->getLightAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));*/
 	}
 
 }

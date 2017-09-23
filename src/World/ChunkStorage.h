@@ -19,6 +19,7 @@ namespace voxel
 		ChunkStorage(int32_t y);
 		~ChunkStorage();
 		void fillBuffers(Chunk *chunk, ChunkTessellator &tessellator, uint8_t layer);
+		void resetLights();
 		void setBlock(glm::vec3 pos, uint8_t type);
 		ChunkBlock *getBlock(glm::vec3 pos);
 		uint32_t getXYZId(glm::vec3 pos);

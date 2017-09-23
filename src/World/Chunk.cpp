@@ -29,8 +29,48 @@ namespace voxel
 			this->chunkZMore->setChunkZLess(this);
 		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
 		std::memset(this->storages, 0, sizeof(this->storages));
-		this->lightMap = new uint8_t[CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH];
-		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH);
+		generate();
+		generateLightMap();
+		regenerateBuffers();
+		if (this->chunkXLess)
+			this->chunkXLess->regenerateLightMap();
+		if (this->chunkXMore)
+			this->chunkXMore->regenerateLightMap();
+		if (this->chunkZLess)
+			this->chunkZLess->regenerateLightMap();
+		if (this->chunkZMore)
+			this->chunkZMore->regenerateLightMap();
+	}
+
+	Chunk::~Chunk()
+	{
+		for (uint8_t i = 0; i < 16; ++i)
+			delete (this->storages[i]);
+		delete[] (this->topBlocks);
+		if (this->chunkXLess)
+		{
+			this->chunkXLess->setChunkXMore(NULL);
+			this->chunkXLess->regenerateLightMap();
+		}
+		if (this->chunkXMore)
+		{
+			this->chunkXMore->setChunkXLess(NULL);
+			this->chunkXMore->regenerateLightMap();
+		}
+		if (this->chunkZLess)
+		{
+			this->chunkZLess->setChunkZMore(NULL);
+			this->chunkZLess->regenerateLightMap();
+		}
+		if (this->chunkZMore)
+		{
+			this->chunkZMore->setChunkZLess(NULL);
+			this->chunkZMore->regenerateLightMap();
+		}
+	}
+
+	void Chunk::generate()
+	{
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
@@ -89,38 +129,6 @@ namespace voxel
 				}
 			}
 		}*/
-		generateLightMap();
-		regenerateBuffers();
-		if (this->chunkXLess)
-			this->chunkXLess->regenerateLightMap();
-		if (this->chunkXMore)
-			this->chunkXMore->regenerateLightMap();
-		if (this->chunkZLess)
-			this->chunkZLess->regenerateLightMap();
-		if (this->chunkZMore)
-			this->chunkZMore->regenerateLightMap();
-	}
-
-	Chunk::~Chunk()
-	{
-		for (uint8_t i = 0; i < 16; ++i)
-			delete (this->storages[i]);
-		//delete[] (this->blocks);
-		delete[] (this->topBlocks);
-		delete[] (this->lightMap);
-		if (this->chunkXLess)
-			this->chunkXLess->setChunkXMore(NULL);
-		if (this->chunkXMore)
-			this->chunkXMore->setChunkXLess(NULL);
-		if (this->chunkZLess)
-			this->chunkZLess->setChunkZMore(NULL);
-		if (this->chunkZMore)
-			this->chunkZMore->setChunkZLess(NULL);
-	}
-
-	void Chunk::generate()
-	{
-		//
 	}
 
 	void Chunk::tick()
@@ -150,6 +158,9 @@ namespace voxel
 
 	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
 	{
+		ChunkBlock *block = getBlock(pos);
+		if (!block)
+			return;
 		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
 		{
 			light = std::max(light, uint8_t(0xf));
@@ -259,36 +270,34 @@ namespace voxel
 endNearTop:
 		if (pos.x == 0 && this->chunkXLess)
 		{
-			uint8_t nearLight = this->chunkXLess->getLightAt(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z));
-			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1u), light);
+			ChunkBlock *nearBlock = this->chunkXLess->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z));
+			if (nearBlock && nearBlock->getLight() > 0)
+				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
 		}
 		else if (pos.x == CHUNK_WIDTH - 1 && this->chunkXMore)
 		{
-			uint8_t nearLight = this->chunkXMore->getLightAt(glm::vec3(0, pos.y, pos.z));
-			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1u), light);
+			ChunkBlock *nearBlock = this->chunkXMore->getBlock(glm::vec3(0, pos.y, pos.z));
+			if (nearBlock && nearBlock->getLight() > 0)
+				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
 		}
 		if (pos.z == 0 && this->chunkZLess)
 		{
-			uint8_t nearLight = this->chunkZLess->getLightAt(glm::vec3(pos.x, pos.y, CHUNK_WIDTH - 1));
-			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1u), light);
+			ChunkBlock *nearBlock = this->chunkZLess->getBlock(glm::vec3(pos.x, pos.y, CHUNK_WIDTH - 1));
+			if (nearBlock && nearBlock->getLight() > 0)
+				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
 		}
 		else if (pos.z == CHUNK_WIDTH - 1 && this->chunkZMore)
 		{
-			uint8_t nearLight = this->chunkZMore->getLightAt(glm::vec3(pos.x, pos.y, 0));
-			if (nearLight > 0)
-				light = std::max(uint8_t(nearLight - 1u), light);
+			ChunkBlock *nearBlock = this->chunkZMore->getBlock(glm::vec3(pos.x, pos.y, 0));
+			if (nearBlock && nearBlock->getLight() > 0)
+				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
 		}
-		uint8_t curLvl = this->lightMap[getXYZId(pos)];
-		if (curLvl >= light)
+		if (block->getLight() >= light)
 			return;
-		this->lightMap[getXYZId(pos)] = light;
+		block->setLight(light);
 		if (light <= 1)
 			return;
-		ChunkBlock *block = getBlock(pos);
-		if (block && block->getType())
+		if (block->getType())
 		{
 			Block *blockModel = Blocks::getBlock(block->getType());
 			if (blockModel)
@@ -298,7 +307,7 @@ endNearTop:
 				light -= blockModel->getOpacity();
 			}
 		}
-		if (block && !block->isTransparent())
+		if (!block->isTransparent())
 		{
 			if (pos.x > 0)
 				setBlockLightRec(glm::vec3(pos.x - 1, pos.y, pos.z), 0);
@@ -332,7 +341,12 @@ endNearTop:
 	{
 		if (this->mustGenerateLightMap > 0)
 			this->mustGenerateLightMap = 0;
-		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH * sizeof(*this->lightMap));
+		for (uint8_t i = 0; i < 16; ++i)
+		{
+			if (!this->storages[i])
+				continue;
+			this->storages[i]->resetLights();
+		}
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)

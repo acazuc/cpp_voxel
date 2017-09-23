@@ -53,6 +53,7 @@ namespace voxel
 	{
 
 	private:
+		uint8_t light;
 		uint8_t type;
 		bool calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		uint8_t calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
@@ -64,6 +65,8 @@ namespace voxel
 	public:
 		void fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer);
 		bool isTransparent();
+		inline void setLight(uint8_t light) {this->light = light;};
+		inline uint8_t getLight() {return (this->light);};
 		inline void setType(uint8_t type) {this->type = type;};
 		inline uint8_t getType() {return (this->type);};
 		static float getLightValue(int8_t light);

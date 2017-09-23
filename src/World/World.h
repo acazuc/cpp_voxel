@@ -31,6 +31,7 @@ namespace voxel
 	private:
 		std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> random;
 		std::vector<VertexBuffer*> buffersToDelete;
+		std::recursive_mutex chunksToUpdateMutex;
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
 		std::list<Chunk*> chunksToUpdate;
@@ -59,6 +60,7 @@ namespace voxel
 		uint8_t getLight(glm::vec3 pos);
 		inline std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> &getRandom() {return (this->random);};
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
+		inline std::recursive_mutex &getChunksToUpdateMutex() {return (this->chunksToUpdateMutex);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};
 		inline std::list<Chunk*> &getChunksToUpdate() {return (this->chunksToUpdate);};

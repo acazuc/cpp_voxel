@@ -48,7 +48,8 @@ namespace voxel
 				if (world.getChunksToUpdate().size() == 0)
 					goto end;
 				Chunk *chunk = world.getChunksToUpdate().front();
-				std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+				std::lock_guard<std::recursive_mutex> lock1(world.getChunksToUpdateMutex());
+				std::lock_guard<std::recursive_mutex> lock2(world.getChunksMutex());
 				world.getChunksToUpdate().pop_front();
 				if (chunk->isMustGenerateLightMap())
 				{

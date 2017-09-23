@@ -300,14 +300,17 @@ nextStep:
 			return;
 		this->todoTicks = 20 * blockModel->getHardness();
 		buildBreakTexCoords();
-		buildBreakColors(ChunkBlock::getLightValue(chunk->getLightAt(relative)));
+		ChunkBlock *relBlock = chunk->getBlock(relative);
+		uint8_t light = 0;
+		if (relBlock)
+			light = relBlock->getLight();
+		buildBreakColors(ChunkBlock::getLightValue(light));
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{
 			this->found = false;
 			float texX = blockModel->getTexTopX();
 			float texY = blockModel->getTexTopY();
 			int32_t nb = 3;
-			uint8_t light = chunk->getLightAt(relative);
 			for (int32_t x = 0; x < nb; ++x)
 			{
 				for (int32_t y = 0; y < nb; ++y)

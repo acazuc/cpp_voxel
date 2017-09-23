@@ -11,15 +11,11 @@
 namespace voxel
 {
 
-	uint8_t Chunk::availableRebuilds;
-
 	Chunk::Chunk(World &world, int32_t x, int32_t z)
 	: world(world)
 	, aabb(glm::vec3(x, 0, z), glm::vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
 	, x(x)
 	, z(z)
-	, mustGenerateLightMap(true)
-	, mustGenerateBuffers(true)
 	, deleted(false)
 	{
 		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
@@ -69,6 +65,15 @@ namespace voxel
 			}
 		}
 		generateLightMap();
+		regenerateBuffers();
+		if (this->chunkXLess)
+			this->chunkXLess->regenerateLightMap();
+		if (this->chunkXMore)
+			this->chunkXMore->regenerateLightMap();
+		if (this->chunkZLess)
+			this->chunkZLess->regenerateLightMap();
+		if (this->chunkZMore)
+			this->chunkZMore->regenerateLightMap();
 	}
 
 	Chunk::~Chunk()
@@ -97,21 +102,12 @@ namespace voxel
 			this->visible = this->world.getFrustum().check(this->aabb);
 		if (!this->visible)
 			return;
-		if (availableRebuilds > 0)
+		if (layer == 0)
 		{
-			if (this->mustGenerateLightMap)
-			{
-				availableRebuilds--;
-				generateLightMap();
-				generateGLBuffer();
-			}
-			if (this->mustGenerateBuffers)
-			{
-				availableRebuilds--;
-				generateGLBuffer();
-			}
+			if (this->mustUpdateBuffers)
+				updateGLBuffers();
 		}
-		if (!this->layers[layer].texCoordsBuffer || !this->layers[layer].verticesNb)
+		if (!this->layers[layer].verticesNb)
 			return;
 		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
 		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
@@ -301,7 +297,8 @@ endNearTop:
 
 	void Chunk::generateLightMap()
 	{
-		this->mustGenerateLightMap = false;
+		if (this->mustGenerateLightMap > 0)
+			this->mustGenerateLightMap = 0;
 		std::memset(this->lightMap, 0, CHUNK_WIDTH * CHUNK_HEIGHT * CHUNK_WIDTH * sizeof(*this->lightMap));
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
@@ -313,12 +310,11 @@ endNearTop:
 		}
 	}
 
-	void Chunk::generateGLBuffer()
+	void Chunk::generateBuffers()
 	{
 		this->mustGenerateBuffers = false;
 		for (uint8_t layer = 0; layer < 3; ++layer)
 		{
-			ChunkTessellator tessellator;
 			glm::vec3 pos(1);
 			for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 			{
@@ -331,10 +327,19 @@ endNearTop:
 						pos.x = this->x + x;
 						pos.y = y;
 						pos.z = this->z + z;
-						block->fillBuffers(this, pos, tessellator, layer);
+						block->fillBuffers(this, pos, this->layers[layer].tessellator, layer);
 					}
 				}
 			}
+		}
+		this->mustUpdateBuffers = true;
+	}
+
+	void Chunk::updateGLBuffers()
+	{
+		this->mustUpdateBuffers = false;
+		for (uint8_t layer = 0; layer < 3; ++layer)
+		{
 			if (!this->layers[layer].texCoordsBuffer)
 				this->layers[layer].texCoordsBuffer = new VertexBuffer();
 			if (!this->layers[layer].vertexesBuffer)
@@ -343,11 +348,19 @@ endNearTop:
 				this->layers[layer].indicesBuffer = new VertexBuffer();
 			if (!this->layers[layer].colorsBuffer)
 				this->layers[layer].colorsBuffer = new VertexBuffer();
-			this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, tessellator.texCoords.data(), tessellator.texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-			this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, tessellator.vertexes.data(), tessellator.vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-			this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, tessellator.indices.data(), tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
-			this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, tessellator.colors.data(), tessellator.colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-			this->layers[layer].verticesNb = tessellator.indices.size();
+			this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+			this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+			this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, this->layers[layer].tessellator.indices.data(), this->layers[layer].tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
+			this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+			this->layers[layer].verticesNb = this->layers[layer].tessellator.indices.size();
+			std::vector<glm::vec2> emptyTexCoords;
+			std::vector<glm::vec3> emptyVertexes;
+			std::vector<glm::vec3> emptyColors;
+			std::vector<GLuint> emptyIndices;
+			this->layers[layer].tessellator.texCoords.swap(emptyTexCoords);
+			this->layers[layer].tessellator.vertexes.swap(emptyVertexes);
+			this->layers[layer].tessellator.colors.swap(emptyColors);
+			this->layers[layer].tessellator.indices.swap(emptyIndices);
 		}
 	}
 
@@ -419,28 +432,36 @@ endNearTop:
 		regenerateLightMap();
 	}
 
+	void Chunk::regenerateBuffers()
+	{
+		this->mustGenerateBuffers = true;
+		this->world.getChunksToUpdate().push_back(this);
+	}
+
+	void Chunk::regenerateLightMap()
+	{
+		this->mustGenerateLightMap = true;
+		this->world.getChunksToUpdate().push_back(this);
+	}
+
 	void Chunk::setChunkXLess(Chunk *chunk)
 	{
 		this->chunkXLess = chunk;
-		regenerateLightMap();
 	}
 
 	void Chunk::setChunkXMore(Chunk *chunk)
 	{
 		this->chunkXMore = chunk;
-		regenerateLightMap();
 	}
 
 	void Chunk::setChunkZLess(Chunk *chunk)
 	{
 		this->chunkZLess = chunk;
-		regenerateLightMap();
 	}
 
 	void Chunk::setChunkZMore(Chunk *chunk)
 	{
 		this->chunkZMore = chunk;
-		regenerateLightMap();
 	}
 
 }

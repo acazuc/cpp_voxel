@@ -1,5 +1,5 @@
-#ifndef CHUNK_LOADER_H
-# define CHUNK_LOADER_H
+#ifndef CHUNK_UPDATER_H
+# define CHUNK_UPDATER_H
 
 # include "Platform.h"
 # include <cstdint>
@@ -14,18 +14,17 @@ namespace voxel
 
 	class World;
 
-	class ChunkLoader
+	class ChunkUpdater
 	{
 
 	private:
 		static bool running;
-		static bool checkChunk(World &world, int32_t x, int32_t z);
 		static void run(void *data);
 		std::thread *thread;
 
 	public:
-		ChunkLoader(World *world);
-		~ChunkLoader();
+		ChunkUpdater(World *world);
+		~ChunkUpdater();
 
 	};
 

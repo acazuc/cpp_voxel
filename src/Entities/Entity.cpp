@@ -95,7 +95,7 @@ namespace voxel
 			this->posDst.y = 0;
 		if (dir.z != org.z)
 			this->posDst.z = 0;
-		if (this->inWater && (dir.x != org.x || dir.z != org.z))
+		if (!this->flying && this->inWater && (dir.x != org.x || dir.z != org.z))
 		{
 			AABB tmp = this->aabb;
 			tmp.move(glm::vec3(this->posDst.x, this->posDst.y + .6f, this->posDst.z));

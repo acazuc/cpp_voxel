@@ -10,14 +10,16 @@ namespace voxel
 	World::World()
 	: particlesManager(*this)
 	, entitiesManager(*this)
+	, chunkUpdater(this)
 	, chunkLoader(this)
 	, noise(512, .5, 1337)
 	, frustum(*this)
 	, player(*this)
 	, clouds(*this)
 	, skybox(*this)
+	, lastRegionCheck(nanotime)
 	{
-		this->regions.reserve(2 * 2);
+		//Empty
 	}
 
 	World::~World()
@@ -28,26 +30,45 @@ namespace voxel
 
 	void World::update()
 	{
-		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		//std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 	}
 
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		checkEmptyRegions();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->tick();
-		this->clouds.tick();
 		this->player.tick();
 		this->entitiesManager.tick();
 		this->particlesManager.tick();
+		this->clouds.tick();
+	}
+
+	void World::checkEmptyRegions()
+	{
+		if (nanotime - this->lastRegionCheck < 5000000000)
+			return;
+		this->lastRegionCheck = nanotime;
+		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		{
+			Region *region = this->regions[i];
+			Chunk **chunks = region->getChunks();
+			for (uint32_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
+			{
+				if (chunks[j])
+					goto nextRegion;
+			}
+			this->regions.erase(this->regions.begin() + i);
+			--i;
+nextRegion:
+			continue;
+		}
 	}
 
 	void World::draw()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
-		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
-			delete (this->buffersToDelete[i]);
-		this->buffersToDelete.clear();
 		this->player.update();
 		glm::mat4 mvp = this->player.getViewProjMat();
 		Main::getBlocksShader().program->use();
@@ -68,7 +89,9 @@ namespace voxel
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();
-		Chunk::setAvailableRebuilds(5);
+		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
+			delete (this->buffersToDelete[i]);
+		this->buffersToDelete.clear();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(0);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
@@ -131,7 +154,7 @@ namespace voxel
 
 	Chunk *World::getChunk(int32_t x, int32_t z)
 	{
-		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		//std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];

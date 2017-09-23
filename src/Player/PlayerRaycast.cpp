@@ -6,7 +6,7 @@
 #include <cstring>
 
 #define OFFSET .002
-#define BREAK_OFFSET .0005
+#define BREAK_OFFSET .001
 #define PICK_DISTANCE 500
 
 namespace voxel
@@ -141,6 +141,7 @@ namespace voxel
 	{
 		if (!this->found)
 			return;
+		glDepthFunc(GL_LEQUAL);
 		Main::getFocusedShader().program->use();
 		glm::mat4 model(1);
 		model = glm::translate(model, this->pos);
@@ -167,11 +168,10 @@ namespace voxel
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			glBlendEquation(GL_FUNC_ADD);
-			glDepthFunc(GL_LEQUAL);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
-			glDepthFunc(GL_LESS);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, NULL);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
+		glDepthFunc(GL_LESS);
 	}
 
 	static float signum(float val)

@@ -17,6 +17,7 @@ namespace voxel
 
 	struct ChunkLayer
 	{
+		ChunkTessellator tessellator;
 		VertexBuffer *texCoordsBuffer;
 		VertexBuffer *vertexesBuffer;
 		VertexBuffer *indicesBuffer;
@@ -29,7 +30,6 @@ namespace voxel
 	{
 
 	private:
-		static uint8_t availableRebuilds;
 		ChunkLayer layers[3];
 		ChunkBlock *blocks;
 		glm::mat4 modelMat;
@@ -45,10 +45,10 @@ namespace voxel
 		int32_t z;
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
+		bool mustUpdateBuffers;
 		bool deleted;
 		bool visible;
-		void generateGLBuffer();
-		void generateLightMap();
+		void updateGLBuffers();
 		void setBlockLightRec(glm::vec3 pos, uint8_t light);
 
 	public:
@@ -56,6 +56,10 @@ namespace voxel
 		~Chunk();
 		void tick();
 		void draw(uint8_t layer);
+		void generateBuffers();
+		void regenerateBuffers();
+		void generateLightMap();
+		void regenerateLightMap();
 		void addBlock(glm::vec3 pos, uint8_t type);
 		void destroyBlock(glm::vec3 pos);
 		inline ChunkBlock **getBlocks() {return (&this->blocks);};
@@ -73,14 +77,13 @@ namespace voxel
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
-		inline void regenerateLightMap() {this->mustGenerateLightMap = true;};
-		inline void regenerateBuffers() {this->mustGenerateBuffers = true;};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
 		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
 		inline int32_t getXYZId(glm::vec3 pos) {return (((int32_t)pos.x * CHUNK_HEIGHT + (int32_t)pos.y) * CHUNK_WIDTH + (int32_t)pos.z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
-		static inline void setAvailableRebuilds(uint8_t rebuilds) {availableRebuilds = rebuilds;};
+		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};
+		inline bool isMustGenerateBuffers() {return (this->mustGenerateBuffers);};
 
 	};
 

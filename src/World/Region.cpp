@@ -1,5 +1,5 @@
 #include "Region.h"
-#include "Debug.h"
+#include "World.h"
 #include <cstring>
 
 namespace voxel
@@ -41,7 +41,35 @@ namespace voxel
 
 	void Region::setChunk(int32_t x, int32_t z, Chunk *chunk)
 	{
-		delete (this->chunks[x * REGION_WIDTH + z]);
+		Chunk *currentChunk = this->chunks[x * REGION_WIDTH + z];
+		if (currentChunk)
+		{
+		begin:
+			for (std::list<Chunk*>::iterator iter = this->world.getChunksToUpdate().begin(); iter != this->world.getChunksToUpdate().end(); ++iter)
+			{
+				if (*iter == currentChunk)
+				{
+					if (iter == this->world.getChunksToUpdate().begin())
+					{
+						this->world.getChunksToUpdate().erase(iter);
+						goto begin;
+					}
+					else if (iter == this->world.getChunksToUpdate().end())
+					{
+						this->world.getChunksToUpdate().erase(iter);
+						break;
+					}
+					else
+					{
+						std::list<Chunk*>::iterator prev = iter;
+						--prev;
+						this->world.getChunksToUpdate().erase(iter);
+						iter = prev;
+					}
+				}
+			}
+		}
+		delete (currentChunk);
 		this->chunks[x * REGION_WIDTH + z] = chunk;
 	}
 

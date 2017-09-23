@@ -57,6 +57,7 @@ SRCS_NAME = Main.cpp \
 	    World/Chunk.cpp \
 	    World/Region.cpp \
 	    World/ChunkLoader.cpp \
+	    World/ChunkUpdater.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
 	    Gui/Gui.cpp \

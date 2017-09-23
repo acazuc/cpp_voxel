@@ -21,7 +21,7 @@ namespace voxel
 	, oldMouseY(0)
 	, eyeInWater(false)
 	{
-		this->flying = false;
+		this->flying = true;
 		setSize(glm::vec3(.6, 1.8, .6));
 		setPos(glm::vec3(0, 70, 0));
 	}
@@ -167,9 +167,9 @@ namespace voxel
 			fov += 10;
 		this->projMat = glm::perspective(glm::radians(fov), Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .019f, 1500.f);
 		this->viewMat = glm::mat4(1.);
-		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.01, 0, 0));
+		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.02, 0, 0));
 		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010, 0).x, glm::vec3(0, 0, 1));
-		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rotX / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
+		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
 		glm::vec3 realPos = getRealPos();

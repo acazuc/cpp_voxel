@@ -1,11 +1,10 @@
 #include "ChunkLoader.h"
 #include "Utils/System.h"
 #include "World/World.h"
-#include "Debug.h"
 
 #define LOAD_DISTANCE 16
 
-#define ON_LOADED {if (++loadedChunks > 5) {goto end;}}
+#define ON_LOADED {if (false && ++loadedChunks > 100) {goto end;}}
 
 namespace voxel
 {
@@ -15,7 +14,7 @@ namespace voxel
 	ChunkLoader::ChunkLoader(World *world)
 	{
 		running = true;
-		this->thread = new std::thread(_run, world);
+		this->thread = new std::thread(run, world);
 	}
 
 	ChunkLoader::~ChunkLoader()
@@ -39,15 +38,15 @@ namespace voxel
 			if (!world.getFrustum().check(aabb))
 				return (false);
 		}
+		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		if (world.getChunk(chunkX, chunkZ))
 			return (false);
-		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		Chunk *chunk = new Chunk(world, chunkX, chunkZ);
 		world.addChunk(chunk);
 		return (true);
 	}
 
-	void ChunkLoader::_run(void *data)
+	void ChunkLoader::run(void *data)
 	{
 		World &world = *reinterpret_cast<World*>(data);
 		int64_t lastCheck = 0;
@@ -128,7 +127,7 @@ namespace voxel
 						ON_LOADED;
 				}
 			}
-			std::this_thread::sleep_for(std::chrono::nanoseconds(100000000));
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		end:
 			continue;
 		}

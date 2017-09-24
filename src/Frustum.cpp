@@ -5,12 +5,6 @@
 namespace voxel
 {
 
-	Frustum::Frustum(World &world)
-	: world(world)
-	{
-		//Empty
-	}
-
 	static inline void normalize(float *part)
 	{
 		float t = sqrt(part[0] * part[0] + part[1] * part[1] + part[2] * part[2]);
@@ -20,11 +14,11 @@ namespace voxel
 		part[3] /= t;
 	}
 
-	void Frustum::update()
+	void Frustum::update(glm::mat4 &prog, glm::mat4 &view)
 	{
 		float clip[16];
-		const float *proj = glm::value_ptr(this->world.getPlayer().getProjMat());
-		const float *modl = glm::value_ptr(this->world.getPlayer().getViewMat());
+		const float *proj = glm::value_ptr(prog);
+		const float *modl = glm::value_ptr(view);
 		clip[ 0] = modl[ 0] * proj[ 0] + modl[ 1] * proj[ 4] + modl[ 2] * proj[ 8] + modl[ 3] * proj[12];
 		clip[ 1] = modl[ 0] * proj[ 1] + modl[ 1] * proj[ 5] + modl[ 2] * proj[ 9] + modl[ 3] * proj[13];
 		clip[ 2] = modl[ 0] * proj[ 2] + modl[ 1] * proj[ 6] + modl[ 2] * proj[10] + modl[ 3] * proj[14];

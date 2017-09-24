@@ -12,6 +12,7 @@
 namespace voxel
 {
 
+	class Frustum;
 	class World;
 
 	class ChunkLoader
@@ -19,7 +20,7 @@ namespace voxel
 
 	private:
 		static bool running;
-		static bool checkChunk(World &world, int32_t x, int32_t z);
+		static bool checkChunk(World &world, Frustum &frustum, int32_t x, int32_t z);
 		static void run(void *data);
 		std::thread *thread;
 		World *world;

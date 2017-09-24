@@ -14,7 +14,6 @@ namespace voxel
 	, chunkUpdater(this)
 	, chunkLoader(this)
 	, noise(512, .5, 1337)
-	, frustum(*this)
 	, player(*this)
 	, clouds(*this)
 	, skybox(*this)

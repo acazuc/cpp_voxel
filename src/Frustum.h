@@ -2,6 +2,7 @@
 # define FRUSTUM_H
 
 # include "AABB.h"
+# include <glm/mat4x4.hpp>
 # include <glm/vec4.hpp>
 
 namespace voxel
@@ -13,12 +14,10 @@ namespace voxel
 	{
 
 	private:
-		World &world;
 		glm::vec4 data[6];
 
 	public:
-		Frustum(World &world);
-		void update();
+		void update(glm::mat4 &proj, glm::mat4 &view);
 		bool check(AABB &aabb);
 
 	};

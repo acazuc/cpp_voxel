@@ -41,7 +41,7 @@ namespace voxel
 		}
 	}
 
-	bool ChunkLoader::checkChunk(World &world, int32_t chunkX, int32_t chunkZ)
+	bool ChunkLoader::checkChunk(World &world, Frustum &frustum, int32_t chunkX, int32_t chunkZ)
 	{
 		if (!running)
 			return (true);
@@ -54,7 +54,7 @@ namespace voxel
 		if (distance > 2 * 16)
 		{
 			AABB aabb(glm::vec3(chunkX, 0, chunkZ), glm::vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
-			if (!world.getFrustum().check(aabb))
+			if (!frustum.check(aabb))
 				return (false);
 		}
 		world.generateChunk(chunkX, chunkZ);
@@ -63,18 +63,21 @@ namespace voxel
 
 	void ChunkLoader::run(void *data)
 	{
+		Frustum frustum;
 		World &world = *reinterpret_cast<World*>(data);
-		int64_t lastCheck = 0;
+		int32_t playerX;
+		int32_t playerZ;
 		while (running)
 		{
-			int32_t playerX = world.getPlayer().getPos().x;
-			int32_t playerZ = world.getPlayer().getPos().z;
+			{
+				std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+				playerX = world.getPlayer().getPos().x;
+				playerZ = world.getPlayer().getPos().z;
+				frustum.update(world.getPlayer().getProjMat(), world.getPlayer().getViewMat());
+			}
 			int32_t playerChunkX = std::floor((float)playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
 			int32_t playerChunkZ = std::floor((float)playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
-			int64_t nanotime = System::nanotime();
-			if (nanotime - lastCheck > 500000000)
 			{
-				lastCheck = nanotime;
 				std::vector<Region*> &regions = world.getRegions();
 				for (uint32_t i = 0; i < regions.size(); ++i)
 				{
@@ -110,36 +113,36 @@ namespace voxel
 					}
 				}
 			}
-			if (checkChunk(world, playerChunkX, playerChunkZ))
+			if (checkChunk(world, frustum, playerChunkX, playerChunkZ))
 				ON_LOADED;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
 			{
 				int32_t chunkX = playerChunkX - i * CHUNK_WIDTH;
 				int32_t chunkZ = playerChunkZ - i * CHUNK_WIDTH;
-				if (checkChunk(world, chunkX, chunkZ))
+				if (checkChunk(world, frustum, chunkX, chunkZ))
 					ON_LOADED;
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX += CHUNK_WIDTH;
-					if (checkChunk(world, chunkX, chunkZ))
+					if (checkChunk(world, frustum, chunkX, chunkZ))
 						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkZ += CHUNK_WIDTH;
-					if (checkChunk(world, chunkX, chunkZ))
+					if (checkChunk(world, frustum, chunkX, chunkZ))
 						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2; ++j)
 				{
 					chunkX -= CHUNK_WIDTH;
-					if (checkChunk(world, chunkX, chunkZ))
+					if (checkChunk(world, frustum, chunkX, chunkZ))
 						ON_LOADED;
 				}
 				for (int32_t j = 0; j <= i * 2 - 1; ++j)
 				{
 					chunkZ -= CHUNK_WIDTH;
-					if (checkChunk(world, chunkX, chunkZ))
+					if (checkChunk(world, frustum, chunkX, chunkZ))
 						ON_LOADED;
 				}
 			}

@@ -94,13 +94,13 @@ namespace voxel
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
 				//float noiseIndex = -1;
-				float noiseIndex = this->world.getNoise().get2((this->x + x), (this->z + z));
-				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
-				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
+				//float noiseIndex = this->world.getNoise().get2((this->x + x), (this->z + z));
+				float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
+				noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
 				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 3;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 12 + CHUNK_HEIGHT / 8;
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 10 + CHUNK_HEIGHT / 8;
 				noiseIndex = std::round(noiseIndex);
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{

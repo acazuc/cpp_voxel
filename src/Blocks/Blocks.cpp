@@ -28,7 +28,7 @@ namespace voxel
 		blocks[15] = (new Block(15))->setDefaultName("iron_ore")->setHardness(3)->setTex(1. / 16, 2. / 16);
 		blocks[16] = (new Block(16))->setDefaultName("coal_ore")->setHardness(3)->setTex(2. / 16, 2. / 16);
 		blocks[17] = (new Block(17))->setDefaultName("tree")->setHardness(2)->setTex(5. / 16, 1. / 16)->setTexSide(4. / 16, 1. / 16);
-		blocks[18] = (new Block(18))->setDefaultName("tree_leaves")->setHardness(.2)->setTex(4. / 16, 3. / 16)->setTransparent(true)->setRenderSameNeighbor(true)->setOpacity(1);
+		blocks[18] = (new Block(18))->setDefaultName("tree_leaves")->setHardness(.2)->setTex(4. / 16, 3. / 16)->setLayer(1)->setTransparent(true)->setRenderSameNeighbor(true)->setOpacity(1);
 		blocks[19] = (new Block(19))->setDefaultName("sponge")->setHardness(.6)->setTex(0, 3. / 16);
 		blocks[20] = (new Block(20))->setDefaultName("glass")->setHardness(0.3)->setTex(1. / 16, 3. / 16);
 		blocks[21] = (new Block(21))->setDefaultName("lapis_ore")->setHardness(3)->setTex(0, 10. / 16);

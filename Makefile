@@ -91,7 +91,7 @@ LIBRARY+= -L lib/freetype/objs/.libs -l:libfreetype.a
 LIBRARY+= -L lib/libpng -l:libpng16.a
 LIBRARY+= -L lib/zlib -l:libz.a
 LIBRARY+= -L lib/harfbuzz/src/.libs -l:libharfbuzz.a
-LIBRARY+= -lGL -lX11 -lXrandr -lXinerama -lXcursor -lXxf86vm
+LIBRARY+= -lGL -lGLU -lX11 -lXrandr -lXinerama -lXcursor -lXxf86vm
 LIBRARY+= -ldl -lrt -lm -lpthread
 #LIBRARY+= -lws2_32 -lwsock32 -lwinmm -lgdi32 -static-libstdc++ -static-libgcc -lopengl32 -lm
 

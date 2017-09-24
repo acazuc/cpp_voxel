@@ -443,9 +443,12 @@ endNearTop:
 
 	void Chunk::setBlock(glm::vec3 pos, uint8_t type)
 	{
-		uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
-		if (pos.y > *top)
-			*top = pos.y;
+		if (type)
+		{
+			uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
+			if (pos.y > *top)
+				*top = pos.y;
+		}
 		int32_t storageY = pos.y / 16;
 		if (!this->storages[storageY])
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
@@ -483,16 +486,15 @@ endNearTop:
 
 	void Chunk::destroyBlock(glm::vec3 pos)
 	{
-		if (pos.y == this->topBlocks[getXZId(pos.x, pos.z)])
+		uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
+		if ((uint8_t)pos.y == *top)
 		{
-			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
+			for (int16_t i = *top - 1; i >= 0; --i)
 			{
 				ChunkBlock *block = getBlock(glm::vec3(pos.x, i, pos.z));
 				if (block && block->getType())
 				{
-					if (i == pos.y)
-						continue;
-					this->topBlocks[getXZId(pos.x, pos.z)] = i;
+					*top = (uint8_t)i;
 					break;
 				}
 			}

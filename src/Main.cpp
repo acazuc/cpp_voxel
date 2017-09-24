@@ -14,6 +14,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <librender/Font/FontModel.h>
 #include <libformat/PNG.h>
+#include <GL/glu.h>
 
 using librender::FontModel;
 
@@ -55,6 +56,7 @@ namespace voxel
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->setKeyDownCallback(Main::keyDown);
@@ -106,7 +108,7 @@ namespace voxel
 			ERROR("Failed to read terrain.png");
 		terrain = new Texture(datas, width, height);
 		delete[] (datas);
-		glBindTexture(GL_TEXTURE_2D, terrain->getId());
+		terrain->bind();
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

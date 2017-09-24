@@ -95,23 +95,24 @@ namespace voxel
 			{
 				//float noiseIndex = -1;
 				//float noiseIndex = this->world.getNoise().get2((this->x + x), (this->z + z));
-				float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
-				noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
-				//float noiseIndex = this->world.getNoise().get3(this->x + x, this->z + z, 400) / 2;
+				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
+				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
+				//float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z) / 2;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 3;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
-				noiseIndex = noiseIndex * CHUNK_HEIGHT / 10 + CHUNK_HEIGHT / 8;
+				float noiseIndex = this->world.getNoise().get2((this->x + x) / 5., (this->z + z) / 5.);
+				noiseIndex = noiseIndex * CHUNK_HEIGHT / 5 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
-					if (y > noiseIndex && y > CHUNK_HEIGHT / 8)
+					if (y > noiseIndex && y > CHUNK_HEIGHT / 4)
 						continue;
 					uint8_t blockType = 1;
 					if (y == 0)
 						blockType = 7;
 					else if (y == noiseIndex)
 					{
-						if (y <= CHUNK_HEIGHT / 8)
+						if (y <= CHUNK_HEIGHT / 4)
 							blockType = 12;
 						else
 							blockType = 2;
@@ -120,7 +121,7 @@ namespace voxel
 						blockType = 8;
 					else if (y > noiseIndex - 3)
 					{
-						if (y <= CHUNK_HEIGHT / 8)
+						if (y <= CHUNK_HEIGHT / 4)
 							blockType = 12;
 						else
 							blockType = 3;

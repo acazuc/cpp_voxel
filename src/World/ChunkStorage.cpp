@@ -12,6 +12,11 @@ namespace voxel
 		std::memset(this->blocks, 0, sizeof(this->blocks));
 	}
 
+	ChunkStorage::~ChunkStorage()
+	{
+		//Empty
+	}
+
 	void ChunkStorage::fillBuffers(Chunk *chunk, ChunkTessellator &tessellator, uint8_t layer)
 	{
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
@@ -22,9 +27,6 @@ namespace voxel
 				{
 					glm::vec3 pos(chunk->getX() + x, this->y + y, chunk->getZ() + z);
 					this->blocks[getXYZId(x, y, z)].fillBuffers(chunk, pos, tessellator, layer);
-					(void)chunk;
-					(void)tessellator;
-					(void)layer;
 				}
 			}
 		}

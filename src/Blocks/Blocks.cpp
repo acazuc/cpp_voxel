@@ -36,10 +36,25 @@ namespace voxel
 		blocks[23] = (new Block(23))->setDefaultName("dispenser")->setHardness(3.5)->setTex(14. / 16, 3. / 16)->setTexSide(13. / 16, 2. / 16)->setTexFront(14. / 16, 2. / 16);
 		blocks[24] = (new Block(24))->setDefaultName("sandstone")->setHardness(.8)->setTexTop(0, 11. / 16)->setTexSide(0, 12. / 16)->setTexBot(0, 13. / 16);
 		blocks[25] = (new Block(25))->setDefaultName("noteblock")->setHardness(.8)->setTex(10. / 16, 3. / 16)->setTexTop(11. / 16, 3. / 16);
+		//
 		blocks[37] = (new Block(37))->setDefaultName("yellow_flower")->setHardness(0)->setTex(13. / 16, 0)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
 		blocks[38] = (new Block(38))->setDefaultName("red_flower")->setHardness(0)->setTex(12. / 16, 0)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
 		blocks[39] = (new Block(39))->setDefaultName("brown_mushroom")->setHardness(0)->setTex(13. / 16, 1. / 16)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
 		blocks[40] = (new Block(40))->setDefaultName("red_mushroom")->setHardness(0)->setTex(12. / 16, 1. / 16)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
+		blocks[41] = (new Block(41))->setDefaultName("gold_block")->setHardness(3)->setTex(7. / 16, 1. / 16);
+		blocks[42] = (new Block(42))->setDefaultName("iron_block")->setHardness(3)->setTex(6. / 16, 1. / 16);
+		//
+		blocks[45] = (new Block(45))->setDefaultName("bricks")->setHardness(2)->setTex(7. / 16, 0);
+		blocks[46] = (new Block(46))->setDefaultName("tnt")->setHardness(0)->setTex(8. / 16, 0);
+		blocks[47] = (new Block(47))->setDefaultName("bookshelf")->setHardness(1.5)->setTex(3. / 16, 2. / 16);
+		blocks[48] = (new Block(48))->setDefaultName("mossy_cobblestone")->setHardness(2)->setTex(8. / 16, 2. / 16);
+		blocks[49] = (new Block(49))->setDefaultName("obsidian")->setHardness(50)->setTex(9. / 16, 2. / 16);
+		//
+		blocks[52] = (new Block(52))->setDefaultName("mob_spawner")->setHardness(5)->setTex(1. / 16, 4. / 16);
+		//
+		blocks[56] = (new Block(56))->setDefaultName("diamond_ore")->setHardness(3)->setTex(2. / 16, 3. / 16);
+		blocks[57] = (new Block(57))->setDefaultName("diamond_block")->setHardness(5)->setTex(8. / 16, 1. / 16);
+		blocks[58] = (new Block(58))->setDefaultName("crafting_table")->setHardness(2.5)->setTexSide(11. / 16, 3. / 16)->setTexFront(12. / 16, 3. / 16)->setTexBack(12. / 16, 3. / 16)->setTexTop(11. / 16, 2. / 16)->setTexBot(4. / 16, 0);
 	}
 
 	void Blocks::clear()

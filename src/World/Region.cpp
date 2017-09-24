@@ -11,7 +11,7 @@ namespace voxel
 	, x(x)
 	, z(z)
 	{
-		//Empty
+		std::memset(this->chunks, 0, sizeof(this->chunks));
 	}
 
 	Region::~Region()

@@ -21,7 +21,7 @@ namespace voxel
 	, oldMouseY(0)
 	, eyeInWater(false)
 	{
-		this->flying = false;
+		this->flying = true;
 		setSize(glm::vec3(.6, 1.8, .6));
 		setPos(glm::vec3(0, 70, 0));
 	}

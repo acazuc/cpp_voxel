@@ -88,7 +88,7 @@ nextRegion:
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		if (this->player.isEyeInWater())
 		{
-			glm::vec4 color(0, 0, .075, 1);
+			glm::vec4 color(0, 0, .05, 1);
 			Main::getBlocksShader().fogColorLocation->setVec4f(color);
 			Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));

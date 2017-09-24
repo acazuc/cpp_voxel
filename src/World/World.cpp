@@ -97,7 +97,7 @@ nextRegion:
 		else
 		{
 			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 12);
+			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 14);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();

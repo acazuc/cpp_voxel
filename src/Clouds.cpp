@@ -8,7 +8,7 @@
 #define CLOUD_Y 128
 #define CLOUD_WIDTH 12
 #define CLOUD_HEIGHT 4
-#define DISPLAY_DISTANCE 16 * 32
+#define DISPLAY_DISTANCE 16 * 16
 #define FRONT_COLOR .9f
 #define BACK_COLOR .9f
 #define LEFT_COLOR .8f

@@ -13,9 +13,9 @@ uniform float timeFactor;
 
 void main()
 {
-	vec4 texCol = vec4(1, 1, 1, 1);
-	if (disableTex == 0)
-		texCol = texture2D(tex, UV);
+	vec4 texCol = texture2D(tex, UV);
+	if (disableTex == 1)
+		texCol.rgb = vec3(1, 1, 1);
 	else
 	{
 		//float rand = fract(sin(dot(viewSpace.xy, vec2(12.9898, 78.233 * timeFactor))) * 43758.5453);

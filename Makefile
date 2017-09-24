@@ -3,7 +3,7 @@ NAME = cpp_voxel
 CC = g++
 #CC = x86_64-w64-mingw32-g++
 
-CFLAGS = -Wall -Wextra -Werror -O2 -g -march=native -flto=8
+CFLAGS = -Wall -Wextra -Werror -O2 -ftree-vectorize -g -march=native -flto=8
 #CFLAGS+= -fsanitize=address
 #CLFAGS+= -Wl,-subsystem,windows
 
@@ -96,6 +96,9 @@ LIBRARY+= -ldl -lrt -lm -lpthread
 #LIBRARY+= -lws2_32 -lwsock32 -lwinmm -lgdi32 -static-libstdc++ -static-libgcc -lopengl32 -lm
 
 all: odir $(NAME)
+
+size:
+	@wc `find $(SRCS_PATH) -type f`
 
 $(NAME): $(OBJS)
 	@echo " - Making $(NAME)"

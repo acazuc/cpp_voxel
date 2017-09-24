@@ -197,7 +197,7 @@ namespace voxel
 		{
 			if (this->chunkXLess)
 			{
-				if (pos.y > this->chunkXLess->getTopBlockAt(CHUNK_WIDTH - 1, pos.z))
+				if (pos.y > this->chunkXLess->getTopBlock(CHUNK_WIDTH - 1, pos.z))
 				{
 					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
@@ -221,7 +221,7 @@ namespace voxel
 		{
 			if (this->chunkXMore)
 			{
-				if (pos.y > this->chunkXMore->getTopBlockAt(0, pos.z))
+				if (pos.y > this->chunkXMore->getTopBlock(0, pos.z))
 				{
 					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
@@ -245,7 +245,7 @@ namespace voxel
 		{
 			if (this->chunkZLess)
 			{
-				if (pos.y > this->chunkZLess->getTopBlockAt(pos.x, CHUNK_WIDTH - 1))
+				if (pos.y > this->chunkZLess->getTopBlock(pos.x, CHUNK_WIDTH - 1))
 				{
 					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
@@ -269,7 +269,7 @@ namespace voxel
 		{
 			if (this->chunkZMore)
 			{
-				if (pos.y > this->chunkZMore->getTopBlockAt(pos.x, 0))
+				if (pos.y > this->chunkZMore->getTopBlock(pos.x, 0))
 				{
 					light = std::max(light, uint8_t(0xe));
 					goto endNearTop;
@@ -353,8 +353,8 @@ endNearTop:
 
 	void Chunk::generateLightMap()
 	{
-		if (this->mustGenerateLightMap > 0)
-			this->mustGenerateLightMap = 0;
+		if (this->mustGenerateLightMap)
+			this->mustGenerateLightMap = false;
 		for (uint8_t i = 0; i < 16; ++i)
 		{
 			if (!this->storages[i])
@@ -496,12 +496,17 @@ endNearTop:
 
 	void Chunk::regenerateBuffers()
 	{
+		if (this->mustGenerateBuffers)
+			return;
 		this->mustGenerateBuffers = true;
 		this->world.getChunksToUpdate().push_back(this);
 	}
 
 	void Chunk::regenerateLightMap()
 	{
+		if (this->mustGenerateLightMap)
+			return;
+		this->mustGenerateBuffers = true;
 		this->mustGenerateLightMap = true;
 		this->world.getChunksToUpdate().push_back(this);
 	}

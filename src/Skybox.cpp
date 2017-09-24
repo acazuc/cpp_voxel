@@ -107,8 +107,8 @@ namespace voxel
 	{
 		GLfloat moonTexCoords[] = {0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1};
 		GLfloat sunTexCoords[] = {0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1};
-		GLfloat moonVertexes[] = {-100, 100, -500, -100, -100, -500, 100, 100, -500, 100, -100, -500, 100, 100, -500, -100, -100, -500};
-		GLfloat sunVertexes[] = {-100, -100, 500, -100, 100, 500, 100, -100, 500, 100, 100, 500, 100, -100, 500, -100, 100, 500};
+		GLfloat moonVertexes[] = {-100, 100, -900, -100, -100, -900, 100, 100, -900, 100, -100, -900, 100, 100, -900, -100, -100, -900};
+		GLfloat sunVertexes[] = {-100, -100, 900, -100, 100, 900, 100, -100, 900, 100, 100, 900, 100, -100, 900, -100, 100, 900};
 		GLfloat moonColors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		GLfloat sunColors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 		this->moonTexCoordsBuffer.setData(GL_ARRAY_BUFFER, moonTexCoords, sizeof(moonTexCoords), GL_FLOAT, 2, GL_STATIC_DRAW);

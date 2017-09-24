@@ -3,9 +3,9 @@
 #include "World/World.h"
 #include "Debug.h"
 
-#define LOAD_DISTANCE 1
+#define LOAD_DISTANCE 16
 
-#define ON_LOADED {};//if (++loadedChunks > 50) {goto end;}}
+#define ON_LOADED {};
 
 namespace voxel
 {
@@ -105,14 +105,14 @@ namespace voxel
 									++iter;
 									continue;
 								}
-								iter = world.getChunksToUpdate().erase(iter);
+								world.getChunksToUpdate().erase(iter);
+								break;
 							}
+							delete (chunk);
 						}
-						delete (chunk);
 					}
 				}
 			}
-			//uint8_t loadedChunks = 0;
 			if (checkChunk(world, playerChunkX, playerChunkZ))
 				ON_LOADED;
 			for (int32_t i = 0; i <= LOAD_DISTANCE; ++i)
@@ -146,9 +146,7 @@ namespace voxel
 						ON_LOADED;
 				}
 			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-			//end:
-			continue;
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	}
 

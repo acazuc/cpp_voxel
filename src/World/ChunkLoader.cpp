@@ -57,10 +57,7 @@ namespace voxel
 			if (!world.getFrustum().check(aabb))
 				return (false);
 		}
-		if (world.getChunk(chunkX, chunkZ))
-			return (false);
-		Chunk *chunk = new Chunk(world, chunkX, chunkZ);
-		world.addChunk(chunk);
+		world.generateChunk(chunkX, chunkZ);
 		return (true);
 	}
 

@@ -89,10 +89,11 @@ namespace voxel
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
 		std::vector<glm::vec3> &colors = tessellator.colors;
 		std::vector<GLuint> &indices = tessellator.indices;
-		if (this->type == 6)
+		if (this->type == 6 || (this->type >= 37 && this->type <= 40))
 		{
-			glm::vec3 org(pos.x + BLOCK_SIZE / 6., pos.y, pos.z + BLOCK_SIZE / 6.);
-			glm::vec3 dst(pos.x + BLOCK_SIZE * 5. / 6, pos.y + BLOCK_SIZE * 2. / 3, pos.z + BLOCK_SIZE * 5. / 6);
+			float diff = (1 - 0.707) / 2 * BLOCK_SIZE;
+			glm::vec3 org(pos.x + diff, pos.y, pos.z + diff);
+			glm::vec3 dst(pos.x + BLOCK_SIZE - diff, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE - diff);
 			glm::vec2 texOrg(blockModel->getTexFrontX(), blockModel->getTexFrontY());
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
@@ -419,105 +420,76 @@ namespace voxel
 		}
 	}
 
+	bool ChunkBlock::shouldRenderFaceNear(ChunkBlock *block)
+	{
+		if (!block)
+			return (true);
+		if (!block->isTransparent())
+			return (false);
+		if (block->getType() == this->type)
+		{
+			Block *blockModel = Blocks::getBlock(this->type);
+			if (!blockModel || !blockModel->isRenderSameNeighbor())
+				return (false);
+		}
+		return (true);
+	}
+
 	void ChunkBlock::calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces)
 	{
 		visibleFaces = 0;
 		if (pos.z - chunk->getZ() == CHUNK_WIDTH - 1)
 		{
 			if (!chunk->getChunkZMore())
-			{
 				visibleFaces |= BLOCK_FACE_FRONT;
-			}
-			else
-			{
-				ChunkBlock *block = chunk->getChunkZMore()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, 0));
-				if (!block || (block->isTransparent() && block->getType() != this->type))
-					visibleFaces |= BLOCK_FACE_FRONT;
-			}
+			else if (shouldRenderFaceNear(chunk->getChunkZMore()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, 0))))
+				visibleFaces |= BLOCK_FACE_FRONT;
 		}
-		else
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1))))
 		{
-			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_FRONT;
+			visibleFaces |= BLOCK_FACE_FRONT;
 		}
 		if (pos.z - chunk->getZ() == 0)
 		{
 			if (!chunk->getChunkZLess())
-			{
 				visibleFaces |= BLOCK_FACE_BACK;
-			}
-			else
-			{
-				ChunkBlock *block = chunk->getChunkZLess()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1));
-				if (!block || (block->isTransparent() && block->getType() != this->type))
-					visibleFaces |= BLOCK_FACE_BACK;
-			}
+			else if (shouldRenderFaceNear(chunk->getChunkZLess()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1))))
+				visibleFaces |= BLOCK_FACE_BACK;
 		}
-		else
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1))))
 		{
-			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_BACK;
+			visibleFaces |= BLOCK_FACE_BACK;
 		}
 		if (pos.x - chunk->getX() == 0)
 		{
 			if (!chunk->getChunkXLess())
-			{
 				visibleFaces |= BLOCK_FACE_LEFT;
-			}
-			else
-			{
-				ChunkBlock *block = chunk->getChunkXLess()->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ()));
-				if (!block || (block->isTransparent() && block->getType() != this->type))
-					visibleFaces |= BLOCK_FACE_LEFT;
-			}
+			else if (shouldRenderFaceNear(chunk->getChunkXLess()->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ()))))
+				visibleFaces |= BLOCK_FACE_LEFT;
 		}
-		else
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ()))))
 		{
-			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ()));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_LEFT;
+			visibleFaces |= BLOCK_FACE_LEFT;
 		}
 		if (pos.x - chunk->getX() == CHUNK_WIDTH - 1)
 		{
 			if (!chunk->getChunkXMore())
-			{
 				visibleFaces |= BLOCK_FACE_RIGHT;
-			}
-			else
-			{
-				ChunkBlock *block = chunk->getChunkXMore()->getBlock(glm::vec3(0, pos.y, pos.z - chunk->getZ()));
-				if (!block || (block->isTransparent() && block->getType() != this->type))
-					visibleFaces |= BLOCK_FACE_RIGHT;
-			}
+			else if (shouldRenderFaceNear(chunk->getChunkXMore()->getBlock(glm::vec3(0, pos.y, pos.z - chunk->getZ()))))
+				visibleFaces |= BLOCK_FACE_RIGHT;
 		}
-		else
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ()))))
 		{
-			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ()));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_RIGHT;
+			visibleFaces |= BLOCK_FACE_RIGHT;
 		}
 		if (pos.y == CHUNK_HEIGHT - 1)
-		{
 			visibleFaces |= BLOCK_FACE_UP;
-		}
-		else
-		{
-			ChunkBlock *block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_UP;
-		}
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()))))
+			visibleFaces |= BLOCK_FACE_UP;
 		if (pos.y == 0)
-		{
 			visibleFaces |= BLOCK_FACE_DOWN;
-		}
-		else
-		{
-			ChunkBlock * block = chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ()));
-			if (!block || (block->isTransparent() && block->getType() != this->type))
-				visibleFaces |= BLOCK_FACE_DOWN;
-		}
+		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ()))))
+			visibleFaces |= BLOCK_FACE_DOWN;
 	}
 
 	uint8_t ChunkBlock::calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
@@ -1357,9 +1329,7 @@ namespace voxel
 		Block *block = Blocks::getBlock(this->type);
 		if (!block)
 			return (true);
-		if (block->getOpacity() != 15)
-			return (true);
-		if (!block->isSolid())
+		if (block->isTransparent())
 			return (true);
 		return (false);
 	}

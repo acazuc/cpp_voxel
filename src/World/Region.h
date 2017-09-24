@@ -14,7 +14,7 @@ namespace voxel
 	{
 
 	private:
-		Chunk **chunks;
+		Chunk *chunks[REGION_WIDTH * REGION_WIDTH];
 		World &world;
 		int32_t x;
 		int32_t z;
@@ -25,6 +25,7 @@ namespace voxel
 		void moveGLBuffersToWorld();
 		void tick();
 		void draw(uint8_t layer);
+		void generateChunk(int32_t x, int32_t z);
 		void setChunk(int32_t x, int32_t z, Chunk *chunk);
 		Chunk *getChunk(int32_t x, int32_t z);
 		inline Chunk **getChunks() {return (this->chunks);};

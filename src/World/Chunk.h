@@ -45,6 +45,7 @@ namespace voxel
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool mustUpdateBuffers;
+		bool generated;
 		bool deleted;
 		bool visible;
 		void updateGLBuffers();
@@ -62,6 +63,7 @@ namespace voxel
 		void generateLightMap();
 		void regenerateLightMap();
 		void setBlock(glm::vec3 pos, uint8_t type);
+		void setBlockIfReplaceable(glm::vec3 pos, uint8_t type);
 		ChunkBlock *getBlock(glm::vec3 pos);
 		void destroyBlock(glm::vec3 pos);
 		inline void setChunkXLess(Chunk *chunk);

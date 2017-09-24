@@ -55,6 +55,7 @@ namespace voxel
 	private:
 		uint8_t light;
 		uint8_t type;
+		bool shouldRenderFaceNear(ChunkBlock *block);
 		bool calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		uint8_t calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t x, int8_t y, int8_t z);
 		void calcAmbientOcclusion(glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent);

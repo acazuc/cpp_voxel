@@ -29,6 +29,9 @@ namespace voxel
 		float texTopY;
 		float texBotX;
 		float texBotY;
+		bool renderSameNeighbor;
+		bool transparent;
+		bool replaceable;
 		bool focusable;
 		bool solid;
 
@@ -82,6 +85,12 @@ namespace voxel
 		Block *setTexY(float texY);
 		inline uint8_t getLayer() {return (this->layer);};
 		Block *setLayer(uint8_t layer);
+		inline bool isRenderSameNeighbor() {return (this->renderSameNeighbor);};
+		Block *setRenderSameNeighbor(bool renderSameNeighbor);
+		inline bool isTransparent() {return (this->transparent);};
+		Block *setTransparent(bool transparent);
+		inline bool isReplaceable() {return (this->replaceable);};
+		Block *setReplaceable(bool replaceable);
 		inline bool isFocusable() {return (this->focusable);};
 		Block *setFocusable(bool focusable);
 		inline bool isSolid() {return (this->solid);};

@@ -10,6 +10,9 @@ namespace voxel
 	, id(id)
 	, resistance(0)
 	, hardness(0)
+	, renderSameNeighbor(false)
+	, transparent(false)
+	, replaceable(false)
 	, focusable(true)
 	, solid(true)
 	{
@@ -211,6 +214,24 @@ namespace voxel
 	Block *Block::setLayer(uint8_t layer)
 	{
 		this->layer = layer;
+		return (this);
+	}
+
+	Block *Block::setRenderSameNeighbor(bool renderSameNeighbor)
+	{
+		this->renderSameNeighbor = renderSameNeighbor;
+		return (this);
+	}
+
+	Block *Block::setTransparent(bool transparent)
+	{
+		this->transparent = transparent;
+		return (this);
+	}
+
+	Block *Block::setReplaceable(bool replaceable)
+	{
+		this->replaceable = replaceable;
 		return (this);
 	}
 

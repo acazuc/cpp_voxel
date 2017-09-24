@@ -1,5 +1,6 @@
 #include "Region.h"
 #include "World.h"
+#include "Debug.h"
 #include <cstring>
 
 namespace voxel
@@ -10,15 +11,13 @@ namespace voxel
 	, x(x)
 	, z(z)
 	{
-		this->chunks = new Chunk*[REGION_WIDTH * REGION_WIDTH];
-		std::memset(this->chunks, 0, sizeof(*this->chunks) * REGION_WIDTH * REGION_WIDTH);
+		//Empty
 	}
 
 	Region::~Region()
 	{
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 			delete (this->chunks[i]);
-		delete[] (this->chunks);
 	}
 
 	void Region::tick()
@@ -46,6 +45,19 @@ namespace voxel
 			if (this->chunks[i])
 				this->chunks[i]->moveGLBuffersToWorld();
 		}
+	}
+
+	void Region::generateChunk(int32_t x, int32_t z)
+	{
+		Chunk *chunk = getChunk(x, z);
+		if (chunk)
+		{
+			chunk->generate();
+			return;
+		}
+		chunk = new Chunk(this->world, this->x + x * CHUNK_WIDTH, this->z + z * CHUNK_WIDTH);
+		setChunk(x, z, chunk);
+		chunk->generate();
 	}
 
 	void Region::setChunk(int32_t x, int32_t z, Chunk *chunk)

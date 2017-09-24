@@ -29,7 +29,7 @@ namespace voxel
 	{
 
 	private:
-		std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> random;
+		std::minstd_rand random;
 		std::vector<VertexBuffer*> buffersToDelete;
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
@@ -53,11 +53,14 @@ namespace voxel
 		void tick();
 		void draw();
 		void getAABBs(AABB &aabb, std::vector<AABB> &aabbs);
+		void setBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
+		void setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type);
+		void generateChunk(int32_t x, int32_t z);
 		void addChunk(Chunk *chunk);
 		Chunk *getChunk(int32_t x, int32_t z);
 		ChunkBlock *getBlock(glm::vec3 pos);
 		uint8_t getLight(glm::vec3 pos);
-		inline std::linear_congruential_engine<uint32_t, 48271, 0, UINT_MAX> &getRandom() {return (this->random);};
+		inline std::minstd_rand &getRandom() {return (this->random);};
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};

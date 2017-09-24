@@ -1,27 +1,37 @@
 #include "FocusedShader.h"
 #include "Utils/readfile.h"
 #include "Debug.h"
-#include <librender/Shader/FragmentShader.h>
-#include <librender/Shader/VertexShader.h>
+#include <cstring>
 #include <string>
-
-using librender::FragmentShader;
-using librender::VertexShader;
 
 namespace voxel
 {
 
+	FocusedShader::FocusedShader()
+	{
+		std::memset(this, 0, sizeof(*this));
+	}
+
+	FocusedShader::~FocusedShader()
+	{
+		delete (this->vertexesLocation);
+		delete (this->mvpLocation);
+		delete (this->program);
+		delete (this->vShad);
+		delete (this->fShad);
+	}
+
 	void FocusedShader::load()
 	{
-		std::string vShad = readfile("data/shaders/focused.vs");
+		std::string vertShad = readfile("data/shaders/focused.vs");
 		LOG("building focused vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		std::string fShad = readfile("data/shaders/focused.fs");
+		this->vShad = new VertexShader(vertShad.c_str());
+		std::string fragShad = readfile("data/shaders/focused.fs");
 		LOG("building focused fragment shader");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		this->fShad = new FragmentShader(fragShad.c_str());
 		this->program = new Program();
-		this->program->attachShader(vertShad);
-		this->program->attachShader(fragShad);
+		this->program->attachShader(this->vShad);
+		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");
 		this->vertexesLocation->setVertexAttribArray(true);

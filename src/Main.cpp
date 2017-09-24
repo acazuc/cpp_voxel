@@ -8,6 +8,7 @@
 #include "Utils/System.h"
 #include "TickManager.h"
 #include "World/World.h"
+#include "Gui/Gui.h"
 #include "Debug.h"
 #include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,21 +22,20 @@ int64_t nanotime;
 namespace voxel
 {
 
-	ParticlesShader Main::particlesShader;
-	FocusedShader Main::focusedShader;
-	SunMoonShader Main::sunMoonShader;
-	BlocksShader Main::blocksShader;
-	CloudsShader Main::cloudsShader;
-	SkyboxShader Main::skyboxShader;
-	EntityShader Main::entityShader;
-	BreakShader Main::breakShader;
-	GuiShader Main::guiShader;
+	ParticlesShader *Main::particlesShader;
+	FocusedShader *Main::focusedShader;
+	SunMoonShader *Main::sunMoonShader;
+	BlocksShader *Main::blocksShader;
+	CloudsShader *Main::cloudsShader;
+	SkyboxShader *Main::skyboxShader;
+	EntityShader *Main::entityShader;
+	BreakShader *Main::breakShader;
+	GuiShader *Main::guiShader;
 	glm::vec4 Main::skyColor;
 	Texture *Main::terrain;
 	Window *Main::window;
 	Screen *Main::screen;
 	Font *Main::font;
-	Gui *Main::gui;
 	int64_t Main::chunkUpdates = 0;
 	int64_t Main::fps = 0;
 	bool Main::smooth = true;
@@ -60,35 +60,44 @@ namespace voxel
 		window->setKeyDownCallback(Main::keyDown);
 		window->show();
 		window->setVSync(true);
-		particlesShader.load();
-		focusedShader.load();
-		sunMoonShader.load();
-		skyboxShader.load();
-		cloudsShader.load();
-		blocksShader.load();
-		entityShader.load();
-		breakShader.load();
-		guiShader.load();
+		particlesShader = new ParticlesShader();
+		particlesShader->load();
+		focusedShader = new FocusedShader();
+		focusedShader->load();
+		sunMoonShader = new SunMoonShader();
+		sunMoonShader->load();
+		skyboxShader = new SkyboxShader();
+		skyboxShader->load();
+		cloudsShader = new CloudsShader();
+		cloudsShader->load();
+		blocksShader = new BlocksShader();
+		blocksShader->load();
+		entityShader = new EntityShader();
+		entityShader->load();
+		breakShader = new BreakShader();
+		breakShader->load();
+		guiShader = new GuiShader();
+		guiShader->load();
 		{
 			glm::mat4 osef(1);
-			blocksShader.program->use();
-			blocksShader.mLocation->setMat4f(osef);
-			blocksShader.texLocation->setVec1i(0);
-			blocksShader.fogDistanceLocation->setVec1f(16 * 12);
-			blocksShader.disableTexLocation->setVec1i(0);
-			cloudsShader.program->use();
-			cloudsShader.mLocation->setMat4f(osef);
-			cloudsShader.fogDistanceLocation->setVec1f(16 * 30);
-			sunMoonShader.program->use();
-			sunMoonShader.texLocation->setVec1i(0);
-			entityShader.program->use();
-			entityShader.fogDistanceLocation->setVec1f(16 * 12);
-			particlesShader.program->use();
-			particlesShader.fogDistanceLocation->setVec1f(16 * 12);
-			breakShader.program->use();
-			breakShader.fogDistanceLocation->setVec1f(16 * 12);
-			guiShader.program->use();
-			guiShader.texLocation->setVec1i(0);
+			blocksShader->program->use();
+			blocksShader->mLocation->setMat4f(osef);
+			blocksShader->texLocation->setVec1i(0);
+			blocksShader->fogDistanceLocation->setVec1f(16 * 12);
+			blocksShader->disableTexLocation->setVec1i(0);
+			cloudsShader->program->use();
+			cloudsShader->mLocation->setMat4f(osef);
+			cloudsShader->fogDistanceLocation->setVec1f(16 * 30);
+			sunMoonShader->program->use();
+			sunMoonShader->texLocation->setVec1i(0);
+			entityShader->program->use();
+			entityShader->fogDistanceLocation->setVec1f(16 * 12);
+			particlesShader->program->use();
+			particlesShader->fogDistanceLocation->setVec1f(16 * 12);
+			breakShader->program->use();
+			breakShader->fogDistanceLocation->setVec1f(16 * 12);
+			guiShader->program->use();
+			guiShader->texLocation->setVec1i(0);
 		}
 		char *datas;
 		uint32_t width;
@@ -107,7 +116,6 @@ namespace voxel
 		EntitiesManager::init();
 		Blocks::init();
 		Gui::init();
-		gui = new Gui();
 		screen = new WorldScreen(new World());
 		//screen = new TitleScreen();
 		nanotime = System::nanotime();
@@ -137,7 +145,22 @@ namespace voxel
 			GuiLagometer::addValue((ended - nanotime) / 1000000.);
 			window->update();
 		}
+		EntitiesManager::clear();
+		Blocks::clear();
+		Gui::clear();
+		delete (particlesShader);
+		delete (focusedShader);
+		delete (sunMoonShader);
+		delete (skyboxShader);
+		delete (cloudsShader);
+		delete (blocksShader);
+		delete (entityShader);
+		delete (breakShader);
+		delete (guiShader);
+		delete (fontModel);
+		delete (terrain);
 		delete (screen);
+		delete (font);
 		delete (window);
 	}
 
@@ -159,8 +182,8 @@ namespace voxel
 				Main::disableTex = 0;
 			else
 				Main::disableTex = 1;
-			blocksShader.program->use();
-			blocksShader.disableTexLocation->setVec1i(Main::disableTex);
+			blocksShader->program->use();
+			blocksShader->disableTexLocation->setVec1i(Main::disableTex);
 		}
 	}
 
@@ -203,5 +226,6 @@ int main(int ac, char **av)
 	if (!glfwInit())
 		ERROR("Failed to init glfw");
 	voxel::Main::main();
+	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }

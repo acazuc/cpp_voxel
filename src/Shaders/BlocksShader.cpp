@@ -1,27 +1,47 @@
 #include "BlocksShader.h"
 #include "Utils/readfile.h"
 #include "Debug.h"
-#include <librender/Shader/FragmentShader.h>
-#include <librender/Shader/VertexShader.h>
+#include <cstring>
 #include <string>
-
-using librender::FragmentShader;
-using librender::VertexShader;
 
 namespace voxel
 {
 
+	BlocksShader::BlocksShader()
+	{
+		std::memset(this, 0, sizeof(*this));
+	}
+
+	BlocksShader::~BlocksShader()
+	{
+		delete (this->fogDistanceLocation);
+		delete (this->timeFactorLocation);
+		delete (this->disableTexLocation);
+		delete (this->fogDensityLocation);
+		delete (this->texCoordsLocation);
+		delete (this->vertexesLocation);
+		delete (this->fogColorLocation);
+		delete (this->colorsLocation);
+		delete (this->mvpLocation);
+		delete (this->texLocation);
+		delete (this->mLocation);
+		delete (this->vLocation);
+		delete (this->program);
+		delete (this->fShad);
+		delete (this->vShad);
+	}
+
 	void BlocksShader::load()
 	{
-		std::string vShad = readfile("data/shaders/blocks.vs");
+		std::string vertShad = readfile("data/shaders/blocks.vs");
 		LOG("building blocks vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		this->vShad = new VertexShader(vertShad.c_str());
 		LOG("building blocks fragment shader");
-		std::string fShad = readfile("data/shaders/blocks.fs");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		std::string fragShad = readfile("data/shaders/blocks.fs");
+		this->fShad = new FragmentShader(fragShad.c_str());
 		this->program = new Program();
-		this->program->attachShader(vertShad);
-		this->program->attachShader(fragShad);
+		this->program->attachShader(this->vShad);
+		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
 		this->timeFactorLocation = this->program->getUniformLocation("timeFactor");

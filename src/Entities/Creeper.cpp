@@ -31,6 +31,16 @@ namespace voxel
 		legBR->setPos(glm::vec3(2, -8, -4));
 	}
 
+	void Creeper::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (legFL);
+		delete (legFR);
+		delete (legBL);
+		delete (legBR);
+	}
+
 	Creeper::Creeper(World &world)
 	: Entity(world)
 	{

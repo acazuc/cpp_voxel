@@ -62,6 +62,23 @@ namespace voxel
 		}
 	}
 
+	void EntitiesManager::clear()
+	{
+		Pigzombie::clear();
+		Skeleton::clear();
+		Creeper::clear();
+		Zombie::clear();
+		Pigman::clear();
+		Human::clear();
+		Sheep::clear();
+		Slime::clear();
+		Pig::clear();
+		Cow::clear();
+		Texture **textures[14] = {&character, &pigzombie, &skeleton, &chicken, &creeper, &pigman, &spider, &zombie, &ghast, &sheep, &slime, &squid, &cow, &pig};
+		for (uint8_t i = 0; i < 14; ++i)
+			delete (*(textures[i]));
+	}
+
 	EntitiesManager::EntitiesManager(World &world)
 	: world(world)
 	{

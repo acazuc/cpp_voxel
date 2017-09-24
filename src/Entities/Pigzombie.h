@@ -23,6 +23,7 @@ namespace voxel
 
 	public:
 		static void init();
+		static void clear();
 		Pigzombie(World &world);
 		void draw();
 

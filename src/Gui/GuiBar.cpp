@@ -1,4 +1,5 @@
 #include "GuiBar.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 namespace voxel
@@ -6,7 +7,7 @@ namespace voxel
 
 	GuiBar::GuiBar()
 	{
-		this->spriteBatch.setTexture(Main::getGui()->getGuiTex());
+		this->spriteBatch.setTexture(Gui::getGuiTex());
 		this->spriteBatch.setProgram(Main::getGuiShader().program);
 		this->spriteBatch.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
 		this->spriteBatch.setVertexesLocation(Main::getGuiShader().vertexesLocation);

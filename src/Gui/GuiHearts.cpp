@@ -1,4 +1,5 @@
 #include "GuiHearts.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 namespace voxel
@@ -6,7 +7,7 @@ namespace voxel
 
 	GuiHearts::GuiHearts()
 	{
-		this->spriteBatch.setTexture(Main::getGui()->getIconsTex());
+		this->spriteBatch.setTexture(Gui::getIconsTex());
 		this->spriteBatch.setProgram(Main::getGuiShader().program);
 		this->spriteBatch.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
 		this->spriteBatch.setVertexesLocation(Main::getGuiShader().vertexesLocation);

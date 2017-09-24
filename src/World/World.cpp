@@ -27,19 +27,21 @@ namespace voxel
 
 	World::~World()
 	{
+		this->chunkUpdater.stop();
+		this->chunkLoader.stop();
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		{
+			this->regions[i]->moveGLBuffersToWorld();
 			delete (this->regions[i]);
-	}
-
-	void World::update()
-	{
-		//std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
+		}
+		clearBuffersToDelete();
 	}
 
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		checkEmptyRegions();
+		clearBuffersToDelete();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->tick();
 		this->player.tick();
@@ -69,6 +71,13 @@ nextRegion:
 		}
 	}
 
+	void World::clearBuffersToDelete()
+	{
+		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
+			delete (this->buffersToDelete[i]);
+		this->buffersToDelete.clear();
+	}
+
 	void World::draw()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
@@ -92,9 +101,6 @@ nextRegion:
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();
-		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
-			delete (this->buffersToDelete[i]);
-		this->buffersToDelete.clear();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(0);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
@@ -164,26 +170,28 @@ nextRegion:
 			int32_t regionX = region->getX();
 			int32_t regionZ = region->getZ();
 			if (x >= regionX && x < regionX + REGION_WIDTH && z >= regionZ && z < regionZ + REGION_WIDTH)
-				return (region->getChunk((x - region->getX()) / CHUNK_WIDTH, (z - region->getZ()) / CHUNK_WIDTH));
+				return (region->getChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
 		}
 		return (NULL);
 	}
 
 	void World::addChunk(Chunk *chunk)
 	{
-		int32_t regionX = std::floor((float)chunk->getX() / REGION_WIDTH) * REGION_WIDTH;
-		int32_t regionZ = std::floor((float)chunk->getZ() / REGION_WIDTH) * REGION_WIDTH;
+		int32_t chunkX = chunk->getX();
+		int32_t chunkZ = chunk->getZ();
+		int32_t regionX = std::floor((float)chunkX / REGION_WIDTH) * REGION_WIDTH;
+		int32_t regionZ = std::floor((float)chunkZ / REGION_WIDTH) * REGION_WIDTH;
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			if (region->getX() == regionX && region->getZ() == regionZ)
 			{
-				region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, chunk);
+				region->setChunk((chunkX - regionX) / CHUNK_WIDTH, (chunkZ - regionZ) / CHUNK_WIDTH, chunk);
 				return;
 			}
 		}
 		Region *region = new Region(*this, regionX, regionZ);
-		region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, chunk);
+		region->setChunk((chunkX - regionX) / CHUNK_WIDTH, (chunkZ - regionZ) / CHUNK_WIDTH, chunk);
 		this->regions.push_back(region);
 	}
 
@@ -205,14 +213,6 @@ nextRegion:
 		if (!block)
 			return (15);
 		return (block->getLight());
-		/*if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
-			return (15);
-		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
-		Chunk *chunk = getChunk(chunkX, chunkZ);
-		if (!chunk)
-			return (15);
-		return (chunk->getLightAt(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));*/
 	}
 
 }

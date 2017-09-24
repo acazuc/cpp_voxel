@@ -33,6 +33,17 @@ namespace voxel
 		legR->setPos(glm::vec3(2, -3, 0));
 	}
 
+	void Pigzombie::clear()
+	{
+		delete (head);
+		delete (headH);
+		delete (body);
+		delete (armL);
+		delete (armR);
+		delete (legL);
+		delete (legR);
+	}
+
 	Pigzombie::Pigzombie(World &world)
 	: Entity(world)
 	{

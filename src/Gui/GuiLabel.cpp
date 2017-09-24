@@ -1,4 +1,5 @@
 #include "GuiLabel.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 namespace voxel

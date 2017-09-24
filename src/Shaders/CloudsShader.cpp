@@ -1,27 +1,42 @@
 #include "CloudsShader.h"
 #include "Utils/readfile.h"
 #include "Debug.h"
-#include <librender/Shader/FragmentShader.h>
-#include <librender/Shader/VertexShader.h>
+#include <cstring>
 #include <string>
-
-using librender::FragmentShader;
-using librender::VertexShader;
 
 namespace voxel
 {
 
+	CloudsShader::CloudsShader()
+	{
+		std::memset(this, 0, sizeof(*this));
+	}
+
+	CloudsShader::~CloudsShader()
+	{
+		delete (this->fogDistanceLocation);
+		delete (this->vertexesLocation);
+		delete (this->fogColorLocation);
+		delete (this->colorsLocation);
+		delete (this->mvpLocation);
+		delete (this->mLocation);
+		delete (this->vLocation);
+		delete (this->program);
+		delete (this->vShad);
+		delete (this->fShad);
+	}
+
 	void CloudsShader::load()
 	{
-		std::string vShad = readfile("data/shaders/clouds.vs");
+		std::string vertShad = readfile("data/shaders/clouds.vs");
 		LOG("building clouds vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
-		std::string fShad = readfile("data/shaders/clouds.fs");
+		this->vShad = new VertexShader(vertShad.c_str());
+		std::string fragShad = readfile("data/shaders/clouds.fs");
 		LOG("building clouds fragment shader");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		this->fShad = new FragmentShader(fragShad.c_str());
 		this->program = new Program();
-		this->program->attachShader(vertShad);
-		this->program->attachShader(fragShad);
+		this->program->attachShader(this->vShad);
+		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");

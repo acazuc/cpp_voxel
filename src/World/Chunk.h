@@ -39,7 +39,7 @@ namespace voxel
 		Chunk *chunkZMore;
 		World &world;
 		AABB aabb;
-		uint8_t *topBlocks;
+		uint8_t topBlocks[CHUNK_WIDTH * CHUNK_WIDTH];
 		int32_t x;
 		int32_t z;
 		bool mustGenerateLightMap;
@@ -53,6 +53,7 @@ namespace voxel
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
 		~Chunk();
+		void moveGLBuffersToWorld();
 		void generate();
 		void tick();
 		void draw(uint8_t layer);

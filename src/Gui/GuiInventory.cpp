@@ -1,4 +1,5 @@
 #include "GuiInventory.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 namespace voxel
@@ -6,7 +7,7 @@ namespace voxel
 
 	GuiInventory::GuiInventory()
 	{
-		this->background.setTexture(Main::getGui()->getInventoryTex());
+		this->background.setTexture(Gui::getInventoryTex());
 		this->background.setSize(176 * 4, 166 * 4);
 		this->background.setProgram(Main::getGuiShader().program);
 		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);

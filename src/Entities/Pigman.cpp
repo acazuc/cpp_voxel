@@ -30,6 +30,16 @@ namespace voxel
 		legR->setPos(glm::vec3(2, -3, 0));
 	}
 
+	void Pigman::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (armL);
+		delete (armR);
+		delete (legL);
+		delete (legR);
+	}
+
 	Pigman::Pigman(World &world)
 	: Entity(world)
 	{

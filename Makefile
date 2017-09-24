@@ -4,6 +4,7 @@ CC = g++
 #CC = x86_64-w64-mingw32-g++
 
 CFLAGS = -Wall -Wextra -Werror -O2 -g -march=native -flto=8
+#CFLAGS+= -fsanitize=address
 #CLFAGS+= -Wl,-subsystem,windows
 
 INCLUDES_PATH = include
@@ -26,6 +27,7 @@ SRCS_NAME = Main.cpp \
 	    Noise/SimplexNoiseOctave.cpp \
 	    Noise/WorleyNoise.cpp \
 	    Utils/readfile.cpp \
+	    Utils/System.cpp \
 	    Player/Player.cpp \
 	    Player/PlayerRaycast.cpp \
 	    Blocks/Blocks.cpp \

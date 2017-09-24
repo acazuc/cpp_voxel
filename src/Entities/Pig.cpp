@@ -32,6 +32,16 @@ namespace voxel
 		legBR->setPos(glm::vec3(3, -1.4, -7));
 	}
 
+	void Pig::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (legFL);
+		delete (legFR);
+		delete (legBL);
+		delete (legBR);
+	}
+
 	Pig::Pig(World &world)
 	: Entity(world)
 	{

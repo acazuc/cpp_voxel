@@ -1,4 +1,5 @@
 #include "GuiCross.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 namespace voxel
@@ -6,7 +7,7 @@ namespace voxel
 
 	GuiCross::GuiCross()
 	{
-		this->sprite.setTexture(Main::getGui()->getGuiTex());
+		this->sprite.setTexture(Gui::getGuiTex());
 		this->sprite.setSize(9 * 4, 9 * 4);
 		this->sprite.setProgram(Main::getGuiShader().program);
 		this->sprite.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);

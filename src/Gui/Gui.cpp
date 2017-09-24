@@ -98,6 +98,21 @@ namespace voxel
 		textColors[15] = new Color(1.00, 1.00, 1.00);
 	}
 
+	void Gui::clear()
+	{
+		for (uint8_t i = 0; i < 16; ++i)
+		{
+			delete (textShadowColors[i]);
+			delete (textColors[i]);
+		}
+		delete (inventoryTex);
+		delete (iconsTex);
+		delete (waterTex);
+		delete (logoTex);
+		delete (guiTex);
+		delete (bgTex);
+	}
+
 	Gui::Gui()
 	{
 		//

@@ -31,6 +31,16 @@ namespace voxel
 		legR->setPos(glm::vec3(2, -3, 0));
 	}
 
+	void Zombie::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (armL);
+		delete (armR);
+		delete (legL);
+		delete (legR);
+	}
+
 	Zombie::Zombie(World &world)
 	: Entity(world)
 	{

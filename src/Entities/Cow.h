@@ -24,6 +24,7 @@ namespace voxel
 
 	public:
 		static void init();
+		static void clear();
 		Cow(World &world);
 		void draw();
 

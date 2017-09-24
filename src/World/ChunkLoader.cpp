@@ -3,7 +3,7 @@
 #include "World/World.h"
 #include "Debug.h"
 
-#define LOAD_DISTANCE 16
+#define LOAD_DISTANCE 1
 
 #define ON_LOADED {};//if (++loadedChunks > 50) {goto end;}}
 
@@ -21,9 +21,7 @@ namespace voxel
 
 	ChunkLoader::~ChunkLoader()
 	{
-		running = false;
-		if (this->thread)
-			this->thread->join();
+		//Empty
 	}
 
 	void ChunkLoader::start()
@@ -32,12 +30,23 @@ namespace voxel
 		this->thread = new std::thread(run, this->world);
 	}
 
+	void ChunkLoader::stop()
+	{
+		running = false;
+		if (this->thread)
+		{
+			this->thread->join();
+			delete (this->thread);
+			this->thread = NULL;
+		}
+	}
+
 	bool ChunkLoader::checkChunk(World &world, int32_t chunkX, int32_t chunkZ)
 	{
 		if (!running)
 			return (true);
-		double part1 = world.getPlayer().getPos().x - (chunkX + CHUNK_WIDTH / 2);
-		double part2 = world.getPlayer().getPos().z - (chunkZ + CHUNK_WIDTH / 2);
+		int32_t part1 = world.getPlayer().getPos().x - (chunkX + CHUNK_WIDTH / 2);
+		int32_t part2 = world.getPlayer().getPos().z - (chunkZ + CHUNK_WIDTH / 2);
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
@@ -61,12 +70,12 @@ namespace voxel
 		int64_t lastCheck = 0;
 		while (running)
 		{
-			float playerX = world.getPlayer().getPos().x;
-			float playerZ = world.getPlayer().getPos().z;
-			int32_t playerChunkX = std::floor(playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
-			int32_t playerChunkZ = std::floor(playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t playerX = world.getPlayer().getPos().x;
+			int32_t playerZ = world.getPlayer().getPos().z;
+			int32_t playerChunkX = std::floor((float)playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t playerChunkZ = std::floor((float)playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
 			int64_t nanotime = System::nanotime();
-			if (nanotime - lastCheck > 2000000000)
+			if (nanotime - lastCheck > 500000000)
 			{
 				lastCheck = nanotime;
 				std::vector<Region*> &regions = world.getRegions();
@@ -79,62 +88,27 @@ namespace voxel
 						Chunk *chunk = chunks[j];
 						if (!chunk)
 							continue;
-						double part1 = playerX - (chunk->getX() + CHUNK_WIDTH / 2);
-						double part2 = playerZ - (chunk->getZ() + CHUNK_WIDTH / 2);
+						int32_t part1 = playerX - (chunk->getX() + CHUNK_WIDTH / 2);
+						int32_t part2 = playerZ - (chunk->getZ() + CHUNK_WIDTH / 2);
 						int32_t distance = sqrt(part1 * part1 + part2 * part2);
-						if (distance > LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
+						if (distance < LOAD_DISTANCE * 1.5 * CHUNK_WIDTH)
+							continue;
 						{
-							Chunk *currentChunk = NULL;
+							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
+							chunk->moveGLBuffersToWorld();
+							region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+							std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin();
+							while (iter != world.getChunksToUpdate().end())
 							{
-
+								if (*iter != chunk)
 								{
-									std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
-									currentChunk = regions[i]->getChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH);
-									for (uint8_t i = 0; i < 3; ++i)
-									{
-										ChunkLayer &layer = chunk->getLayer(i);
-										world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
-										world.getBuffersToDelete().push_back(layer.vertexesBuffer);
-										world.getBuffersToDelete().push_back(layer.indicesBuffer);
-										world.getBuffersToDelete().push_back(layer.colorsBuffer);
-										layer.texCoordsBuffer = NULL;
-										layer.vertexesBuffer = NULL;
-										layer.indicesBuffer = NULL;
-										layer.colorsBuffer = NULL;
-									}
-									regions[i]->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+									++iter;
+									continue;
 								}
-								if (currentChunk)
-								{
-								begin:
-									std::lock_guard<std::recursive_mutex> lock(world.getChunksToUpdateMutex());
-									for (std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin(); iter != world.getChunksToUpdate().end(); ++iter)
-									{
-										if (*iter == currentChunk)
-										{
-											if (iter == world.getChunksToUpdate().begin())
-											{
-												world.getChunksToUpdate().erase(iter);
-												goto begin;
-											}
-											else if (iter == world.getChunksToUpdate().end())
-											{
-												world.getChunksToUpdate().erase(iter);
-												break;
-											}
-											else
-											{
-												std::list<Chunk*>::iterator prev = iter;
-												--prev;
-												world.getChunksToUpdate().erase(iter);
-												iter = prev;
-											}
-										}
-									}
-								}
+								iter = world.getChunksToUpdate().erase(iter);
 							}
-							delete (currentChunk);
 						}
+						delete (chunk);
 					}
 				}
 			}

@@ -22,6 +22,7 @@ namespace voxel
 
 	public:
 		static void init();
+		static void clear();
 		Creeper(World &world);
 		void draw();
 

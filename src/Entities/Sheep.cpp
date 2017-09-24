@@ -32,6 +32,16 @@ namespace voxel
 		legBR->setPos(glm::vec3(3, -5, -7));
 	}
 
+	void Sheep::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (legFL);
+		delete (legFR);
+		delete (legBL);
+		delete (legBR);
+	}
+
 	Sheep::Sheep(World &world)
 	: Entity(world)
 	{

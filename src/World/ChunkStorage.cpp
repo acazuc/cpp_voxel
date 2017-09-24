@@ -9,13 +9,7 @@ namespace voxel
 	ChunkStorage::ChunkStorage(int32_t y)
 	: y(y)
 	{
-		this->blocks = new ChunkBlock[CHUNK_WIDTH * 16 * CHUNK_WIDTH];
-		std::memset(this->blocks, 0, sizeof(*this->blocks) * CHUNK_WIDTH * 16 * CHUNK_WIDTH);
-	}
-
-	ChunkStorage::~ChunkStorage()
-	{
-		delete[] (this->blocks);
+		std::memset(this->blocks, 0, sizeof(this->blocks));
 	}
 
 	void ChunkStorage::fillBuffers(Chunk *chunk, ChunkTessellator &tessellator, uint8_t layer)

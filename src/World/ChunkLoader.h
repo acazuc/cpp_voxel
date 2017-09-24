@@ -28,6 +28,7 @@ namespace voxel
 		ChunkLoader(World *world);
 		~ChunkLoader();
 		void start();
+		void stop();
 
 	};
 

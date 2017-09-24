@@ -35,6 +35,7 @@ namespace voxel
 
 	public:
 		static void init();
+		static void clear();
 		EntitiesManager(World &world);
 		~EntitiesManager();
 		void tick();

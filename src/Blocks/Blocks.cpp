@@ -35,7 +35,14 @@ namespace voxel
 		blocks[22] = (new Block(22))->setDefaultName("lapis_block")->setHardness(3)->setTex(0, 9. / 16);
 		blocks[23] = (new Block(23))->setDefaultName("dispenser")->setHardness(3.5)->setTex(14. / 16, 3. / 16)->setTexSide(13. / 16, 2. / 16)->setTexFront(14. / 16, 2. / 16);
 		blocks[24] = (new Block(24))->setDefaultName("sandstone")->setHardness(.8)->setTexTop(0, 11. / 16)->setTexSide(0, 12. / 16)->setTexBot(0, 13. / 16);
-		blocks[24] = (new Block(25))->setDefaultName("noteblock")->setHardness(.8)->setTex(10. / 16, 3. / 16)->setTexTop(11. / 16, 3. / 16);
+		blocks[25] = (new Block(25))->setDefaultName("noteblock")->setHardness(.8)->setTex(10. / 16, 3. / 16)->setTexTop(11. / 16, 3. / 16);
+	}
+
+	void Blocks::clear()
+	{
+		for (uint32_t i = 0; i < 256; ++i)
+			delete (blocks[i]);
+		delete[] (blocks);
 	}
 
 }

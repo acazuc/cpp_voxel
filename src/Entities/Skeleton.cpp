@@ -31,6 +31,16 @@ namespace voxel
 		legR->setPos(glm::vec3(2, -4.6, 0));
 	}
 
+	void Skeleton::clear()
+	{
+		delete (head);
+		delete (body);
+		delete (armL);
+		delete (armR);
+		delete (legL);
+		delete (legR);
+	}
+
 	Skeleton::Skeleton(World &world)
 	: Entity(world)
 	{

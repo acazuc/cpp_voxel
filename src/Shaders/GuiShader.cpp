@@ -1,28 +1,40 @@
 #include "GuiShader.h"
 #include "Utils/readfile.h"
 #include "Debug.h"
-#include <librender/Shader/FragmentShader.h>
-#include <librender/Shader/VertexShader.h>
+#include <cstring>
 #include <string>
-#include "Main.h"
-
-using librender::FragmentShader;
-using librender::VertexShader;
 
 namespace voxel
 {
 
+	GuiShader::GuiShader()
+	{
+		std::memset(this, 0, sizeof(*this));
+	}
+
+	GuiShader::~GuiShader()
+	{
+		delete (this->texCoordsLocation);
+		delete (this->vertexesLocation);
+		delete (this->colorsLocation);
+		delete (this->mvpLocation);
+		delete (this->texLocation);
+		delete (this->program);
+		delete (this->vShad);
+		delete (this->fShad);
+	}
+
 	void GuiShader::load()
 	{
-		std::string vShad = readfile("data/shaders/gui.vs");
+		std::string vertShad = readfile("data/shaders/gui.vs");
 		LOG("building particles vertex shader");
-		VertexShader *vertShad = new VertexShader(vShad.c_str());
+		this->vShad = new VertexShader(vertShad.c_str());
 		LOG("building particles fragment shader");
-		std::string fShad = readfile("data/shaders/gui.fs");
-		FragmentShader *fragShad = new FragmentShader(fShad.c_str());
+		std::string fragShad = readfile("data/shaders/gui.fs");
+		this->fShad = new FragmentShader(fragShad.c_str());
 		this->program = new Program();
-		this->program->attachShader(vertShad);
-		this->program->attachShader(fragShad);
+		this->program->attachShader(this->vShad);
+		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->texCoordsLocation = this->program->getAttribLocation("vertexUV");
 		this->texCoordsLocation->setVertexAttribArray(true);

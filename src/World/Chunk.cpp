@@ -27,7 +27,6 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
-		this->topBlocks = new uint8_t[CHUNK_WIDTH * CHUNK_WIDTH];
 		std::memset(this->storages, 0, sizeof(this->storages));
 		generate();
 		generateLightMap();
@@ -46,7 +45,6 @@ namespace voxel
 	{
 		for (uint8_t i = 0; i < 16; ++i)
 			delete (this->storages[i]);
-		delete[] (this->topBlocks);
 		if (this->chunkXLess)
 		{
 			this->chunkXLess->setChunkXMore(NULL);
@@ -66,6 +64,22 @@ namespace voxel
 		{
 			this->chunkZMore->setChunkZLess(NULL);
 			this->chunkZMore->regenerateLightMap();
+		}
+	}
+
+	void Chunk::moveGLBuffersToWorld()
+	{
+		for (uint8_t i = 0; i < 3; ++i)
+		{
+			ChunkLayer &layer = this->layers[i];
+			if (layer.texCoordsBuffer)
+				this->world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
+			if (layer.vertexesBuffer)
+				this->world.getBuffersToDelete().push_back(layer.vertexesBuffer);
+			if (layer.indicesBuffer)
+				this->world.getBuffersToDelete().push_back(layer.indicesBuffer);
+			if (layer.colorsBuffer)
+				this->world.getBuffersToDelete().push_back(layer.colorsBuffer);
 		}
 	}
 
@@ -442,6 +456,22 @@ endNearTop:
 
 	void Chunk::destroyBlock(glm::vec3 pos)
 	{
+		if (pos.y == this->topBlocks[getXZId(pos.x, pos.z)])
+		{
+			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
+			{
+				ChunkBlock *block = getBlock(glm::vec3(pos.x, i, pos.z));
+				if (block && block->getType())
+				{
+					if (i == pos.y)
+						continue;
+					this->topBlocks[getXZId(pos.x, pos.z)] = i;
+					break;
+				}
+			}
+		}
+		setBlock(pos, 0);
+		regenerateLightMap();
 		if (pos.x == 0)
 		{
 			if (this->chunkXLess)
@@ -462,22 +492,6 @@ endNearTop:
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();
 		}
-		if (pos.y == this->topBlocks[getXZId(pos.x, pos.z)])
-		{
-			for (int32_t i = CHUNK_HEIGHT - 1; i >= 0; --i)
-			{
-				ChunkBlock *block = getBlock(glm::vec3(pos.x, i, pos.z));
-				if (block->getType())
-				{
-					if (i == pos.y)
-						continue;
-					this->topBlocks[getXZId(pos.x, pos.z)] = i;
-					break;
-				}
-			}
-		}
-		setBlock(pos, 0);
-		regenerateLightMap();
 	}
 
 	void Chunk::regenerateBuffers()

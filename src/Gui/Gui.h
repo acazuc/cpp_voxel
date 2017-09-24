@@ -34,6 +34,7 @@ namespace voxel
 		~Gui();
 		void draw();
 		static void init();
+		static void clear();
 		static void updateMat();
 		static inline glm::mat4 &getMat() {return (mat);};
 		static inline Texture *getInventoryTex() {return (inventoryTex);};

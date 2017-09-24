@@ -16,6 +16,11 @@ namespace voxel
 		body->setPos(glm::vec3(0, -4.4, 0));
 	}
 
+	void Slime::clear()
+	{
+		delete (body);
+	}
+
 	Slime::Slime(World &world)
 	: Entity(world)
 	{

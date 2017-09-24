@@ -27,6 +27,7 @@ namespace voxel
 		ChunkUpdater(World *world);
 		~ChunkUpdater();
 		void start();
+		void stop();
 
 	};
 

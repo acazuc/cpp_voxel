@@ -19,15 +19,24 @@ namespace voxel
 
 	ChunkUpdater::~ChunkUpdater()
 	{
-		running = false;
-		if (this->thread)
-			this->thread->join();
+		//Empty
 	}
 
 	void ChunkUpdater::start()
 	{
 		running = true;
 		this->thread = new std::thread(run, world);
+	}
+
+	void ChunkUpdater::stop()
+	{
+		running = false;
+		if (this->thread)
+		{
+			this->thread->join();
+			delete (this->thread);
+			this->thread = NULL;
+		}
 	}
 
 	void ChunkUpdater::run(void *data)
@@ -37,19 +46,17 @@ namespace voxel
 		World &world = *reinterpret_cast<World*>(data);
 		while (running)
 		{
+			if (nanotime - lastUpdate >= 1000000000)
 			{
-			start:
-				if (nanotime - lastUpdate >= 1000000000)
-				{
-					lastUpdate += 1000000000;
-					Main::setChunkUpdates(updatesCount);
-					updatesCount = 0;
-				}
+				lastUpdate += 1000000000;
+				Main::setChunkUpdates(updatesCount);
+				updatesCount = 0;
+			}
+			{
+				std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 				if (world.getChunksToUpdate().size() == 0)
-					goto end;
+					goto wait;
 				Chunk *chunk = world.getChunksToUpdate().front();
-				std::lock_guard<std::recursive_mutex> lock1(world.getChunksToUpdateMutex());
-				std::lock_guard<std::recursive_mutex> lock2(world.getChunksMutex());
 				world.getChunksToUpdate().pop_front();
 				if (chunk->isMustGenerateLightMap())
 				{
@@ -63,11 +70,11 @@ namespace voxel
 					chunk->generateBuffers();
 				}
 				else
-					goto start;
+					continue;
 			}
 			std::this_thread::sleep_for(std::chrono::microseconds(10));
 			continue;
-		end:
+		wait:
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}

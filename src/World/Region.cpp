@@ -39,6 +39,15 @@ namespace voxel
 		}
 	}
 
+	void Region::moveGLBuffersToWorld()
+	{
+		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		{
+			if (this->chunks[i])
+				this->chunks[i]->moveGLBuffersToWorld();
+		}
+	}
+
 	void Region::setChunk(int32_t x, int32_t z, Chunk *chunk)
 	{
 		this->chunks[x * REGION_WIDTH + z] = chunk;

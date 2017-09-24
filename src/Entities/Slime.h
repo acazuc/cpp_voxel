@@ -17,6 +17,7 @@ namespace voxel
 
 	public:
 		static void init();
+		static void clear();
 		Slime(World &world);
 		void draw();
 

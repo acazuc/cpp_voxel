@@ -1,6 +1,6 @@
 #include "GuiButton.h"
+#include "Gui/Gui.h"
 #include "Main.h"
-#include "Gui.h"
 
 namespace voxel
 {

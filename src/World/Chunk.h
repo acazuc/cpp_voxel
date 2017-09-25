@@ -40,6 +40,7 @@ namespace voxel
 		World &world;
 		AABB aabb;
 		uint8_t topBlocks[CHUNK_WIDTH * CHUNK_WIDTH];
+		uint8_t biomes[CHUNK_WIDTH * CHUNK_WIDTH];
 		int32_t x;
 		int32_t z;
 		bool mustGenerateLightMap;
@@ -65,6 +66,12 @@ namespace voxel
 		void setBlock(glm::vec3 pos, uint8_t type);
 		void setBlockIfReplaceable(glm::vec3 pos, uint8_t type);
 		ChunkBlock *getBlock(glm::vec3 pos);
+		uint8_t getLight(glm::vec3 pos);
+		void setSkyLight(glm::vec3 pos, uint8_t light);
+		uint8_t getSkyLight(glm::vec3 pos);
+		void setBlockLight(glm::vec3 pos, uint8_t light);
+		uint8_t getBlockLight(glm::vec3 pos);
+		uint8_t getTopBlock(int32_t x, int32_t z);
 		void destroyBlock(glm::vec3 pos);
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
@@ -74,7 +81,6 @@ namespace voxel
 		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
 		inline void setChunkZMore(Chunk *chunk);
 		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline uint16_t getTopBlock(int32_t x, int32_t z) {return (this->topBlocks[getXZId(x, z)]);};
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};

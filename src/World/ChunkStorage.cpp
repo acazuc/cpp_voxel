@@ -10,6 +10,8 @@ namespace voxel
 	: y(y)
 	{
 		std::memset(this->blocks, 0, sizeof(this->blocks));
+		std::memset(this->blockLights, 0, sizeof(this->blockLights));
+		std::memset(this->skyLights, 0, sizeof(this->skyLights));
 	}
 
 	ChunkStorage::~ChunkStorage()
@@ -34,8 +36,7 @@ namespace voxel
 
 	void ChunkStorage::resetLights()
 	{
-		for (uint32_t i = 0; i < CHUNK_WIDTH * 16 * CHUNK_WIDTH; ++i)
-			this->blocks[i].setLight(0);
+		std::memset(this->skyLights, 0, sizeof(this->skyLights));
 	}
 
 	void ChunkStorage::setBlock(glm::vec3 pos, uint8_t type)
@@ -48,6 +49,45 @@ namespace voxel
 		return (&this->blocks[getXYZId(pos)]);
 	}
 
+	uint8_t ChunkStorage::getLight(glm::vec3 pos)
+	{
+		return (std::max(getSkyLight(pos), getBlockLight(pos)));
+	}
+
+	void ChunkStorage::setSkyLight(glm::vec3 pos, uint8_t light)
+	{
+		uint32_t idx = getXYZId(pos);
+		if (idx & 1)
+			this->skyLights[idx / 2] = (this->skyLights[idx / 2] & 0xf0) | (light & 0xf);
+		else
+			this->skyLights[idx / 2] = (this->skyLights[idx / 2] & 0x0f) | ((light & 0xf) << 4);
+	}
+
+	uint8_t ChunkStorage::getSkyLight(glm::vec3 pos)
+	{
+		uint32_t idx = getXYZId(pos);
+		if (idx & 1)
+			return (this->skyLights[idx / 2] & 0xf);
+		return ((this->skyLights[idx / 2] >> 4) & 0xf);
+	}
+
+	void ChunkStorage::setBlockLight(glm::vec3 pos, uint8_t light)
+	{
+		uint32_t idx = getXYZId(pos);
+		if (idx & 1)
+			this->blockLights[idx / 2] = (this->blockLights[idx / 2] & 0xf0) | (light & 0xf);
+		else
+			this->blockLights[idx / 2] = (this->blockLights[idx / 2] & 0x0f) | ((light & 0xf) << 4);
+	}
+
+	uint8_t ChunkStorage::getBlockLight(glm::vec3 pos)
+	{
+		uint32_t idx = getXYZId(pos);
+		if (idx & 1)
+			return (this->blockLights[idx / 2] & 0xf);
+		return ((this->blockLights[idx / 2] >> 4) & 0xf);
+	}
+
 	uint32_t ChunkStorage::getXYZId(glm::vec3 pos)
 	{
 		return (getXYZId((int8_t)pos.x, (int8_t)pos.y, (int8_t)pos.z));
@@ -55,7 +95,7 @@ namespace voxel
 
 	uint32_t ChunkStorage::getXYZId(int8_t x, int8_t y, int8_t z)
 	{
-		return ((x * 16 + y) * CHUNK_WIDTH + z);
+		return ((y * CHUNK_WIDTH + z) * CHUNK_WIDTH + x);
 	}
 
 }

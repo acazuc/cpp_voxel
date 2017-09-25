@@ -12,7 +12,6 @@ namespace voxel
 
 	private:
 		SimplexNoiseOctave *octaves;
-		uint32_t largestFeature;
 		uint32_t octavesNumber;
 		double *frequencies;
 		double *amplitudes;
@@ -20,7 +19,7 @@ namespace voxel
 		int32_t seed;
 
 	public:
-		SimplexNoise(uint32_t largestFeature, double persistance, int32_t seed);
+		SimplexNoise(uint32_t octavesNumber, double persistance, int32_t seed);
 		~SimplexNoise();
 		double get2(double x, double y);
 		double get3(double x, double y, double z);

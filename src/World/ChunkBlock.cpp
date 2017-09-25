@@ -1,5 +1,4 @@
 #include "ChunkBlock.h"
-#include "Blocks/Blocks.h"
 #include "Chunk.h"
 #include "Main.h"
 #include <cstring>
@@ -521,10 +520,7 @@ namespace voxel
 			if (!(chunk = chunk->getChunkZMore()))
 				return (15);
 		}
-		ChunkBlock *block = chunk->getBlock(newPos);
-		if (!block)
-			return (0);
-		return (block->getLight());
+		return (chunk->getLight(newPos));
 	}
 
 	bool ChunkBlock::calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
@@ -835,8 +831,8 @@ namespace voxel
 
 	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blocksLights)
 	{
-		Block *block = Blocks::getBlock(this->type);
-		if (!Main::getSmooth() || !block->isSolid() || isTransparent())
+		Block *blockModel = Blocks::getBlock(this->type);
+		if (!Main::getSmooth() || !blockModel->isSolid() || isTransparent())
 		{
 			lights[F1P1] = getLightValue(lightsLevels.f1p1);
 			lights[F1P2] = getLightValue(lightsLevels.f1p2);

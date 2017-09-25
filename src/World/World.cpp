@@ -13,7 +13,7 @@ namespace voxel
 	, entitiesManager(*this)
 	, chunkUpdater(this)
 	, chunkLoader(this)
-	, noise(512, .5, 1337)
+	, noise(16, .5, 1337)
 	, player(*this)
 	, clouds(*this)
 	, skybox(*this)
@@ -258,10 +258,14 @@ nextRegion:
 
 	uint8_t World::getLight(glm::vec3 pos)
 	{
-		ChunkBlock *block = getBlock(pos);
-		if (!block)
-			return (15);
-		return (block->getLight());
+		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+			return (0);
+		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		Chunk *chunk = getChunk(chunkX, chunkZ);
+		if (!chunk)
+			return (0);
+		return (chunk->getLight(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
 	}
 
 }

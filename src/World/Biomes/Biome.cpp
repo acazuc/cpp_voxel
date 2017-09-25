@@ -29,7 +29,7 @@ namespace voxel
 				{
 					if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 100)
 						this->treeGenerator.generate(chunk, x, top + 1, z);
-					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
+					/*else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 37);
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 38);
@@ -38,16 +38,48 @@ namespace voxel
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 40);
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
-						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);
+						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);*/
 				}
-				if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 500)
-					this->ironOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (chunk.getWorld().getRandom().max() / 10.) * CHUNK_HEIGHT, z);
-				if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 500)
-					this->coalOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (chunk.getWorld().getRandom().max() / 10.) * CHUNK_HEIGHT, z);
-				if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 1000)
-					this->goldOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (chunk.getWorld().getRandom().max() / 10.) * CHUNK_HEIGHT, z);
-				if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 1000)
-					this->diamondOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (chunk.getWorld().getRandom().max() / 10.) * CHUNK_HEIGHT, z);
+			}
+		}
+		for (uint8_t i = 0; i < 10; ++i)
+		{
+			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
+			{
+				int32_t top = chunk.getTopBlock(x, z);
+				this->ironOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+			}
+		}
+		for (uint8_t i = 0; i < 10; ++i)
+		{
+			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
+			{
+				int32_t top = chunk.getTopBlock(x, z);
+				this->coalOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+			}
+		}
+		for (uint8_t i = 0; i < 5; ++i)
+		{
+			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
+			{
+				int32_t top = chunk.getTopBlock(x, z);
+				this->goldOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+			}
+		}
+		for (uint8_t i = 0; i < 4; ++i)
+		{
+			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
+			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
+			{
+				int32_t top = chunk.getTopBlock(x, z);
+				this->diamondOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
 			}
 		}
 	}

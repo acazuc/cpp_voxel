@@ -4,12 +4,12 @@
 namespace voxel
 {
 
-	SimplexNoise::SimplexNoise(uint32_t largestFeature, double persistence, int32_t seed)
-	: largestFeature(largestFeature)
+	SimplexNoise::SimplexNoise(uint32_t octavesNumber, double persistence, int32_t seed)
+	: octavesNumber(octavesNumber)
 	, persistence(persistence)
 	, seed(seed)
 	{
-		this->octavesNumber = std::ceil(std::log10(this->largestFeature) / std::log10(2));
+		this->octavesNumber = octavesNumber;
 		this->octaves = new SimplexNoiseOctave[this->octavesNumber];
 		this->frequencies = new double[this->octavesNumber];
 		this->amplitudes = new double[this->octavesNumber];

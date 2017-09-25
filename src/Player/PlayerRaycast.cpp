@@ -300,10 +300,7 @@ nextStep:
 			return;
 		this->todoTicks = 20 * blockModel->getHardness();
 		buildBreakTexCoords();
-		ChunkBlock *relBlock = chunk->getBlock(relative);
-		uint8_t light = 0;
-		if (relBlock)
-			light = relBlock->getLight();
+		uint8_t light = chunk->getLight(relative);
 		buildBreakColors(ChunkBlock::getLightValue(light));
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{

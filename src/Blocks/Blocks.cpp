@@ -10,7 +10,7 @@ namespace voxel
 	{
 		blocks = new Block*[255];
 		std::memset(blocks, 0, sizeof(*blocks) * 255);
-		blocks[0] = (new Block(0))->setDefaultName("air")->setOpacity(0)->setTransparent(true)->setSolid(false)->setReplaceable(true)->setFocusable(false)->setOpacity(1);
+		blocks[0] = (new Block(0))->setDefaultName("air")->setOpacity(1)->setTransparent(true)->setSolid(false)->setReplaceable(true)->setFocusable(false);
 		blocks[1] = (new Block(1))->setDefaultName("stone")->setHardness(1.5)->setResistance(10)->setTex(1. / 16, 0);
 		blocks[2] = (new Block(2))->setDefaultName("grass")->setHardness(.6)->setTexTop(0, 0)->setTexSide(3. / 16, 0)->setTexBot(2. / 16, 0);
 		blocks[3] = (new Block(3))->setDefaultName("dirt")->setHardness(.5)->setTex(2. / 16, 0);

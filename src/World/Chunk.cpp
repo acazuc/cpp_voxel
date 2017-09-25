@@ -33,6 +33,7 @@ namespace voxel
 			this->chunkZMore->setChunkZLess(this);
 		std::memset(this->topBlocks, 0, sizeof(this->topBlocks));
 		std::memset(this->storages, 0, sizeof(this->storages));
+		std::memset(this->biomes, 0, sizeof(this->biomes));
 		if (this->chunkXLess)
 			this->chunkXLess->regenerateLightMap();
 		if (this->chunkXMore)
@@ -101,7 +102,7 @@ namespace voxel
 				//float noiseIndex = this->world.getNoise().get2(this->x + x, this->z + z) / 2;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 3) / 3;
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
-				float noiseIndex = this->world.getNoise().get2((this->x + x) / 5., (this->z + z) / 5.);
+				float noiseIndex = this->world.getNoise().get2((this->x + x) * 100, (this->z + z) * 100);
 				noiseIndex = noiseIndex * CHUNK_HEIGHT / 5 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
@@ -262,33 +263,33 @@ namespace voxel
 endNearTop:
 		if (pos.x == 0 && this->chunkXLess)
 		{
-			ChunkBlock *nearBlock = this->chunkXLess->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z));
-			if (nearBlock && nearBlock->getLight() > 0)
-				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
+			uint8_t nearLight = this->chunkXLess->getSkyLight(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z));
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 		else if (pos.x == CHUNK_WIDTH - 1 && this->chunkXMore)
 		{
-			ChunkBlock *nearBlock = this->chunkXMore->getBlock(glm::vec3(0, pos.y, pos.z));
-			if (nearBlock && nearBlock->getLight() > 0)
-				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
+			uint8_t nearLight = this->chunkXMore->getSkyLight(glm::vec3(0, pos.y, pos.z));
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 		if (pos.z == 0 && this->chunkZLess)
 		{
-			ChunkBlock *nearBlock = this->chunkZLess->getBlock(glm::vec3(pos.x, pos.y, CHUNK_WIDTH - 1));
-			if (nearBlock && nearBlock->getLight() > 0)
-				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
+			uint8_t nearLight = this->chunkZLess->getSkyLight(glm::vec3(pos.x, pos.y, CHUNK_WIDTH - 1));
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 		else if (pos.z == CHUNK_WIDTH - 1 && this->chunkZMore)
 		{
-			ChunkBlock *nearBlock = this->chunkZMore->getBlock(glm::vec3(pos.x, pos.y, 0));
-			if (nearBlock && nearBlock->getLight() > 0)
-				light = std::max(uint8_t(nearBlock->getLight() - 1u), light);
+			uint8_t nearLight = this->chunkZMore->getSkyLight(glm::vec3(pos.x, pos.y, 0));
+			if (nearLight > 0)
+				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		if (block->getLight() >= light)
+		if (light == 0)
 			return;
-		block->setLight(light);
-		if (light <= 1)
+		if (getSkyLight(pos) >= light)
 			return;
+		setSkyLight(pos, light);
 		Block *blockModel = Blocks::getBlock(block->getType());
 		if (blockModel)
 		{
@@ -445,6 +446,59 @@ endNearTop:
 		return (this->storages[storageY]->getBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
 	}
 
+	uint8_t Chunk::getLight(glm::vec3 pos)
+	{
+		if (!this->generated)
+			return (0);
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return (0);
+		return (this->storages[storageY]->getLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+	}
+
+	void Chunk::setSkyLight(glm::vec3 pos, uint8_t light)
+	{
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return;
+		return (this->storages[storageY]->setSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), light));
+	}
+
+	uint8_t Chunk::getSkyLight(glm::vec3 pos)
+	{
+		if (!this->generated)
+			return (0);
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return (0);
+		return (this->storages[storageY]->getSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+	}
+
+	void Chunk::setBlockLight(glm::vec3 pos, uint8_t light)
+	{
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return;
+		return (this->storages[storageY]->setSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), light));
+	}
+
+	uint8_t Chunk::getBlockLight(glm::vec3 pos)
+	{
+		if (!this->generated)
+			return (0);
+		uint8_t storageY = pos.y / 16;
+		if (!this->storages[storageY])
+			return (0);
+		return (this->storages[storageY]->getBlockLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+	}
+
+	uint8_t Chunk::getTopBlock(int32_t x, int32_t z)
+	{
+		if (!this->generated)
+			return (CHUNK_HEIGHT);
+		return (this->topBlocks[getXZId(x, z)]);
+	}
+
 	void Chunk::destroyBlock(glm::vec3 pos)
 	{
 		uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
@@ -486,6 +540,8 @@ endNearTop:
 
 	void Chunk::regenerateBuffers()
 	{
+		if (!this->generated)
+			return;
 		if (this->mustGenerateBuffers)
 			return;
 		this->mustGenerateBuffers = true;
@@ -494,6 +550,8 @@ endNearTop:
 
 	void Chunk::regenerateLightMap()
 	{
+		if (!this->generated)
+			return;
 		if (this->mustGenerateLightMap)
 			return;
 		this->mustGenerateBuffers = true;

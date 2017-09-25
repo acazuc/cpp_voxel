@@ -1,4 +1,5 @@
 #include "NBTTag.h"
+#include "NBTFile.h"
 
 namespace voxel
 {
@@ -8,6 +9,18 @@ namespace voxel
 	, name(name)
 	{
 		//Empty
+	}
+
+	void NBTTag::writeIdToFile(NBTFile *file)
+	{
+		file->writeInt8(this->typeId);
+	}
+
+	void NBTTag::writeNameToFile(NBTFile *file)
+	{
+		file->writeInt16(this->name.length());
+		if (this->name.length())
+			file->writeData(const_cast<char*>(this->name.data()), this->name.length());
 	}
 
 }

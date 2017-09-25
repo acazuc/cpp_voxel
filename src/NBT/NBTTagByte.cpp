@@ -20,7 +20,7 @@ namespace voxel
 
 	void NBTTagByte::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeInt8(this->value);
 	}
 
 }

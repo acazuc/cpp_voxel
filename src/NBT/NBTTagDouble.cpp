@@ -20,7 +20,7 @@ namespace voxel
 
 	void NBTTagDouble::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeDouble(this->value);
 	}
 
 }

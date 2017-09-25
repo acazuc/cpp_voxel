@@ -49,6 +49,7 @@ namespace voxel
 		//glfwWindowHint(GLFW_SAMPLES, 32);
 		NBTFile file("./level.dat");
 		file.load();
+		//file.save();
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");

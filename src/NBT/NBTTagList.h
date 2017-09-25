@@ -15,7 +15,6 @@ namespace voxel
 	private:
 		std::vector<NBTTag*> values;
 		enum NBTTagType type;
-		int32_t size;
 
 	public:
 		NBTTagList(std::string name);
@@ -23,7 +22,6 @@ namespace voxel
 		void writeDataToFile(NBTFile *file);
 		inline std::vector<NBTTag*> &getValues() {return (this->values);};
 		inline enum NBTTagType getType() {return (this->type);};
-		inline int32_t getSize() {return (this->size);};
 
 	};
 

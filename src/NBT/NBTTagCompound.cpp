@@ -18,9 +18,7 @@ namespace voxel
 		{
 			tag->readDataFromFile(file);
 			if (tag->getType() == NBT_TAG_END)
-			{
 				return;
-			}
 			this->tags.push_back(tag);
 		}
 		//LOG("Tag_Compound(\"" << this->name << "\") : " << this->tags.size() << " entries");
@@ -28,7 +26,14 @@ namespace voxel
 
 	void NBTTagCompound::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		{
+			NBTTag *tag = this->tags[i];
+			tag->writeIdToFile(file);
+			tag->writeNameToFile(file);
+			tag->writeDataToFile(file);
+		}
+		file->writeInt8(0);
 	}
 
 }

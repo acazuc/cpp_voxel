@@ -13,10 +13,10 @@ namespace voxel
 
 	void NBTTagLongArray::readDataFromFile(NBTFile *file)
 	{
-		this->size = file->readTagInt(file->readTagName());
-		this->size->readDataFromFile(file);
-		//LOG("Tag_LongArray(\"" << this->name << "\") : [" << this->size << " longs]");
-		for (int32_t i = 0; i < this->size->getValue(); ++i)
+		int32_t size;
+		file->readInt32(&size);
+		//LOG("Tag_LongArray(\"" << this->name << "\") : [" << size << " longs]");
+		for (int32_t i = 0; i < size; ++i)
 		{
 			int64_t value;
 			file->readInt64(&value);
@@ -26,7 +26,9 @@ namespace voxel
 
 	void NBTTagLongArray::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeInt32(this->values.size());
+		for (uint32_t i = 0; i < this->values.size(); ++i)
+			file->writeInt64(this->values[i]);
 	}
 
 }

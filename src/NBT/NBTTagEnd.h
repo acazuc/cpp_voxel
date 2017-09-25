@@ -13,6 +13,7 @@ namespace voxel
 		NBTTagEnd();
 		void readDataFromFile(NBTFile *file);
 		void writeDataToFile(NBTFile *file);
+		void writeNameToFile(NBTFile *file) {(void)file;};
 
 	};
 

@@ -1,5 +1,6 @@
 #include "NBTTagShort.h"
 #include "NBTFile.h"
+#include "Debug.h"
 
 namespace voxel
 {
@@ -14,11 +15,12 @@ namespace voxel
 	void NBTTagShort::readDataFromFile(NBTFile *file)
 	{
 		file->readInt16(&this->value);
+		//LOG("Tag_Short(\"" << this->name << "\") : " << this->value);
 	}
 
 	void NBTTagShort::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeInt16(this->value);
 	}
 
 }

@@ -2,9 +2,6 @@
 #include "NBTException.h"
 #include "NBTTagType.h"
 #include "Debug.h"
-#include <libgzip/GZipInputStream.h>
-
-using libgzip::GZipInputStream;
 
 namespace voxel
 {
@@ -12,18 +9,31 @@ namespace voxel
 	NBTFile::NBTFile(std::string name)
 	: name(name)
 	{
-		if (!this->istream.open(this->name))
-			throw NBTException("Failed to open file " + this->name);
+		//Empty
 	}
 
 	void NBTFile::load()
 	{
+		if (!this->istream.open(this->name))
+			throw NBTException("Failed to open file " + this->name);
 		NBTTag *tag = NULL;
 		while ((tag = readNextTag()))
 		{
 			tag->readDataFromFile(this);
 			this->tags.push_back(tag);
 		}
+		this->istream.close();
+	}
+
+	void NBTFile::save()
+	{
+		if (!this->ostream.open(this->name))
+			throw NBTException("Failed to open file " + this->name);
+		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		{
+			this->tags[i]->writeDataToFile(this);
+		}
+		this->ostream.close();
 	}
 
 	std::string NBTFile::readTagName()
@@ -31,6 +41,8 @@ namespace voxel
 		int16_t len = 0;
 		if (!readInt16(&len))
 			throw NBTException("Can't read name len");
+		if (!len)
+			return ("");
 		std::string result(len + 1, '\0');
 		if (!readData(const_cast<char*>(result.data()), (size_t)len))
 			throw NBTException("Can't read name");
@@ -89,7 +101,44 @@ namespace voxel
 
 	bool NBTFile::readData(void *data, size_t len)
 	{
-		return (this->istream.read(data, len));
+		return (this->istream.read(data, len) == (ssize_t)len);
+	}
+
+	bool NBTFile::writeInt8(int8_t value)
+	{
+		return (this->ostream.writeInt8(value));
+	}
+
+	bool NBTFile::writeInt16(int16_t value)
+	{
+		return (this->ostream.writeInt16(htons(value)));
+	}
+
+	bool NBTFile::writeInt32(int32_t value)
+	{
+		return (this->ostream.writeInt32(htonl(value)));
+	}
+
+	bool NBTFile::writeInt64(int64_t value)
+	{
+		return (this->ostream.writeInt64(htonll(value)));
+	}
+
+	bool NBTFile::writeFloat(float value)
+	{
+		int32_t *val = reinterpret_cast<int32_t*>(&value);
+		return (this->ostream.writeInt32(htonl(*val)));
+	}
+
+	bool NBTFile::writeDouble(double value)
+	{
+		int64_t *val = reinterpret_cast<int64_t*>(&value);
+		return (this->ostream.writeInt64(htonll(*val)));
+	}
+
+	bool NBTFile::writeData(void *data, size_t len)
+	{
+		return (this->ostream.write(data, len) == (ssize_t)len);
 	}
 
 	uint16_t NBTFile::htons(uint16_t val)

@@ -15,10 +15,12 @@
 # include "NBTTagEnd.h"
 # include "NBTTagInt.h"
 # include "NBTTag.h"
+# include <libgzip/GZipOutputStream.h>
 # include <libgzip/GZipInputStream.h>
 # include <string>
 # include <vector>
 
+using libgzip::GZipOutputStream;
 using libgzip::GZipInputStream;
 
 namespace voxel
@@ -29,6 +31,7 @@ namespace voxel
 
 	private:
 		std::vector<NBTTag*> tags;
+		GZipOutputStream ostream;
 		GZipInputStream istream;
 		std::string name;
 		uint16_t htons(uint16_t val);
@@ -46,6 +49,13 @@ namespace voxel
 		bool readFloat(float *data);
 		bool readDouble(double *data);
 		bool readData(void *data, size_t len);
+		bool writeInt8(int8_t value);
+		bool writeInt16(int16_t value);
+		bool writeInt32(int32_t value);
+		bool writeInt64(int64_t value);
+		bool writeFloat(float value);
+		bool writeDouble(double value);
+		bool writeData(void *data, size_t len);
 		std::string readTagName();
 		NBTTag *readNextTag();
 		NBTTag *readTagOfType(enum NBTTagType type, std::string name);

@@ -23,7 +23,9 @@ namespace voxel
 
 	void NBTTagString::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeInt16(this->value.size());
+		if (this->value.size())
+			file->writeData(const_cast<char*>(this->value.data()), this->value.size());
 	}
 
 }

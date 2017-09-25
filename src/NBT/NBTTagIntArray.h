@@ -13,14 +13,12 @@ namespace voxel
 
 	private:
 		std::vector<int32_t> values;
-		NBTTagInt *size;
 
 	public:
 		NBTTagIntArray(std::string name);
 		void readDataFromFile(NBTFile *file);
 		void writeDataToFile(NBTFile *file);
 		inline std::vector<int32_t> &getValues() {return (this->values);};
-		inline NBTTagInt *getSize() {return (this->size);};
 
 	};
 

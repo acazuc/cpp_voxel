@@ -20,7 +20,7 @@ namespace voxel
 
 	void NBTTagLong::writeDataToFile(NBTFile *file)
 	{
-		(void)file;
+		file->writeInt64(this->value);
 	}
 
 }

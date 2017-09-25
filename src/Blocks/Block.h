@@ -33,6 +33,7 @@ namespace voxel
 		bool transparent;
 		bool replaceable;
 		bool focusable;
+		bool fullCube;
 		bool solid;
 
 	public:
@@ -93,6 +94,8 @@ namespace voxel
 		Block *setReplaceable(bool replaceable);
 		inline bool isFocusable() {return (this->focusable);};
 		Block *setFocusable(bool focusable);
+		inline bool isFullCube() {return (this->fullCube);};
+		Block *setFullCube(bool fullCube);
 		inline bool isSolid() {return (this->solid);};
 		Block *setSolid(bool solid);
 

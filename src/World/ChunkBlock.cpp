@@ -89,7 +89,7 @@ namespace voxel
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
 		std::vector<glm::vec3> &colors = tessellator.colors;
 		std::vector<GLuint> &indices = tessellator.indices;
-		if (this->type == 6 || (this->type >= 37 && this->type <= 40))
+		if (!blockModel->isFullCube())
 		{
 			float diff = (1 - 0.707) / 2 * BLOCK_SIZE;
 			glm::vec3 org(pos.x + diff, pos.y, pos.z + diff);

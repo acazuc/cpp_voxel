@@ -62,6 +62,9 @@ SRCS_NAME = Main.cpp \
 	    World/ChunkLoader.cpp \
 	    World/ChunkUpdater.cpp \
 	    World/ChunkStorage.cpp \
+	    World/Biomes/Biome.cpp \
+	    World/Biomes/Biomes.cpp \
+	    World/Generators/GeneratorTree.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
 	    Gui/Gui.cpp \
@@ -134,6 +137,8 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Shaders
 	@mkdir -p $(OBJS_PATH)/Entities
 	@mkdir -p $(OBJS_PATH)/World
+	@mkdir -p $(OBJS_PATH)/World/Biomes
+	@mkdir -p $(OBJS_PATH)/World/Generators
 	@mkdir -p $(OBJS_PATH)/Particles
 	@mkdir -p $(OBJS_PATH)/Gui
 	@mkdir -p $(OBJS_PATH)/WorldScreen

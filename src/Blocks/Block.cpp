@@ -14,6 +14,7 @@ namespace voxel
 	, transparent(false)
 	, replaceable(false)
 	, focusable(true)
+	, fullCube(true)
 	, solid(true)
 	{
 		//Empty
@@ -238,6 +239,12 @@ namespace voxel
 	Block *Block::setFocusable(bool focusable)
 	{
 		this->focusable = focusable;
+		return (this);
+	}
+
+	Block *Block::setFullCube(bool fullCube)
+	{
+		this->fullCube = fullCube;
 		return (this);
 	}
 

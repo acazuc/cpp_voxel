@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include "Generators/GeneratorTree.h"
 #include "Noise/WorleyNoise.h"
 #include "ChunkTessellator.h"
 #include "Blocks/Blocks.h"
@@ -139,40 +140,21 @@ namespace voxel
 				if (block && block->getType() == 2)
 				{
 					if (this->world.getRandom()() < this->world.getRandom().max() / 100)
-					{
-						setBlock(glm::vec3(x, top, z), 3);
-						for (int8_t y2 = 3; y2 <= 6; ++y2)
-						{
-							int8_t x2min = -2 + std::max(0, -(5 - y2));
-							int8_t x2max = 2 - std::max(0, -(5 - y2));
-							int8_t z2min = -2 + std::max(0, -(5 - y2));
-							int8_t z2max = 2 - std::max(0, -(5 - y2));
-							for (int8_t x2 = x2min; x2 <= x2max; ++x2)
-							{
-								for (int8_t z2 = z2min; z2 <= z2max; ++z2)
-								{
-									if (x2 == 0 && z2 == 0 && y2 <= 5)
-										continue;
-									this->world.setBlockIfReplaceable(this->x + x + x2, top + y2, this->z + z + z2, 18);
-								}
-							}
-						}
-						for (int32_t y = top + 1; y < top + 6; ++y)
-							setBlockIfReplaceable(glm::vec3(x, y, z), 17);
-					}
+						GeneratorTree::generate(this->world, *this, x, top + 1, z);
 					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
 						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 37);
-					else if (this->world.getRandom()() < UINT_MAX / 40)
+					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
 						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 38);
-					else if (this->world.getRandom()() < UINT_MAX / 40)
+					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
 						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 39);
-					else if (this->world.getRandom()() < UINT_MAX / 40)
+					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
 						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 40);
+					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
+						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);
 				}
 			}
 		}
 		generateLightMap();
-		regenerateBuffers();
 	}
 
 	void Chunk::tick()

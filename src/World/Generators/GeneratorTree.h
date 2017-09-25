@@ -1,21 +1,16 @@
 #ifndef GENERATOR_TREE_H
 # define GENERATOR_TREE_H
 
-# include <cstdint>
+# include "Generator.h"
 
 namespace voxel
 {
 
-	class World;
-	class Chunk;
-
-	class GeneratorTree
+	class GeneratorTree : public Generator
 	{
 
-	private:
-
 	public:
-		static void generate(World &world, Chunk &chunk, uint8_t x, uint8_t y, uint8_t z);
+		void generate(Chunk &chunk, uint8_t x, uint8_t y, uint8_t z);
 
 	};
 

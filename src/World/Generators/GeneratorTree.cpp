@@ -4,7 +4,7 @@
 namespace voxel
 {
 
-	void GeneratorTree::generate(World &world, Chunk &chunk, uint8_t x, uint8_t y, uint8_t z)
+	void GeneratorTree::generate(Chunk &chunk, uint8_t x, uint8_t y, uint8_t z)
 	{
 		chunk.setBlock(glm::vec3(x, y - 1, z), 3);
 		for (int8_t y2 = 3; y2 <= 6; ++y2)
@@ -19,7 +19,7 @@ namespace voxel
 				{
 					if (x2 == 0 && z2 == 0 && y2 <= 5)
 						continue;
-					world.setBlockIfReplaceable(chunk.getX() + x + x2, y + y2, chunk.getZ() + z + z2, 18);
+					chunk.getWorld().setBlockIfReplaceable(chunk.getX() + x + x2, y + y2, chunk.getZ() + z + z2, 18);
 				}
 			}
 		}

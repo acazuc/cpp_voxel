@@ -2,6 +2,7 @@
 #include "Entities/EntitiesManager.h"
 #include "WorldScreen/WorldScreen.h"
 #include "TitleScreen/TitleScreen.h"
+#include "World/Biomes/Biomes.h"
 #include "Gui/GuiLagometer.h"
 #include "Utils/readfile.h"
 #include "Blocks/Blocks.h"
@@ -121,6 +122,7 @@ namespace voxel
 		font = fontModel->derive(32);
 		EntitiesManager::init();
 		Blocks::init();
+		Biomes::init();
 		Gui::init();
 		screen = new WorldScreen(new World());
 		//screen = new TitleScreen();
@@ -153,6 +155,7 @@ namespace voxel
 		}
 		EntitiesManager::clear();
 		Blocks::clear();
+		Biomes::clear();
 		Gui::clear();
 		delete (particlesShader);
 		delete (focusedShader);

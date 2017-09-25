@@ -1,5 +1,5 @@
 #include "Chunk.h"
-#include "Generators/GeneratorTree.h"
+#include "World/Biomes/Biomes.h"
 #include "Noise/WorleyNoise.h"
 #include "ChunkTessellator.h"
 #include "Blocks/Blocks.h"
@@ -131,29 +131,7 @@ namespace voxel
 				}
 			}
 		}
-		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
-		{
-			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
-			{
-				int32_t top = this->topBlocks[getXZId(x, z)];
-				ChunkBlock *block = getBlock(glm::vec3(x, top, z));
-				if (block && block->getType() == 2)
-				{
-					if (this->world.getRandom()() < this->world.getRandom().max() / 100)
-						GeneratorTree::generate(this->world, *this, x, top + 1, z);
-					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
-						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 37);
-					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
-						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 38);
-					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
-						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 39);
-					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
-						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 40);
-					else if (this->world.getRandom()() < this->world.getRandom().max() / 40)
-						setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);
-				}
-			}
-		}
+		Biomes::getBiome(1)->generate(*this);
 		generateLightMap();
 	}
 

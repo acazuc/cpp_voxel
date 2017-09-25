@@ -65,6 +65,7 @@ SRCS_NAME = Main.cpp \
 	    World/Biomes/Biome.cpp \
 	    World/Biomes/Biomes.cpp \
 	    World/Generators/GeneratorTree.cpp \
+	    World/Generators/GeneratorMinable.cpp \
 	    Particles/Particle.cpp \
 	    Particles/ParticlesManager.cpp \
 	    Gui/Gui.cpp \

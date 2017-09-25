@@ -163,6 +163,8 @@ nextRegion:
 
 	void World::setBlock(int32_t x, int32_t y, int32_t z, uint8_t type)
 	{
+		if (y < 0 || y >= CHUNK_HEIGHT)
+			return;
 		int32_t chunkX = std::floor((float)x / CHUNK_WIDTH) * CHUNK_WIDTH;
 		int32_t chunkZ = std::floor((float)z / CHUNK_WIDTH) * CHUNK_WIDTH;
 		Chunk *chunk = getChunk(chunkX, chunkZ);
@@ -176,6 +178,8 @@ nextRegion:
 
 	void World::setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type)
 	{
+		if (y < 0 || y >= CHUNK_HEIGHT)
+			return;
 		int32_t chunkX = std::floor((float)x / CHUNK_WIDTH) * CHUNK_WIDTH;
 		int32_t chunkZ = std::floor((float)z / CHUNK_WIDTH) * CHUNK_WIDTH;
 		Chunk *chunk = getChunk(chunkX, chunkZ);

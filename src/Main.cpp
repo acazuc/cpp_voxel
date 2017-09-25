@@ -8,6 +8,7 @@
 #include "Utils/System.h"
 #include "TickManager.h"
 #include "World/World.h"
+#include "NBT/NBTFile.h"
 #include "Gui/Gui.h"
 #include "Debug.h"
 #include <cstring>
@@ -46,6 +47,8 @@ namespace voxel
 	void Main::main()
 	{
 		//glfwWindowHint(GLFW_SAMPLES, 32);
+		NBTFile file("./level.dat");
+		file.load();
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");

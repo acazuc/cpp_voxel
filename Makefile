@@ -12,6 +12,7 @@ INCLUDES_PATH+= -I lib/glfw/include
 INCLUDES_PATH+= -I lib/glad/include
 INCLUDES_PATH+= -I lib/librender/include
 INCLUDES_PATH+= -I lib/libformat/include
+INCLUDES_PATH+= -I lib/libgzip/include
 INCLUDES_PATH+= -I lib/glm
 INCLUDES_PATH+= -I lib
 
@@ -74,6 +75,21 @@ SRCS_NAME = Main.cpp \
 	    WorldScreen/WorldScreen.cpp \
 	    WorldScreen/WorldScreenGui.cpp \
 	    TitleScreen/TitleScreen.cpp \
+	    NBT/NBTFile.cpp \
+	    NBT/NBTTag.cpp \
+	    NBT/NBTTagEnd.cpp \
+	    NBT/NBTTagByte.cpp \
+	    NBT/NBTTagShort.cpp \
+	    NBT/NBTTagInt.cpp \
+	    NBT/NBTTagLong.cpp \
+	    NBT/NBTTagFloat.cpp \
+	    NBT/NBTTagDouble.cpp \
+	    NBT/NBTTagByteArray.cpp \
+	    NBT/NBTTagString.cpp \
+	    NBT/NBTTagList.cpp \
+	    NBT/NBTTagCompound.cpp \
+	    NBT/NBTTagIntArray.cpp \
+	    NBT/NBTTagLongArray.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -87,6 +103,7 @@ LIBRARY = -L lib/glfw/src -l:libglfw3.a
 LIBRARY+= -L lib/glad -l:libglad.a
 LIBRARY+= -L lib/librender -l:librender.a
 LIBRARY+= -L lib/libformat -l:libformat.a
+LIBRARY+= -L lib/libgzip -l:libgzip.a
 LIBRARY+= -L lib/freetype/objs/.libs -l:libfreetype.a
 LIBRARY+= -L lib/libpng -l:libpng16.a
 LIBRARY+= -L lib/zlib -l:libz.a
@@ -121,6 +138,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/Gui
 	@mkdir -p $(OBJS_PATH)/WorldScreen
 	@mkdir -p $(OBJS_PATH)/TitleScreen
+	@mkdir -p $(OBJS_PATH)/NBT
 
 clean:
 	@echo " - Cleaning objs"

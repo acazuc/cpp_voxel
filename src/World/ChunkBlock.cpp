@@ -90,7 +90,7 @@ namespace voxel
 		std::vector<GLuint> &indices = tessellator.indices;
 		if (!blockModel->isFullCube())
 		{
-			float diff = (1 - 0.707) / 2 * BLOCK_SIZE;
+			float diff = (1 - 0.707/*1/sqrt(2)*/) / 2 * BLOCK_SIZE;
 			glm::vec3 org(pos.x + diff, pos.y, pos.z + diff);
 			glm::vec3 dst(pos.x + BLOCK_SIZE - diff, pos.y + BLOCK_SIZE, pos.z + BLOCK_SIZE - diff);
 			glm::vec2 texOrg(blockModel->getTexFrontX(), blockModel->getTexFrontY());
@@ -560,10 +560,9 @@ namespace voxel
 		return (block->isTransparent());
 	}
 
-	void ChunkBlock::initLightsLevels(BlockLightsLevels &lights, uint8_t /*visibleFaces*/, int8_t *blocksLights)
+	void ChunkBlock::initLightsLevels(BlockLightsLevels &lights, uint8_t visibleFaces, int8_t *blocksLights)
 	{
-		std::memset(&lights, ((blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf) << 4) | (blocksLights[(1 * 3 + 1) * 3 + 1] & 0xf), sizeof(lights));
-		/*if (visibleFaces & BLOCK_FACE_FRONT)
+		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			int8_t value = blocksLights[(1 * 3 + 1) * 3 + 2];
 			lights.f1p1 = value;
@@ -610,7 +609,7 @@ namespace voxel
 			lights.f6p2 = value;
 			lights.f6p3 = value;
 			lights.f6p4 = value;
-		}*/
+		}
 	}
 
 	void ChunkBlock::calcAmbientOcclusion(glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent)
@@ -832,7 +831,7 @@ namespace voxel
 	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blocksLights)
 	{
 		Block *blockModel = Blocks::getBlock(this->type);
-		if (!Main::getSmooth() || !blockModel->isSolid() || isTransparent())
+		if (!Main::getSmooth() || !blockModel->isFullCube() || isTransparent())
 		{
 			lights[F1P1] = getLightValue(lightsLevels.f1p1);
 			lights[F1P2] = getLightValue(lightsLevels.f1p2);
@@ -871,13 +870,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 2];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f1p1 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 				lights[F1P1] = result;
 			}
 			{
@@ -889,13 +888,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 2];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f1p4 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 				lights[F1P4] = result;
 			}
 			{
@@ -907,13 +906,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 2];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f1p3 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 				lights[F1P3] = result;
 			}
 			{
@@ -925,13 +924,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 2];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f1p2 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 				lights[F1P2] = result;
 			}
 		}
@@ -946,13 +945,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 0];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f2p1 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 				lights[F2P1] = result;
 			}
 			{
@@ -964,13 +963,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 0];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f2p4 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 				lights[F2P4] = result;
 			}
 			{
@@ -982,13 +981,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 0];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f2p3 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 				lights[F2P3] = result;
 			}
 			{
@@ -1000,13 +999,13 @@ namespace voxel
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
-							totalLight += blocksLights[(x * 3 + y) * 3 + 1];
+							totalLight += blocksLights[(x * 3 + y) * 3 + 0];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f2p2 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 				lights[F2P2] = result;
 			}
 		}
@@ -1021,13 +1020,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(0 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f3p1 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 				lights[F3P1] = result;
 			}
 			{
@@ -1039,13 +1038,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(0 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f3p2 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 				lights[F3P2] = result;
 			}
 			{
@@ -1057,13 +1056,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(0 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f3p3 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 				lights[F3P3] = result;
 			}
 			{
@@ -1075,13 +1074,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(0 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f3p4 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 				lights[F3P4] = result;
 			}
 		}
@@ -1096,13 +1095,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(2 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f4p1 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 				lights[F4P1] = result;
 			}
 			{
@@ -1114,13 +1113,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(2 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f4p2 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 				lights[F4P2] = result;
 			}
 			{
@@ -1132,13 +1131,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(2 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f4p3 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 				lights[F4P3] = result;
 			}
 			{
@@ -1150,13 +1149,13 @@ namespace voxel
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
-							totalLight += blocksLights[(1 * 3 + y) * 3 + z];
+							totalLight += blocksLights[(2 * 3 + y) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f4p4 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 				lights[F4P4] = result;
 			}
 		}
@@ -1171,13 +1170,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f5p2 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 				lights[F5P2] = result;
 			}
 			{
@@ -1189,13 +1188,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f5p3 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 				lights[F5P3] = result;
 			}
 			{
@@ -1207,13 +1206,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f5p4 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 				lights[F5P4] = result;
 			}
 			{
@@ -1225,13 +1224,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 2) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f5p1 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 				lights[F5P1] = result;
 			}
 		}
@@ -1246,13 +1245,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 0) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p2 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f6p2 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 				lights[F6P2] = result;
 			}
 			{
@@ -1264,13 +1263,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 0) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p3 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f6p3 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 				lights[F6P3] = result;
 			}
 			{
@@ -1282,13 +1281,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 0) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p4 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f6p4 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 				lights[F6P4] = result;
 			}
 			{
@@ -1300,13 +1299,13 @@ namespace voxel
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
-							totalLight += blocksLights[(x * 3 + 1) * 3 + z];
+							totalLight += blocksLights[(x * 3 + 0) * 3 + z];
 							lightsPoints++;
 						}
 					}
 				}
 				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p1 - blocksLights[(1 * 3 + 1) * 3 + 1]);
+				float result = getLightValue(average + lightsLevels.f6p1 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 				lights[F6P1] = result;
 			}
 		}

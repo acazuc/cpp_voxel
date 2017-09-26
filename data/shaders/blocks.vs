@@ -16,9 +16,12 @@ uniform float timeFactor;
 void main()
 {
 	vec4 newVertex = vec4(vertexPosition, 1);
-	//newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;
-	//newVertex.y += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 3) * .033;
-	//newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;
+	/*if (blockId == 18)
+	{
+		newVertex.x += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14) * .1;
+		newVertex.y += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 3) * .033;
+		newVertex.z += cos(newVertex.x + newVertex.y + newVertex.z + timeFactor * 3.14 / 2) * .05;
+	}*/
 	UV = vertexUV;
 	color = vertexColor;
 	viewSpace = (V * M * newVertex).xyz;

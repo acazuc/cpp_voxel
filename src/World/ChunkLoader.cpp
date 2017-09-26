@@ -5,7 +5,7 @@
 
 #define LOAD_DISTANCE 16
 
-#define ON_LOADED {};
+#define ON_LOADED {}//std::this_thread::sleep_for(std::chrono::nanoseconds(1));}
 
 namespace voxel
 {

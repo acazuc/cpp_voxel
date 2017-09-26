@@ -18,7 +18,6 @@ namespace voxel
 		delete (this->texCoordsLocation);
 		delete (this->vertexesLocation);
 		delete (this->fogColorLocation);
-		delete (this->colorsLocation);
 		delete (this->mvpLocation);
 		delete (this->texLocation);
 		delete (this->mLocation);
@@ -46,8 +45,6 @@ namespace voxel
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");
 		this->vertexesLocation->setVertexAttribArray(true);
 		this->fogColorLocation = this->program->getUniformLocation("fogColor");
-		this->colorsLocation = this->program->getAttribLocation("vertexColor");
-		this->colorsLocation->setVertexAttribArray(true);
 		this->mvpLocation = this->program->getUniformLocation("MVP");
 		this->texLocation = this->program->getAttribLocation("tex");
 		this->mLocation = this->program->getUniformLocation("M");

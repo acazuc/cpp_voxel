@@ -163,7 +163,6 @@ namespace voxel
 			Main::getBreakShader().fogColorLocation->setVec4f(Main::getSkyColor());
 			Main::getBreakShader().texCoordsLocation->setVertexBuffer(this->breakTexCoordsBuffer);
 			Main::getBreakShader().vertexesLocation->setVertexBuffer(this->breakVertexesBuffer);
-			Main::getBreakShader().colorsLocation->setVertexBuffer(this->breakColorsBuffer);
 			this->breakIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
@@ -239,6 +238,8 @@ namespace voxel
 				}
 				else
 					doneTicks = 0;
+				this->face = face;
+				this->pos = pos;
 				if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
 				{
 					onRightClick(chunk, relative);
@@ -301,7 +302,6 @@ nextStep:
 		this->todoTicks = 20 * blockModel->getHardness();
 		buildBreakTexCoords();
 		uint8_t light = chunk->getLight(relative);
-		buildBreakColors(ChunkBlock::getLightValue(light));
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{
 			this->found = false;
@@ -377,10 +377,7 @@ nextStep:
 			newChunk = chunk->getChunkZMore();
 			newPos.z = 0;
 		}
-		ChunkBlock *block = newChunk->getBlock(newPos);
-		if (block && block->getType())
-			return;
-		newChunk->setBlock(newPos, 2);
+		newChunk->setBlockIfReplaceable(newPos, 2);
 	}
 
 	void PlayerRaycast::buildBreakTexCoords()
@@ -421,14 +418,6 @@ nextStep:
 		texCoords[22] = glm::vec2(dst.x, dst.y);
 		texCoords[23] = glm::vec2(org.x, dst.y);
 		this->breakTexCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords, sizeof(texCoords), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-	}
-
-	void PlayerRaycast::buildBreakColors(float val)
-	{
-		glm::vec3 colors[24];
-		for (uint8_t i = 0; i < 24; ++i)
-			colors[i] = glm::vec3(val, val, val);
-		this->breakColorsBuffer.setData(GL_ARRAY_BUFFER, colors, sizeof(colors), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 	}
 
 }

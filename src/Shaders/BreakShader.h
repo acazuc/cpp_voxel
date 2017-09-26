@@ -19,7 +19,6 @@ namespace voxel
 		ProgramLocation *texCoordsLocation;
 		ProgramLocation *vertexesLocation;
 		ProgramLocation *fogColorLocation;
-		ProgramLocation *colorsLocation;
 		ProgramLocation *mvpLocation;
 		ProgramLocation *texLocation;
 		ProgramLocation *mLocation;

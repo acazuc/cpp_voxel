@@ -85,6 +85,7 @@ namespace voxel
 		breakShader->load();
 		guiShader = new GuiShader();
 		guiShader->load();
+		glErrors("shader");
 		{
 			glm::mat4 osef(1);
 			blocksShader->program->use();
@@ -148,6 +149,7 @@ namespace voxel
 			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
 				screen->tick();
 			screen->draw();
+			glErrors("check");
 			window->pollEvents();
 			int64_t ended = System::nanotime();
 			GuiLagometer::addValue((ended - nanotime) / 1000000.);

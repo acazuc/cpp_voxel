@@ -22,7 +22,6 @@ namespace voxel
 		VertexBuffer hoverVertexesBuffer;
 		VertexBuffer breakVertexesBuffer;
 		VertexBuffer breakIndicesBuffer;
-		VertexBuffer breakColorsBuffer;
 		glm::vec3 pos;
 		uint32_t todoTicks;
 		uint32_t doneTicks;
@@ -31,7 +30,6 @@ namespace voxel
 		void onRightClick(Chunk *chunk, glm::vec3 &pos);
 		void onLeftClick(Chunk *chunk, ChunkBlock *block, glm::vec3 &relative, glm::vec3 &pos);
 		void buildBreakTexCoords();
-		void buildBreakColors(float val);
 
 	public:
 		PlayerRaycast(Player &player);

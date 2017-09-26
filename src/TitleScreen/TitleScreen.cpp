@@ -14,6 +14,7 @@ namespace voxel
 	, options(0, 0, "Options...")
 	, quit(0, 0, "Quit Game")
 	{
+		glfwSetInputMode(Main::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		this->background.setTexture(Gui::getBgTex());
 		this->background.setProgram(Main::getGuiShader().program);
 		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
@@ -35,6 +36,7 @@ namespace voxel
 
 	void TitleScreen::draw()
 	{
+		glDisable(GL_MULTISAMPLE);
 		glDisable(GL_CULL_FACE);
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
@@ -53,6 +55,25 @@ namespace voxel
 		this->lagometer.draw();
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
+		glEnable(GL_MULTISAMPLE);
+	}
+
+	void TitleScreen::mouseMove()
+	{
+		bool alreadyHovered = false;
+		this->singleplayer.mouseMove(alreadyHovered);
+		this->multiplayer.mouseMove(alreadyHovered);
+		this->texturePack.mouseMove(alreadyHovered);
+	}
+
+	void TitleScreen::mouseDown(MouseEvent &event)
+	{
+		if (this->singleplayer.mouseDown(event))
+			return;
+		if (this->multiplayer.mouseDown(event))
+			return;
+		if (this->texturePack.mouseDown(event))
+			return;
 	}
 
 }

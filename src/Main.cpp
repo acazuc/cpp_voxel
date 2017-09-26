@@ -48,13 +48,12 @@ namespace voxel
 	void Main::main()
 	{
 		//glfwWindowHint(GLFW_SAMPLES, 32);
-		NBTFile file("./level.dat");
-		file.load();
+		//NBTFile file("./level.dat");
+		//file.load();
 		//file.save();
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
-		glfwSetInputMode(window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glDisable(GL_POLYGON_SMOOTH);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
@@ -64,7 +63,6 @@ namespace voxel
 		glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
 		glBlendEquation(GL_FUNC_ADD);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		window->setKeyDownCallback(Main::keyDown);
 		window->show();
 		window->setVSync(true);
 		particlesShader = new ParticlesShader();
@@ -125,12 +123,16 @@ namespace voxel
 		Blocks::init();
 		Biomes::init();
 		Gui::init();
-		screen = new WorldScreen(new World());
-		//screen = new TitleScreen();
+		//screen = new WorldScreen(new World());
+		screen = new TitleScreen();
 		nanotime = System::nanotime();
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;
 		TickManager::init();
+		window->setMouseMoveCallback(&Main::mouseMove);
+		window->setMouseDownCallback(&Main::mouseDown);
+		window->setMouseUpCallback(&Main::mouseUp);
+		window->setKeyDownCallback(Main::keyDown);
 		while (!window->closeRequested())
 		{
 			++fpsCount;
@@ -173,6 +175,21 @@ namespace voxel
 		delete (screen);
 		delete (font);
 		delete (window);
+	}
+
+	void Main::mouseMove()
+	{
+		screen->mouseMove();
+	}
+
+	void Main::mouseDown(MouseEvent &event)
+	{
+		screen->mouseDown(event);
+	}
+
+	void Main::mouseUp(MouseEvent &event)
+	{
+		screen->mouseUp(event);
 	}
 
 	void Main::keyDown(KeyEvent &event)

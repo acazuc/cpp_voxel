@@ -25,6 +25,7 @@ namespace voxel
 
 	void WorldScreenGui::draw()
 	{
+		glDisable(GL_MULTISAMPLE);
 		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
@@ -53,6 +54,7 @@ namespace voxel
 		this->lagometer.draw();
 		glDepthFunc(GL_LESS);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_MULTISAMPLE);
 	}
 
 }

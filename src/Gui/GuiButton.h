@@ -4,10 +4,12 @@
 # include "./GuiLabel.h"
 # include <librender/Shader/Sprite/ShaderSprite.h>
 # include <librender/Shader/Text/ShaderText.h>
+# include <librender/Window/Window.h>
 # include <string>
 
 using librender::ShaderSprite;
 using librender::ShaderText;
+using librender::MouseEvent;
 
 namespace voxel
 {
@@ -23,10 +25,13 @@ namespace voxel
 		int32_t x;
 		int32_t y;
 		bool disabled;
+		bool hover;
 
 	public:
 		GuiButton(int32_t x, int32_t y, std::string text, int32_t width = 200, int32_t height = 20);
 		void draw(glm::mat4 &viewProj);
+		void mouseMove(bool &alreadyHovered);
+		bool mouseDown(MouseEvent &event);
 		void setPos(int32_t x, int32_t y);
 		void setSize(int32_t width, int32_t height);
 		void setDisabled(bool disabled);

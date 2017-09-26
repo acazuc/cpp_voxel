@@ -27,6 +27,8 @@ namespace voxel
 	public:
 		TitleScreen();
 		void draw();
+		void mouseMove();
+		void mouseDown(MouseEvent &event);
 
 	};
 

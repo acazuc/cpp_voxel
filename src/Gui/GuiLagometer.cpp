@@ -16,7 +16,8 @@ namespace voxel
 
 	GuiLagometer::GuiLagometer()
 	{
-		//
+		for (uint32_t i = 0; i < 512; ++i)
+			values[i] = 0;
 	}
 
 	void GuiLagometer::draw()
@@ -49,9 +50,7 @@ namespace voxel
 		glm::mat4 mvp = Gui::getMat() * model;
 		Main::getGuiShader().mvpLocation->setMat4f(mvp);
 		glLineWidth(1);
-		glDisable(GL_MULTISAMPLE);
 		glDrawArrays(GL_LINES, 0, colors.size());
-		glEnable(GL_MULTISAMPLE);
 	}
 
 	void GuiLagometer::addValue(float val)

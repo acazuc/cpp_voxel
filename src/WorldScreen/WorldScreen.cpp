@@ -1,5 +1,6 @@
 #include "WorldScreen.h"
 #include "Gui/Gui.h"
+#include "Main.h"
 
 namespace voxel
 {
@@ -8,7 +9,7 @@ namespace voxel
 	: gui(*this)
 	, world(world)
 	{
-		//
+		glfwSetInputMode(Main::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 
 	WorldScreen::~WorldScreen()

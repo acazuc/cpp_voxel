@@ -46,6 +46,9 @@ namespace voxel
 		static bool smooth;
 		static bool ssao;
 		static int disableTex;
+		static void mouseMove();
+		static void mouseDown(MouseEvent &event);
+		static void mouseUp(MouseEvent &event);
 		static void keyDown(KeyEvent &event);
 
 	public:

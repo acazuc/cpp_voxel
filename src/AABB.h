@@ -24,6 +24,7 @@ namespace voxel
 		float collideY(AABB &other, float y);
 		float collideZ(AABB &other, float z);
 		bool intersect(AABB &other);
+		bool intersect(glm::vec3 pos, glm::vec3 dir, float &t);
 		inline glm::vec3 &getP0() {return (this->p0);};
 		inline glm::vec3 &getP1() {return (this->p1);};
 

@@ -4,6 +4,7 @@
 # include "Shaders/ParticlesShader.h"
 # include "Shaders/FocusedShader.h"
 # include "Shaders/SunMoonShader.h"
+# include "Shaders/DroppedShader.h"
 # include "Shaders/BlocksShader.h"
 # include "Shaders/CloudsShader.h"
 # include "Shaders/SkyboxShader.h"
@@ -30,6 +31,7 @@ namespace voxel
 		static ParticlesShader *particlesShader;
 		static FocusedShader *focusedShader;
 		static SunMoonShader *sunMoonShader;
+		static DroppedShader *droppedShader;
 		static BlocksShader *blocksShader;
 		static CloudsShader *cloudsShader;
 		static SkyboxShader *skyboxShader;
@@ -37,7 +39,9 @@ namespace voxel
 		static BreakShader *breakShader;
 		static GuiShader *guiShader;
 		static glm::vec4 skyColor;
+		static Texture *unknownPack;
 		static Texture *terrain;
+		static Texture *empty;
 		static Window *window;
 		static Screen *screen;
 		static Font *font;
@@ -57,6 +61,7 @@ namespace voxel
 		static ParticlesShader &getParticlesShader() {return (*particlesShader);};
 		static FocusedShader &getFocusedShader() {return (*focusedShader);};
 		static SunMoonShader &getSunMoonShader() {return (*sunMoonShader);};
+		static DroppedShader &getDroppedShader() {return (*droppedShader);};
 		static BlocksShader &getBlocksShader() {return (*blocksShader);};
 		static CloudsShader &getCloudsShader() {return (*cloudsShader);};
 		static SkyboxShader &getSkyboxShader() {return (*skyboxShader);};
@@ -64,7 +69,9 @@ namespace voxel
 		static BreakShader &getBreakShader() {return (*breakShader);};
 		static GuiShader &getGuiShader() {return (*guiShader);};
 		static glm::vec4 &getSkyColor() {return (skyColor);};
+		static Texture *getUnknownPack() {return (unknownPack);};
 		static Texture *getTerrain() {return (terrain);};
+		static Texture *getEmpty() {return (empty);};
 		static Window *getWindow() {return (window);};
 		static Screen *getScreen() {return (screen);};
 		static Font *getFont() {return (font);};

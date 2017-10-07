@@ -50,13 +50,13 @@ namespace voxel
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
 			return (false);
-		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		if (distance > 2 * 16)
 		{
 			AABB aabb(glm::vec3(chunkX, 0, chunkZ), glm::vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
 			if (!frustum.check(aabb))
 				return (false);
 		}
+		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
 		world.generateChunk(chunkX, chunkZ);
 		return (true);
 	}
@@ -73,7 +73,7 @@ namespace voxel
 				std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 				playerX = world.getPlayer().getPos().x;
 				playerZ = world.getPlayer().getPos().z;
-				frustum.update(world.getPlayer().getProjMat(), world.getPlayer().getViewMat());
+				frustum.update(world.getPlayer().getViewProjMat());
 			}
 			int32_t playerChunkX = std::floor((float)playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
 			int32_t playerChunkZ = std::floor((float)playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
@@ -97,14 +97,10 @@ namespace voxel
 							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 							chunk->moveGLBuffersToWorld();
 							region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
-							std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin();
-							while (iter != world.getChunksToUpdate().end())
+							for (std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin(); iter != world.getChunksToUpdate().end(); ++iter)
 							{
 								if (*iter != chunk)
-								{
-									++iter;
 									continue;
-								}
 								world.getChunksToUpdate().erase(iter);
 								break;
 							}

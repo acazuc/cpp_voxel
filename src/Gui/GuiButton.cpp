@@ -7,6 +7,7 @@ namespace voxel
 
 	GuiButton::GuiButton(int32_t x, int32_t y, std::string text, int32_t width, int32_t height)
 	: text(0, 0, text)
+	, callback(NULL)
 	, height(height)
 	, width(width)
 	, x(x)
@@ -29,11 +30,20 @@ namespace voxel
 	void GuiButton::draw(glm::mat4 &viewProj)
 	{
 		if (this->disabled)
+		{
+			this->text.setColor('7');
 			this->background.setTexY(.1796);
+		}
 		else if (this->hover)
+		{
+			this->text.setColor('e');
 			this->background.setTexY(.3359);
+		}
 		else
+		{
+			this->text.setColor('f');
 			this->background.setTexY(.2578);
+		}
 		this->background.setSize(this->width * 4, this->height * 4);
 		this->background.draw(viewProj);
 		this->text.draw(viewProj);
@@ -60,6 +70,8 @@ namespace voxel
 	{
 		if (!this->hover || event.button != GLFW_MOUSE_BUTTON_LEFT)
 			return (false);
+		if (callback)
+			callback();
 		return (true);
 	}
 

@@ -4,7 +4,8 @@ namespace voxel
 {
 
 	Block::Block(uint8_t id)
-	: opacity(15)
+	: aabb(glm::vec3(0), glm::vec3(1))
+	, opacity(15)
 	, light(0)
 	, layer(0)
 	, id(id)
@@ -23,6 +24,18 @@ namespace voxel
 	Block *Block::setDefaultName(std::string defaultName)
 	{
 		this->defaultName = defaultName;
+		return (this);
+	}
+
+	Block *Block::setTool(enum ToolType tool)
+	{
+		this->tool = tool;
+		return (this);
+	}
+
+	Block *Block::setAABB(AABB aabb)
+	{
+		this->aabb = aabb;
 		return (this);
 	}
 

@@ -1,0 +1,20 @@
+#ifndef TITLE_SCREEN_MODE_H
+# define TITLE_SCREEN_MODE_H
+
+namespace voxel
+{
+
+	enum TitleScreenMode
+	{
+
+		TITLE_SCREEN_TITLE,
+		TITLE_SCREEN_SINGLEPLAYER,
+		TITLE_SCREEN_MULTIPLAYER,
+		TITLE_SCREEN_TEXTURE_PACK,
+		TITLE_SCREEN_OPTIONS
+
+	};
+
+}
+
+#endif

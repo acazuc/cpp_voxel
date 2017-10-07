@@ -29,7 +29,7 @@ namespace voxel
 				{
 					if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 100)
 						this->treeGenerator.generate(chunk, x, top + 1, z);
-					/*else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
+					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 37);
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 38);
@@ -38,7 +38,7 @@ namespace voxel
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 40);
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
-						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);*/
+						chunk.setBlockIfReplaceable(glm::vec3(x, top + 1, z), 6);
 				}
 			}
 		}

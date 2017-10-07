@@ -20,6 +20,7 @@ namespace voxel
 	private:
 		ShaderSprite background;
 		GuiLabel text;
+		void(*callback)(void);
 		int32_t height;
 		int32_t width;
 		int32_t x;
@@ -35,6 +36,7 @@ namespace voxel
 		void setPos(int32_t x, int32_t y);
 		void setSize(int32_t width, int32_t height);
 		void setDisabled(bool disabled);
+		inline void setCallback(void(*callback)(void)) {this->callback = callback;};
 		inline int32_t getHeight() {return (this->height);};
 		inline int32_t getWidth() {return (this->width);};
 		inline int32_t getX() {return (this->x);};

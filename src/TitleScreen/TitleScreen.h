@@ -1,8 +1,11 @@
 #ifndef TITLE_SCREEN_H
 # define TITLE_SCREEN_H
 
+# include "Gui/GuiSingleplayer.h"
+# include "Gui/GuiMultiplayer.h"
 # include "Gui/GuiLagometer.h"
-# include "Gui/GuiButton.h"
+# include "TitleScreenMode.h"
+# include "Gui/GuiTitle.h"
 # include "Screen.h"
 # include <librender/Shader/Sprite/ShaderSprite.h>
 
@@ -15,20 +18,19 @@ namespace voxel
 	{
 
 	private:
+		static enum TitleScreenMode mode;
+		GuiSingleplayer singleplayer;
+		GuiMultiplayer multiplayer;
 		ShaderSprite background;
-		ShaderSprite logo;
 		GuiLagometer lagometer;
-		GuiButton singleplayer;
-		GuiButton multiplayer;
-		GuiButton texturePack;
-		GuiButton options;
-		GuiButton quit;
+		GuiTitle title;
 
 	public:
 		TitleScreen();
 		void draw();
 		void mouseMove();
 		void mouseDown(MouseEvent &event);
+		static inline void setMode(enum TitleScreenMode mode) {TitleScreen::mode = mode;};
 
 	};
 

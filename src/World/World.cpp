@@ -146,14 +146,21 @@ nextRegion:
 					{
 						for (int32_t z = startZ; z <= endZ; ++z)
 						{
-							float s = BLOCK_SIZE;
 							ChunkBlock *block = chunk->getBlock(glm::vec3(x, y, z));
 							if (!block || !block->getType())
 								continue;
 							Block *blockModel = Blocks::getBlock(block->getType());
 							if (!blockModel || !blockModel->isSolid())
 								continue;
-							aabbs.push_back(AABB(glm::vec3(chunkX + x, y, chunkZ + z), glm::vec3(chunkX + x + s, y + s, chunkZ + z + s)));
+							glm::vec3 p0(blockModel->getAABB().getP0());
+							p0.x += chunkX + x;
+							p0.y += y;
+							p0.z += chunkZ + z;
+							glm::vec3 p1(blockModel->getAABB().getP1());
+							p1.x += chunkX + x;
+							p1.y += y;
+							p1.z += chunkZ + z;
+							aabbs.push_back(AABB(p0, p1));
 						}
 					}
 				}

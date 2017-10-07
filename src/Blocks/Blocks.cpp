@@ -16,7 +16,7 @@ namespace voxel
 		blocks[3] = (new Block(3))->setDefaultName("dirt")->setHardness(.5)->setTex(2. / 16, 0);
 		blocks[4] = (new Block(4))->setDefaultName("cobblestone")->setHardness(2)->setTex(0, 1. / 16);
 		blocks[5] = (new Block(5))->setDefaultName("planks")->setHardness(2)->setTex(4. / 16, 0);
-		blocks[6] = (new Block(6))->setDefaultName("sapling")->setHardness(0)->setTex(15. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
+		blocks[6] = (new Block(6))->setDefaultName("sapling")->setHardness(0)->setTex(15. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true)->setAABB(AABB(glm::vec3(.1, 0, .1), glm::vec3(.9, .8, .9)));
 		blocks[7] = (new Block(7))->setDefaultName("bedrock")->setHardness(6000000)->setTex(1. / 16, 1. / 16);
 		blocks[8] = (new Block(8))->setDefaultName("flowing_water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
 		blocks[9] = (new Block(9))->setDefaultName("water")->setHardness(100)->setTex(15. / 16, 13. / 16)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
@@ -37,10 +37,10 @@ namespace voxel
 		blocks[24] = (new Block(24))->setDefaultName("sandstone")->setHardness(.8)->setTexTop(0, 11. / 16)->setTexSide(0, 12. / 16)->setTexBot(0, 13. / 16);
 		blocks[25] = (new Block(25))->setDefaultName("noteblock")->setHardness(.8)->setTex(10. / 16, 3. / 16)->setTexTop(11. / 16, 3. / 16);
 		//
-		blocks[37] = (new Block(37))->setDefaultName("yellow_flower")->setHardness(0)->setTex(13. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
-		blocks[38] = (new Block(38))->setDefaultName("red_flower")->setHardness(0)->setTex(12. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
-		blocks[39] = (new Block(39))->setDefaultName("brown_mushroom")->setHardness(0)->setTex(13. / 16, 1. / 16)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
-		blocks[40] = (new Block(40))->setDefaultName("red_mushroom")->setHardness(0)->setTex(12. / 16, 1. / 16)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
+		blocks[37] = (new Block(37))->setDefaultName("yellow_flower")->setHardness(0)->setTex(13. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true)->setAABB(AABB(glm::vec3(.3, 0, .3), glm::vec3(.7, .6, .7)));
+		blocks[38] = (new Block(38))->setDefaultName("red_flower")->setHardness(0)->setTex(12. / 16, 0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true)->setAABB(AABB(glm::vec3(.3, 0, .3), glm::vec3(.7, .6, .7)));
+		blocks[39] = (new Block(39))->setDefaultName("brown_mushroom")->setHardness(0)->setTex(13. / 16, 1. / 16)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true)->setAABB(AABB(glm::vec3(.3 ,0, .3), glm::vec3(.7, .4, .7)));
+		blocks[40] = (new Block(40))->setDefaultName("red_mushroom")->setHardness(0)->setTex(12. / 16, 1. / 16)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true)->setAABB(AABB(glm::vec3(.3 ,0, .3), glm::vec3(.7, .4, .7)));
 		blocks[41] = (new Block(41))->setDefaultName("gold_block")->setHardness(3)->setTex(7. / 16, 1. / 16);
 		blocks[42] = (new Block(42))->setDefaultName("iron_block")->setHardness(3)->setTex(6. / 16, 1. / 16);
 		//

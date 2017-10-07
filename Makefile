@@ -5,6 +5,9 @@ CC = g++
 
 CFLAGS = -Wall -Wextra -Werror -O2 -ftree-vectorize -g -march=native -flto=8
 #CFLAGS+= -fsanitize=address
+#CFLAGS+= -fsanitize=thread
+#CFLAGS+= -fsanitize=leak
+#CFLAGS+= -fsanitize=undefined
 #CLFAGS+= -Wl,-subsystem,windows
 
 INCLUDES_PATH = include
@@ -42,6 +45,7 @@ SRCS_NAME = Main.cpp \
 	    Shaders/BreakShader.cpp \
 	    Shaders/SunMoonShader.cpp \
 	    Shaders/GuiShader.cpp \
+	    Shaders/DroppedShader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
 	    Entities/Creeper.cpp \
@@ -76,6 +80,10 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiButton.cpp \
 	    Gui/GuiLabel.cpp \
 	    Gui/GuiLagometer.cpp \
+	    Gui/GuiTitle.cpp \
+	    Gui/GuiSingleplayer.cpp \
+	    Gui/GuiMultiplayer.cpp \
+	    Gui/GuiSingleplayerEntry.cpp \
 	    WorldScreen/WorldScreen.cpp \
 	    WorldScreen/WorldScreenGui.cpp \
 	    TitleScreen/TitleScreen.cpp \

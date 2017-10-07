@@ -1,4 +1,5 @@
 #include "AABB.h"
+#include <algorithm>
 
 namespace voxel
 {
@@ -124,6 +125,24 @@ namespace voxel
 			return (false);
 		if (this->p1.z <= other.p0.z || this->p0.z >= other.p1.z)
 			return (false);
+		return (true);
+	}
+
+	bool AABB::intersect(glm::vec3 pos, glm::vec3 dir, float &t)
+	{
+		float t1 = (this->p0.x - pos.x) / dir.x;
+		float t2 = (this->p1.x - pos.x) / dir.x;
+		float t3 = (this->p0.y - pos.y) / dir.y;
+		float t4 = (this->p1.y - pos.y) / dir.y;
+		float t5 = (this->p0.z - pos.z) / dir.z;
+		float t6 = (this->p1.z - pos.z) / dir.z;
+		float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+		float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
+		if (tmax < 0)
+			return (false);
+		if (tmin > tmax)
+			return (false);
+		t = tmin;
 		return (true);
 	}
 

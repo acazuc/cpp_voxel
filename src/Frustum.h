@@ -17,7 +17,7 @@ namespace voxel
 		glm::vec4 data[6];
 
 	public:
-		void update(glm::mat4 &proj, glm::mat4 &view);
+		void update(glm::mat4 &vp);
 		bool check(AABB &aabb);
 
 	};

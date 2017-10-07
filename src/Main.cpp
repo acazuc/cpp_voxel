@@ -28,6 +28,7 @@ namespace voxel
 	ParticlesShader *Main::particlesShader;
 	FocusedShader *Main::focusedShader;
 	SunMoonShader *Main::sunMoonShader;
+	DroppedShader *Main::droppedShader;
 	BlocksShader *Main::blocksShader;
 	CloudsShader *Main::cloudsShader;
 	SkyboxShader *Main::skyboxShader;
@@ -35,7 +36,9 @@ namespace voxel
 	BreakShader *Main::breakShader;
 	GuiShader *Main::guiShader;
 	glm::vec4 Main::skyColor;
+	Texture *Main::unknownPack;
 	Texture *Main::terrain;
+	Texture *Main::empty;
 	Window *Main::window;
 	Screen *Main::screen;
 	Font *Main::font;
@@ -71,6 +74,8 @@ namespace voxel
 		focusedShader->load();
 		sunMoonShader = new SunMoonShader();
 		sunMoonShader->load();
+		droppedShader = new DroppedShader();
+		droppedShader->load();
 		skyboxShader = new SkyboxShader();
 		skyboxShader->load();
 		cloudsShader = new CloudsShader();
@@ -104,18 +109,35 @@ namespace voxel
 			breakShader->fogDistanceLocation->setVec1f(16 * 14);
 			guiShader->program->use();
 			guiShader->texLocation->setVec1i(0);
+			droppedShader->program->use();
+			droppedShader->fogDistanceLocation->setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;
 		uint32_t height;
 		if (!libformat::PNG::read("data/textures/terrain.png", datas, width, height))
 			ERROR("Failed to read terrain.png");
-		terrain = new Texture(datas, width, height);
+		terrain = new Texture();
+		terrain->setData(datas, width, height);
 		delete[] (datas);
 		terrain->bind();
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		if (!libformat::PNG::read("data/textures/unknown_pack.png", datas, width, height))
+			ERROR("Failed to read unknown.png");
+		unknownPack = new Texture();
+		unknownPack->setData(datas, width, height);
+		delete[] (datas);
+		unknownPack->bind();
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		datas = new char[4];
+		std::memset(datas, 0xff, 4);
+		empty = new Texture();
+		empty->setData(datas, 1, 1);
+		delete[] (datas);
 		glActiveTexture(GL_TEXTURE0);
 		FontModel *fontModel = new FontModel("./data/minecraftia.ttf");
 		font = fontModel->derive(32);
@@ -123,8 +145,8 @@ namespace voxel
 		Blocks::init();
 		Biomes::init();
 		Gui::init();
-		//screen = new WorldScreen(new World());
-		screen = new TitleScreen();
+		screen = new WorldScreen(new World());
+		//screen = new TitleScreen();
 		nanotime = System::nanotime();
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;

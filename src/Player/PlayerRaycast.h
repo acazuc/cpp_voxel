@@ -1,6 +1,7 @@
 #ifndef PLAYER_RAYCAST_H
 # define PLAYER_RAYCAST_H
 
+# include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
 # include <glm/vec3.hpp>
 
@@ -30,6 +31,7 @@ namespace voxel
 		void onRightClick(Chunk *chunk, glm::vec3 &pos);
 		void onLeftClick(Chunk *chunk, ChunkBlock *block, glm::vec3 &relative, glm::vec3 &pos);
 		void buildBreakTexCoords();
+		void buildHoverVertexes(AABB aabb);
 
 	public:
 		PlayerRaycast(Player &player);

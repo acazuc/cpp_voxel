@@ -1,6 +1,8 @@
 #ifndef BLOCK_H
 # define BLOCK_H
 
+# include "ToolType.h"
+# include "AABB.h"
 # include <string>
 
 namespace voxel
@@ -11,6 +13,8 @@ namespace voxel
 
 	private:
 		std::string defaultName;
+		enum ToolType tool;
+		AABB aabb;
 		uint8_t opacity;
 		uint8_t light;
 		uint8_t layer;
@@ -40,6 +44,10 @@ namespace voxel
 		Block(uint8_t id);
 		Block *setDefaultName(std::string defaultName);
 		inline std::string &getDefaultName() {return (this->defaultName);};
+		Block *setTool(enum ToolType tool);
+		inline enum ToolType getTool() {return (this->tool);};
+		Block *setAABB(AABB aabb);
+		inline AABB &getAABB() {return (this->aabb);};
 		Block *setOpacity(uint8_t opacity);
 		inline uint8_t getOpacity() {return (this->opacity);};
 		Block *setLight(uint8_t light);

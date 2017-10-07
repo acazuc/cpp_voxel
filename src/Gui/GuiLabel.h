@@ -21,6 +21,7 @@ namespace voxel
 		void draw(glm::mat4 &viewProj);
 		void setText(std::string text);
 		void setPos(int32_t x, int32_t y);
+		void setColor(char color);
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getY() {return (this->y);};
 		inline int32_t getWidth() {return (this->text.getWidth());};

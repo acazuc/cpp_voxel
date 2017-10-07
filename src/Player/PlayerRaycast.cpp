@@ -1,6 +1,7 @@
 #include "PlayerRaycast.h"
 #include "Blocks/Blocks.h"
 #include "World/World.h"
+#include "Debug.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
@@ -8,6 +9,7 @@
 #define OFFSET .002
 #define BREAK_OFFSET .001
 #define PICK_DISTANCE 500
+#define PICK_EPSILON .001
 
 namespace voxel
 {
@@ -17,34 +19,6 @@ namespace voxel
 	, doneTicks(0)
 	, found(false)
 	{
-		{
-			glm::vec3 vertexes[24];
-			vertexes[0]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[1]  = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[2]  = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[3]  = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[4]  = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[5]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[6]  = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[7]  = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[8]  = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[9]  = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[10] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[11] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[12] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[13] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[14] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[15] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[16] = glm::vec3(            -OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[17] = glm::vec3(            -OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[18] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[19] = glm::vec3(BLOCK_SIZE + OFFSET,             -OFFSET,             -OFFSET);
-			vertexes[20] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[21] = glm::vec3(            -OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			vertexes[22] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET);
-			vertexes[23] = glm::vec3(BLOCK_SIZE + OFFSET, BLOCK_SIZE + OFFSET,             -OFFSET);
-			this->hoverVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
-		}
 		{
 			glm::vec3 vertexes[24];
 			//Front
@@ -198,10 +172,12 @@ namespace voxel
 	void PlayerRaycast::raycast()
 	{
 		this->found = false;
-		glm::vec3 pos(std::floor(this->player.getPos().x), std::floor(this->player.getPos().y + 0.72), std::floor(this->player.getPos().z));
+		glm::vec3 org(this->player.getPos());
+		org.y += .72;
+		glm::vec3 pos(std::floor(this->player.getPos().x), std::floor(this->player.getPos().y + .72), std::floor(this->player.getPos().z));
 		glm::vec4 dir = glm::vec4(0, 0, -1, 0) * this->player.getViewMat();
 		glm::vec3 step(signum(dir.x), signum(dir.y), signum(dir.z));
-		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y + 0.72, dir.y), intbound(this->player.getPos().z, dir.z));
+		glm::vec3 max(intbound(this->player.getPos().x, dir.x), intbound(this->player.getPos().y + .72, dir.y), intbound(this->player.getPos().z, dir.z));
 		glm::vec3 delta(step.x / dir.x, step.y / dir.y, step.z / dir.z);
 		float radius = PICK_DISTANCE;
 		uint8_t face = 0;
@@ -231,24 +207,50 @@ namespace voxel
 					goto nextStep;
 				if (this->pos != pos)
 					doneTicks = 0;
+				float t = 0;
+				AABB aabb = blockModel->getAABB();
+				aabb.move(pos);
+				if (!aabb.intersect(org, dir, t))
+					goto nextStep;
+				glm::vec3 interPos = org + glm::vec3(dir) * t;
+				float dst[6];
+				dst[0] = std::abs(interPos.x - aabb.getP0().x);
+				dst[1] = std::abs(interPos.x - aabb.getP1().x);
+				dst[2] = std::abs(interPos.y - aabb.getP0().y);
+				dst[3] = std::abs(interPos.y - aabb.getP1().y);
+				dst[4] = std::abs(interPos.z - aabb.getP0().z);
+				dst[5] = std::abs(interPos.z - aabb.getP1().z);
+				float min = std::min(dst[0], std::min(dst[1], std::min(dst[2], std::min(dst[3], std::min(dst[4], dst[5])))));
+				if (min == dst[0])
+					this->face = BLOCK_FACE_LEFT;
+				else if (min == dst[1])
+					this->face = BLOCK_FACE_RIGHT;
+				else if (min == dst[2])
+					this->face = BLOCK_FACE_BACK;
+				else if (min == dst[3])
+					this->face = BLOCK_FACE_FRONT;
+				else if (min == dst[4])
+					this->face = BLOCK_FACE_UP;
+				else if (min == dst[5])
+					this->face = BLOCK_FACE_DOWN;
+				else
+					goto nextStep;
+				buildHoverVertexes(blockModel->getAABB());
+				this->face = face;
+				this->pos = pos;
+				this->found = true;
 				if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_LEFT))
 				{
 					onLeftClick(chunk, block, relative, pos);
-					goto end;
+					return;
 				}
 				else
 					doneTicks = 0;
-				this->face = face;
-				this->pos = pos;
 				if (Main::getWindow()->isButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
 				{
 					onRightClick(chunk, relative);
 					return;
 				}
-end:
-				this->found = true;
-				this->face = face;
-				this->pos = pos;
 				return;
 			}
 nextStep:
@@ -418,6 +420,36 @@ nextStep:
 		texCoords[22] = glm::vec2(dst.x, dst.y);
 		texCoords[23] = glm::vec2(org.x, dst.y);
 		this->breakTexCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords, sizeof(texCoords), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+	}
+
+	void PlayerRaycast::buildHoverVertexes(AABB aabb)
+	{
+		glm::vec3 vertexes[24];
+		vertexes[0]  = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[1]  = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[2]  = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[3]  = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[4]  = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[5]  = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[6]  = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[7]  = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[8]  = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[9]  = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[10] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[11] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[12] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[13] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[14] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[15] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[16] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[17] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[18] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[19] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[20] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[21] = glm::vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		vertexes[22] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		vertexes[23] = glm::vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		this->hoverVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 	}
 
 }

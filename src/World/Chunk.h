@@ -68,6 +68,7 @@ namespace voxel
 		ChunkBlock *getBlock(glm::vec3 pos);
 		uint8_t getLight(glm::vec3 pos);
 		void setSkyLight(glm::vec3 pos, uint8_t light);
+		uint8_t getSkyLightVal(glm::vec3 pos);
 		uint8_t getSkyLight(glm::vec3 pos);
 		void setBlockLight(glm::vec3 pos, uint8_t light);
 		uint8_t getBlockLight(glm::vec3 pos);

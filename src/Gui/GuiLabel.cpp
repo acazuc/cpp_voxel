@@ -39,4 +39,10 @@ namespace voxel
 		this->text.setPos(this->x, this->y);
 	}
 
+	void GuiLabel::setColor(char color)
+	{
+		this->text.setColor(Gui::getTextColor(color));
+		this->text.setShadowColor(Gui::getTextShadowColor(color));
+	}
+
 }

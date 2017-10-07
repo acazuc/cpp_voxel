@@ -2,6 +2,9 @@
 # define DROPPED_BLOCK_H
 
 # include "Entity.h"
+# include <librender/Shader/VertexBuffer.h>
+
+using librender::VertexBuffer;
 
 namespace voxel
 {
@@ -10,6 +13,13 @@ namespace voxel
 	{
 
 	private:
+		VertexBuffer texCoordsBuffer;
+		VertexBuffer vertexesBuffer;
+		VertexBuffer indicesBuffer;
+		World &world;
+		uint64_t vertexNumber;
+		int64_t created;
+		uint8_t number;
 		uint8_t type;
 
 	public:

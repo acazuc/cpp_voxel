@@ -7,12 +7,9 @@ using librender::Color;
 namespace voxel
 {
 
+	enum TitleScreenMode TitleScreen::mode = TITLE_SCREEN_TITLE;
+
 	TitleScreen::TitleScreen()
-	: singleplayer(0, 0, "Singleplayer")
-	, multiplayer(0, 0, "Multiplayer")
-	, texturePack(0, 0, "Mods and Texture Packs")
-	, options(0, 0, "Options...")
-	, quit(0, 0, "Quit Game")
 	{
 		glfwSetInputMode(Main::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		this->background.setTexture(Gui::getBgTex());
@@ -23,15 +20,6 @@ namespace voxel
 		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
 		Color color(.25);
 		this->background.setColor(color);
-		this->logo.setTexture(Gui::getLogoTex());
-		this->logo.setProgram(Main::getGuiShader().program);
-		this->logo.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->logo.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->logo.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->logo.setMvpLocation(Main::getGuiShader().mvpLocation);
-		this->logo.setSize(256 * 4, 48 * 4);
-		this->logo.setTexSize(1, .1875);
-		this->logo.setTexPos(0, 0);
 	}
 
 	void TitleScreen::draw()
@@ -43,15 +31,10 @@ namespace voxel
 		this->background.setSize(Main::getWindow()->getWidth(), Main::getWindow()->getHeight());
 		this->background.setTexSize(Main::getWindow()->getWidth() / (16 * 8.f), Main::getWindow()->getHeight() / (16 * 8.f));
 		this->background.draw(Gui::getMat());
-		this->logo.setPos((Main::getWindow()->getWidth() - 256 * 4) / 2, 19 * 8);
-		this->logo.draw(Gui::getMat());
-		int32_t offset = 48 * 4 + 19 * 8 * 2;
-		this->singleplayer.setPos((Main::getWindow()->getWidth() - this->singleplayer.getWidth() * 4) / 2, offset);
-		this->singleplayer.draw(Gui::getMat());
-		this->multiplayer.setPos((Main::getWindow()->getWidth() - this->multiplayer.getWidth() * 4) / 2, offset + 24 * 4);
-		this->multiplayer.draw(Gui::getMat());
-		this->texturePack.setPos((Main::getWindow()->getWidth() - this->texturePack.getWidth() * 4) / 2, offset + 48 * 4);
-		this->texturePack.draw(Gui::getMat());
+		if (this->mode == TITLE_SCREEN_TITLE)
+			this->title.draw();
+		else if (this->mode == TITLE_SCREEN_SINGLEPLAYER)
+			this->singleplayer.draw();
 		this->lagometer.draw();
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
@@ -61,19 +44,24 @@ namespace voxel
 	void TitleScreen::mouseMove()
 	{
 		bool alreadyHovered = false;
-		this->singleplayer.mouseMove(alreadyHovered);
-		this->multiplayer.mouseMove(alreadyHovered);
-		this->texturePack.mouseMove(alreadyHovered);
+		if (this->mode == TITLE_SCREEN_TITLE)
+			this->title.mouseMove(alreadyHovered);
+		else if (this->mode == TITLE_SCREEN_SINGLEPLAYER)
+			this->singleplayer.mouseMove(alreadyHovered);
 	}
 
 	void TitleScreen::mouseDown(MouseEvent &event)
 	{
-		if (this->singleplayer.mouseDown(event))
-			return;
-		if (this->multiplayer.mouseDown(event))
-			return;
-		if (this->texturePack.mouseDown(event))
-			return;
+		if (this->mode == TITLE_SCREEN_TITLE)
+		{
+			if (this->title.mouseDown(event))
+				return;
+		}
+		else if (this->mode == TITLE_SCREEN_SINGLEPLAYER)
+		{
+			if (this->singleplayer.mouseDown(event))
+				return;
+		}
 	}
 
 }

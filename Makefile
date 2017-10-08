@@ -3,7 +3,7 @@ NAME = cpp_voxel
 CC = g++
 #CC = x86_64-w64-mingw32-g++
 
-CFLAGS = -Wall -Wextra -Werror -O2 -ftree-vectorize -g -march=native -flto=8
+CFLAGS = -Wall -Wextra -Werror -O3 -ftree-vectorize -g -march=native -flto=8
 #CFLAGS+= -fsanitize=address
 #CFLAGS+= -fsanitize=thread
 #CFLAGS+= -fsanitize=leak

@@ -34,14 +34,6 @@ namespace voxel
 		std::memset(this->topBlocks, 0, sizeof(this->topBlocks));
 		std::memset(this->storages, 0, sizeof(this->storages));
 		std::memset(this->biomes, 0, sizeof(this->biomes));
-		if (this->chunkXLess)
-			this->chunkXLess->regenerateLightMap();
-		if (this->chunkXMore)
-			this->chunkXMore->regenerateLightMap();
-		if (this->chunkZLess)
-			this->chunkZLess->regenerateLightMap();
-		if (this->chunkZMore)
-			this->chunkZMore->regenerateLightMap();
 	}
 
 	Chunk::~Chunk()
@@ -95,7 +87,7 @@ namespace voxel
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				//float noiseIndex = -1;
+				//float noiseIndex = -.02;
 				float noiseIndex = this->world.getNoise().get2((this->x + x) * 100, (this->z + z) * 100);
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
 				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
@@ -132,7 +124,6 @@ namespace voxel
 			}
 		}
 		Biomes::getBiome(1)->generate(*this);
-		generateLightMap();
 	}
 
 	void Chunk::tick()
@@ -164,12 +155,9 @@ namespace voxel
 
 	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
 	{
-		if (getSkyLightVal(pos) >= light)
-			return;
 		ChunkBlock *block = getBlock(pos);
-		if (!block)
-			return;
-		Block *blockModel = Blocks::getBlock(block->getType());
+		uint8_t type = !block ? 0 : block->getType();
+		Block *blockModel = Blocks::getBlock(type);
 		if (!blockModel || blockModel->getOpacity() == 15)
 			return;
 		if (light == 0xf)
@@ -438,11 +426,9 @@ endNearTop:
 	{
 		if (!this->generated)
 			return (0);
-		/*if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
-			return (15);*/
 		uint8_t storageY = pos.y / 16;
 		if (!this->storages[storageY])
-			return (15);
+			return (0);
 		return (this->storages[storageY]->getSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
 	}
 

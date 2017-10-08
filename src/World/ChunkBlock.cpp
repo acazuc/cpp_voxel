@@ -34,10 +34,10 @@
 
 #define FRONT_COLOR_FACTOR .95f
 #define BACK_COLOR_FACTOR .95f
-#define LEFT_COLOR_FACTOR .9f
-#define RIGHT_COLOR_FACTOR .9f
+#define LEFT_COLOR_FACTOR .85f
+#define RIGHT_COLOR_FACTOR .85f
 #define UP_COLOR_FACTOR 1.f
-#define DOWN_COLOR_FACTOR .6f
+#define DOWN_COLOR_FACTOR .75f
 
 #define LIGHT_SSAO_TEST(light, ssao) if (light < ssao) {light = 0;} else {light -= ssao;}
 

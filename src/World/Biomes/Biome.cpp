@@ -49,7 +49,7 @@ namespace voxel
 			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
 			{
 				int32_t top = chunk.getTopBlock(x, z);
-				this->ironOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+				this->ironOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, .2f) - 2, z);
 			}
 		}
 		for (uint8_t i = 0; i < 10; ++i)
@@ -59,7 +59,7 @@ namespace voxel
 			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
 			{
 				int32_t top = chunk.getTopBlock(x, z);
-				this->coalOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+				this->coalOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, 5.f) - 5, z);
 			}
 		}
 		for (uint8_t i = 0; i < 5; ++i)
@@ -69,7 +69,7 @@ namespace voxel
 			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
 			{
 				int32_t top = chunk.getTopBlock(x, z);
-				this->goldOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+				this->goldOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, 2.f) - 2, z);
 			}
 		}
 		for (uint8_t i = 0; i < 4; ++i)
@@ -79,7 +79,7 @@ namespace voxel
 			if (x < CHUNK_WIDTH && z < CHUNK_WIDTH)
 			{
 				int32_t top = chunk.getTopBlock(x, z);
-				this->diamondOreGenerator.generate(chunk, x, chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, z);
+				this->diamondOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, 2.f) - 2, z);
 			}
 		}
 	}

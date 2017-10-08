@@ -28,7 +28,9 @@ namespace voxel
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
 					glm::vec3 pos(chunk->getX() + x, this->y + y, chunk->getZ() + z);
-					this->blocks[getXYZId(x, y, z)].fillBuffers(chunk, pos, tessellator, layer);
+					ChunkBlock block;
+					block.setType(this->blocks[getXYZId(x, y, z)]);
+					block.fillBuffers(chunk, pos, tessellator, layer);
 				}
 			}
 		}
@@ -41,12 +43,12 @@ namespace voxel
 
 	void ChunkStorage::setBlock(glm::vec3 pos, uint8_t type)
 	{
-		this->blocks[getXYZId(pos)].setType(type);
+		this->blocks[getXYZId(pos)] = type;
 	}
 
 	ChunkBlock *ChunkStorage::getBlock(glm::vec3 pos)
 	{
-		return (&this->blocks[getXYZId(pos)]);
+		return (reinterpret_cast<ChunkBlock*>(&this->blocks[getXYZId(pos)]));
 	}
 
 	uint8_t ChunkStorage::getLight(glm::vec3 pos)

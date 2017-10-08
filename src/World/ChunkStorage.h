@@ -12,7 +12,7 @@ namespace voxel
 	{
 
 	private:
-		ChunkBlock blocks[16 * 16 * 16];
+		uint8_t blocks[16 * 16 * 16];
 		uint8_t blockLights[16 * 16 * 8];
 		uint8_t skyLights[16 * 16 * 8];
 		int32_t y;

@@ -1,5 +1,7 @@
 #include "Biomes.h"
+#include "Debug.h"
 #include <cstring>
+#include <cmath>
 
 namespace voxel
 {
@@ -32,6 +34,22 @@ namespace voxel
 		for (uint8_t i = 0; i < 255; ++i)
 			delete (biomes[i]);
 		delete[] (biomes);
+	}
+
+	uint8_t Biomes::getBiomeFor(float temp, float rain)
+	{
+		static uint8_t tab[] = {
+			 1,  1,  3,  3,  6,  6,  9,  9,
+			 1,  1,  3,  3,  6,  6,  9,  9,
+			 3,  3,  4,  4,  7,  7,  9,  9,
+			 3,  3,  4,  4,  7,  7, 10, 10,
+			 6,  6,  7,  7,  5,  5, 10, 10,
+			 6,  6,  7,  7,  5,  5, 10, 10,
+			 9,  9,  9, 10, 10, 10,  8,  8,
+			 9,  9,  9, 10, 10, 10,  8,  8};
+		float perTemp = std::min(1.f, std::max(0.f, temp));
+		float perRain = std::min(1.f, std::max(0.f, rain)) * perTemp;
+		return (tab[(int32_t)(std::round(perRain * 7) * 8 + std::round(perTemp * 7))]);
 	}
 
 }

@@ -20,6 +20,7 @@ namespace voxel
 		GuiLagometer lagometer;
 		WorldScreen &worldScreen;
 		GuiHearts hearts;
+		GuiLabel focusedLabel;
 		GuiLabel fpsLabel;
 		GuiLabel posLabel;
 		GuiCross cross;

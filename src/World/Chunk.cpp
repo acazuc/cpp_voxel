@@ -20,6 +20,7 @@ namespace voxel
 	, mustGenerateLightMap(false)
 	, mustGenerateBuffers(false)
 	, mustUpdateBuffers(false)
+	, recursiveLightMap(false)
 	, generated(false)
 	, deleted(false)
 	{
@@ -87,7 +88,14 @@ namespace voxel
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
+				//float fac = 1. / 50;
+				//float temp = this->world.getBiomeTempNoise().get2((this->x + x) * fac, (this->z + z) * fac) / 2 + .5;
+				//float rain = this->world.getBiomeRainNoise().get2((this->x + x) * fac, (this->z + z) * fac) / 2 + .5;
+				//float temp = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac, (this->z + z) * fac)));
+				//float rain = 1.;//std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac / 100, (this->z + z) * fac / 100)));
+				//this->biomes[getXZId(x, z)] = Biomes::getBiomeFor(temp, rain);
 				//float noiseIndex = -.02;
+				//float noiseIndex = 0;
 				float noiseIndex = this->world.getNoise().get2((this->x + x) * 100, (this->z + z) * 100);
 				//float noiseIndex = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) / 50., (this->z + z) / 50.)));
 				//noiseIndex *= this->world.getNoise().get2(this->x + x, this->z + z);
@@ -96,6 +104,8 @@ namespace voxel
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
 				noiseIndex = noiseIndex * CHUNK_HEIGHT / 5 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
+				if ((x + z) % 2 == 0)
+					noiseIndex--;
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
 					if (y > noiseIndex && y > CHUNK_HEIGHT / 4)
@@ -108,7 +118,7 @@ namespace voxel
 						if (y <= CHUNK_HEIGHT / 4)
 							blockType = 12;
 						else
-							blockType = 2;
+							blockType = rand() / (float)RAND_MAX * 255;//2;
 					}
 					else if (y > noiseIndex)
 						blockType = 8;
@@ -123,7 +133,8 @@ namespace voxel
 				}
 			}
 		}
-		Biomes::getBiome(1)->generate(*this);
+		//Biomes::getBiome(1)->generate(*this);
+		regenerateLightMapRec();
 	}
 
 	void Chunk::tick()
@@ -158,15 +169,33 @@ namespace voxel
 		ChunkBlock *block = getBlock(pos);
 		uint8_t type = !block ? 0 : block->getType();
 		Block *blockModel = Blocks::getBlock(type);
-		if (!blockModel || blockModel->getOpacity() == 15)
+		if (!blockModel)
+			blockModel = Blocks::getBlock(0);
+		if (blockModel->getOpacity() == 15)
 			return;
+		bool isTopBlock = false;
 		if (light == 0xf)
 			goto endNearTop;
-		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
+		if (pos.y >= this->topBlocks[getXZId(pos.x, pos.z)])
 		{
+			isTopBlock = true;
 			light = 0xf;
 			goto endNearTop;
 		}
+		for (int8_t x = -1; x <= 1; ++x)
+		{
+			for (int8_t y = -1; y <= 1; ++y)
+			{
+				for (int8_t z = -1; z <= 1; ++z)
+				{
+					ChunkBlock *tmp = this->world.getBlock(glm::vec3(this->x + pos.x + x, pos.y + y, this->z + pos.z + z));
+					if (tmp && tmp->getType())
+						goto endCheckAround;
+				}
+			}
+		}
+		return;
+	endCheckAround:
 		if (pos.x > 0)
 		{
 			if (pos.y > this->topBlocks[getXZId(pos.x - 1, pos.z)])
@@ -262,24 +291,35 @@ endNearTop:
 		if (blockModel->getOpacity() >= light)
 			return;
 		light -= blockModel->getOpacity();
-		if (pos.x > 0 && pos.y < this->topBlocks[getXZId(pos.x - 1, pos.z)])
+		if (pos.x > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x - 1, pos.z)])
 			setBlockLightRec(glm::vec3(pos.x - 1, pos.y, pos.z), light);
-		if (pos.x < CHUNK_WIDTH - 1 && pos.y < this->topBlocks[getXZId(pos.x + 1, pos.z)])
+		if (pos.x < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x + 1, pos.z)])
 			setBlockLightRec(glm::vec3(pos.x + 1, pos.y, pos.z), light);
 		if (pos.y > 0)
 			setBlockLightRec(glm::vec3(pos.x, pos.y - 1, pos.z), light);
-		if (pos.y < CHUNK_HEIGHT - 1 && pos.y < this->topBlocks[getXZId(pos.x, pos.z)])
+		if (pos.y < CHUNK_HEIGHT - 1 && !isTopBlock)
 			setBlockLightRec(glm::vec3(pos.x, pos.y + 1, pos.z), light);
-		if (pos.z > 0 && pos.y < this->topBlocks[getXZId(pos.x, pos.z - 1)])
+		if (pos.z > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z - 1)])
 			setBlockLightRec(glm::vec3(pos.x, pos.y, pos.z - 1), light);
-		if (pos.z < CHUNK_WIDTH - 1 && pos.y < this->topBlocks[getXZId(pos.x, pos.z + 1)])
+		if (pos.z < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z + 1)])
 			setBlockLightRec(glm::vec3(pos.x, pos.y, pos.z + 1), light);
 	}
 
 	void Chunk::generateLightMap()
 	{
-		if (this->mustGenerateLightMap)
-			this->mustGenerateLightMap = false;
+		this->mustGenerateLightMap = false;
+		if (this->recursiveLightMap)
+		{
+			this->recursiveLightMap = false;
+			if (this->chunkXLess)
+				this->chunkXLess->regenerateLightMap();
+			if (this->chunkXMore)
+				this->chunkXMore->regenerateLightMap();
+			if (this->chunkZLess)
+				this->chunkZLess->regenerateLightMap();
+			if (this->chunkZMore)
+				this->chunkZMore->regenerateLightMap();
+		}
 		for (uint8_t i = 0; i < 16; ++i)
 		{
 			if (!this->storages[i])
@@ -418,7 +458,7 @@ endNearTop:
 	{
 		uint8_t storageY = pos.y / 16;
 		if (!this->storages[storageY])
-			return;
+			this->storages[storageY] = new ChunkStorage(storageY * 16);
 		return (this->storages[storageY]->setSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), light));
 	}
 
@@ -467,6 +507,11 @@ endNearTop:
 		if (!this->generated)
 			return (CHUNK_HEIGHT);
 		return (this->topBlocks[getXZId(x, z)]);
+	}
+
+	uint8_t Chunk::getBiome(int32_t x, int32_t z)
+	{
+		return (this->biomes[getXZId(x, z)]);
 	}
 
 	void Chunk::destroyBlock(glm::vec3 pos)
@@ -529,6 +574,12 @@ endNearTop:
 		this->mustGenerateLightMap = true;
 		if (!tmp) //Already in list
 			this->world.getChunksToUpdate().push_back(this);
+	}
+
+	void Chunk::regenerateLightMapRec()
+	{
+		//this->recursiveLightMap = true;
+		regenerateLightMap();
 	}
 
 	void Chunk::setChunkXLess(Chunk *chunk)

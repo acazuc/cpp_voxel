@@ -29,15 +29,17 @@ namespace voxel
 	{
 
 	private:
-		std::minstd_rand random;
 		std::vector<VertexBuffer*> buffersToDelete;
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
 		std::list<Chunk*> chunksToUpdate;
+		std::minstd_rand random;
 		ParticlesManager particlesManager;
 		EntitiesManager entitiesManager;
 		ChunkUpdater chunkUpdater;
 		ChunkLoader chunkLoader;
+		SimplexNoise biomeTempNoise;
+		SimplexNoise biomeRainNoise;
 		SimplexNoise noise;
 		Frustum frustum;
 		Player player;
@@ -60,13 +62,15 @@ namespace voxel
 		Chunk *getChunk(int32_t x, int32_t z);
 		ChunkBlock *getBlock(glm::vec3 pos);
 		uint8_t getLight(glm::vec3 pos);
-		inline std::minstd_rand &getRandom() {return (this->random);};
 		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};
 		inline std::list<Chunk*> &getChunksToUpdate() {return (this->chunksToUpdate);};
+		inline std::minstd_rand &getRandom() {return (this->random);};
 		inline ParticlesManager &getParticlesManager() {return (this->particlesManager);};
 		inline EntitiesManager &getEntitiesManager() {return (this->entitiesManager);};
+		inline SimplexNoise &getBiomeTempNoise() {return (this->biomeTempNoise);};
+		inline SimplexNoise &getBiomeRainNoise() {return (this->biomeRainNoise);};
 		inline SimplexNoise &getNoise() {return (this->noise);};
 		inline Frustum &getFrustum() {return (this->frustum);};
 		inline Player &getPlayer() {return (this->player);};

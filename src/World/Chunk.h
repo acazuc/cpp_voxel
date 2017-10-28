@@ -46,6 +46,7 @@ namespace voxel
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool mustUpdateBuffers;
+		bool recursiveLightMap;
 		bool generated;
 		bool deleted;
 		bool visible;
@@ -62,6 +63,7 @@ namespace voxel
 		void generateBuffers();
 		void regenerateBuffers();
 		void generateLightMap();
+		void regenerateLightMapRec();
 		void regenerateLightMap();
 		void setBlock(glm::vec3 pos, uint8_t type);
 		void setBlockIfReplaceable(glm::vec3 pos, uint8_t type);
@@ -73,6 +75,7 @@ namespace voxel
 		void setBlockLight(glm::vec3 pos, uint8_t light);
 		uint8_t getBlockLight(glm::vec3 pos);
 		uint8_t getTopBlock(int32_t x, int32_t z);
+		uint8_t getBiome(int32_t x, int32_t z);
 		void destroyBlock(glm::vec3 pos);
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};

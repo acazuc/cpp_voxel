@@ -1,4 +1,5 @@
 #include "PlayerRaycast.h"
+#include "Entities/DroppedBlock.h"
 #include "Blocks/Blocks.h"
 #include "World/World.h"
 #include "Debug.h"
@@ -6,8 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
 
-#define OFFSET .002
-#define BREAK_OFFSET .001
+#define OFFSET .001
+#define BREAK_OFFSET .0001
 #define PICK_DISTANCE 500
 #define PICK_EPSILON .001
 
@@ -307,9 +308,9 @@ nextStep:
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{
 			this->found = false;
-			float texX = blockModel->getTexTopX();
-			float texY = blockModel->getTexTopY();
-			int32_t nb = 3;
+			float texX = 0;//blockModel->getTexTopX();
+			float texY = 0;//blockModel->getTexTopY();
+			int32_t nb = 4;
 			for (int32_t x = 0; x < nb; ++x)
 			{
 				for (int32_t y = 0; y < nb; ++y)
@@ -320,8 +321,8 @@ nextStep:
 						pos.x += std::rand() * .1 / RAND_MAX - .05;
 						pos.y += std::rand() * .1 / RAND_MAX - .05;
 						pos.z += std::rand() * .1 / RAND_MAX - .05;
-						glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .15, (std::rand() * .5 / RAND_MAX + .5) * .15);
-						glm::vec3 dir(std::rand() * .2 / RAND_MAX - .1, std::rand() * .2 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
+						glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .2, (std::rand() * .5 / RAND_MAX + .5) * .2);
+						glm::vec3 dir(std::rand() * .2 / RAND_MAX - .1, std::rand() * .3 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
 						glm::vec2 uv(texX, texY);
 						uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 						uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
@@ -331,6 +332,10 @@ nextStep:
 					}
 				}
 			}
+			DroppedBlock *tmp = new DroppedBlock(this->player.getWorld(), block->getType());
+			tmp->setPos(pos + std::rand() * 1.f / RAND_MAX);
+			tmp->setPosDst(glm::vec3(std::rand() * .2 / RAND_MAX - .1, std::rand() * .5 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1));
+			this->player.getWorld().getEntitiesManager().addEntity(tmp);
 			chunk->destroyBlock(relative);
 		}
 	}
@@ -401,14 +406,14 @@ nextStep:
 		texCoords[7]  = glm::vec2(dst.x, org.y);
 		//Left
 		texCoords[8]  = glm::vec2(org.x, dst.y);
-		texCoords[9]  = glm::vec2(dst.x, dst.y);
+		texCoords[9]  = glm::vec2(org.x, org.y);
 		texCoords[10] = glm::vec2(dst.x, org.y);
-		texCoords[11] = glm::vec2(org.x, org.y);
+		texCoords[11] = glm::vec2(dst.x, dst.y);
 		//Right
 		texCoords[12] = glm::vec2(dst.x, dst.y);
-		texCoords[13] = glm::vec2(org.x, dst.y);
+		texCoords[13] = glm::vec2(dst.x, org.y);
 		texCoords[14] = glm::vec2(org.x, org.y);
-		texCoords[15] = glm::vec2(dst.x, org.y);
+		texCoords[15] = glm::vec2(org.x, dst.y);
 		//Up
 		texCoords[16] = glm::vec2(org.x, dst.y);
 		texCoords[17] = glm::vec2(dst.x, dst.y);

@@ -36,6 +36,8 @@ SRCS_NAME = Main.cpp \
 	    Player/PlayerRaycast.cpp \
 	    Blocks/Blocks.cpp \
 	    Blocks/Block.cpp \
+	    Blocks/BlockBase.cpp \
+	    Blocks/BlockSapling.cpp \
 	    Shaders/BlocksShader.cpp \
 	    Shaders/CloudsShader.cpp \
 	    Shaders/SkyboxShader.cpp \
@@ -59,6 +61,7 @@ SRCS_NAME = Main.cpp \
 	    Entities/Cow.cpp \
 	    Entities/Entity.cpp \
 	    Entities/EntitiesManager.cpp \
+	    Entities/DroppedBlock.cpp \
 	    World/World.cpp \
 	    World/ChunkBlock.cpp \
 	    World/Chunk.cpp \

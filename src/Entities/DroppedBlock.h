@@ -16,6 +16,7 @@ namespace voxel
 		VertexBuffer texCoordsBuffer;
 		VertexBuffer vertexesBuffer;
 		VertexBuffer indicesBuffer;
+		VertexBuffer colorsBuffer;
 		World &world;
 		uint64_t vertexNumber;
 		int64_t created;

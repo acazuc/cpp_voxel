@@ -38,6 +38,7 @@ namespace voxel
 		void jump();
 		void setSize(glm::vec3 size);
 		glm::vec3 getRealPos();
+		inline void setPosDst(glm::vec3 posDst) {this->posDst = posDst;};
 		inline glm::vec3 &getPos() {return (this->pos);};
 		inline glm::vec3 &getRot() {return (this->rot);};
 		inline AABB &getAABB() {return (this->aabb);};

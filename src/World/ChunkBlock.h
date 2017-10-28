@@ -17,6 +17,38 @@
 # define BLOCK_FACE_DOWN	0x20
 # define BLOCK_SIZE 1
 
+# define FRONT_COLOR_FACTOR .95f
+# define BACK_COLOR_FACTOR .95f
+# define LEFT_COLOR_FACTOR .85f
+# define RIGHT_COLOR_FACTOR .85f
+# define UP_COLOR_FACTOR 1.f
+# define DOWN_COLOR_FACTOR .75f
+
+# define F1P1 0
+# define F1P2 1
+# define F1P3 2
+# define F1P4 3
+# define F2P1 4
+# define F2P2 5
+# define F2P3 6
+# define F2P4 7
+# define F3P1 8
+# define F3P2 9
+# define F3P3 10
+# define F3P4 11
+# define F4P1 12
+# define F4P2 13
+# define F4P3 14
+# define F4P4 15
+# define F5P1 16
+# define F5P2 17
+# define F5P3 18
+# define F5P4 19
+# define F6P1 20
+# define F6P2 21
+# define F6P3 22
+# define F6P4 23
+
 namespace voxel
 {
 

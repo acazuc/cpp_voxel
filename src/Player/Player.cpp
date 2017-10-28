@@ -6,7 +6,7 @@
 
 #define WALK_SPEED 1
 #define RUN_SPEED 1.3
-#define FLY_SPEED 20
+#define FLY_SPEED 5
 #define SWIM_SPEED 0.02
 
 extern int64_t nanotime;
@@ -23,7 +23,7 @@ namespace voxel
 	{
 		this->flying = true;
 		setSize(glm::vec3(.6, 1.8, .6));
-		setPos(glm::vec3(0, 70, 0));
+		setPos(glm::vec3(0, 150, 0));
 	}
 
 	void Player::handleMovement()

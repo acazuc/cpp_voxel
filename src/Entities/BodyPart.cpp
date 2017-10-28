@@ -124,7 +124,7 @@ namespace voxel
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
 		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
 		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		glm::mat4 mvp = world->getPlayer().getProjMat() * world->getPlayer().getViewMat() * model;
+		glm::mat4 mvp = world->getPlayer().getViewProjMat() * model;
 		Main::getEntityShader().mvpLocation->setMat4f(mvp);
 		Main::getEntityShader().mLocation->setMat4f(model);
 		Main::getEntityShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);

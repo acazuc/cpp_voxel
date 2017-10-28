@@ -1,4 +1,5 @@
 #include "World.h"
+#include "Entities/DroppedBlock.h"
 #include "Blocks/Blocks.h"
 #include "Debug.h"
 #include "Main.h"
@@ -13,6 +14,8 @@ namespace voxel
 	, entitiesManager(*this)
 	, chunkUpdater(this)
 	, chunkLoader(this)
+	, biomeTempNoise(16, .70, 1334538)
+	, biomeRainNoise(16, .70, 1222222339)
 	, noise(16, .5, 1337)
 	, player(*this)
 	, clouds(*this)
@@ -22,6 +25,8 @@ namespace voxel
 		this->random.seed(1337);
 		this->chunkUpdater.start();
 		this->chunkLoader.start();
+		DroppedBlock *tmp = new DroppedBlock(*this, 2);
+		this->entitiesManager.addEntity(tmp);
 	}
 
 	World::~World()
@@ -96,7 +101,7 @@ nextRegion:
 		else
 		{
 			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 14);
+			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 140);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();

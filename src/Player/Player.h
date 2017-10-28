@@ -28,6 +28,7 @@ namespace voxel
 		void update();
 		void tick();
 		void draw();
+		inline PlayerRaycast &getRaycast() {return (this->raycast);};
 		inline glm::mat4 &getViewProjMat() {return (this->viewProjMat);};
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};

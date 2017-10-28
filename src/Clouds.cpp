@@ -66,11 +66,13 @@ namespace voxel
 		Main::getCloudsShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
 		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 		glColorMask(false, false, false, false);
+		glDisable(GL_CULL_FACE);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 		glColorMask(true, true, true, true);
 		glDepthFunc(GL_LEQUAL);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
 	}
 
 	void Clouds::rebuild()

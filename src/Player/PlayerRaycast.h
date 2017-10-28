@@ -39,6 +39,8 @@ namespace voxel
 		void tick();
 		void raycast();
 		void draw();
+		inline bool isFound() {return (this->found);};
+		inline glm::vec3 &getPos() {return (this->pos);};
 
 	};
 

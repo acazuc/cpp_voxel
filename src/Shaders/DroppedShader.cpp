@@ -1,6 +1,7 @@
 #include "DroppedShader.h"
 #include "Utils/readfile.h"
 #include "Debug.h"
+#include "Main.h"
 #include <cstring>
 #include <string>
 
@@ -15,10 +16,11 @@ namespace voxel
 	DroppedShader::~DroppedShader()
 	{
 		delete (this->fogDistanceLocation);
+		delete (this->fogDensityLocation);
 		delete (this->texCoordsLocation);
 		delete (this->vertexesLocation);
 		delete (this->fogColorLocation);
-		delete (this->colorLocation);
+		delete (this->colorsLocation);
 		delete (this->mvpLocation);
 		delete (this->texLocation);
 		delete (this->mLocation);
@@ -41,12 +43,14 @@ namespace voxel
 		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
+		this->fogDensityLocation = this->program->getUniformLocation("fogDensity");
 		this->texCoordsLocation = this->program->getAttribLocation("vertexUV");
 		this->texCoordsLocation->setVertexAttribArray(true);
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");
 		this->vertexesLocation->setVertexAttribArray(true);
 		this->fogColorLocation = this->program->getUniformLocation("fogColor");
-		this->colorLocation = this->program->getUniformLocation("color");
+		this->colorsLocation = this->program->getAttribLocation("vertexColor");
+		this->colorsLocation->setVertexAttribArray(true);
 		this->mvpLocation = this->program->getUniformLocation("MVP");
 		this->texLocation = this->program->getAttribLocation("tex");
 		this->mLocation = this->program->getUniformLocation("M");

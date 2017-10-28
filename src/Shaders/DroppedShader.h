@@ -16,10 +16,11 @@ namespace voxel
 
 	public:
 		ProgramLocation *fogDistanceLocation;
+		ProgramLocation *fogDensityLocation;
 		ProgramLocation *texCoordsLocation;
 		ProgramLocation *vertexesLocation;
 		ProgramLocation *fogColorLocation;
-		ProgramLocation *colorLocation;
+		ProgramLocation *colorsLocation;
 		ProgramLocation *mvpLocation;
 		ProgramLocation *texLocation;
 		ProgramLocation *mLocation;

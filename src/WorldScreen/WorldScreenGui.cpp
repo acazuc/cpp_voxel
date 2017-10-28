@@ -8,6 +8,7 @@ namespace voxel
 
 	WorldScreenGui::WorldScreenGui(WorldScreen &worldScreen)
 	: worldScreen(worldScreen)
+	, focusedLabel(0, 100, "")
 	, fpsLabel(0, 0, "")
 	, posLabel(0, 24, "")
 	, lastChunkUpdates(INT_MAX)
@@ -50,6 +51,11 @@ namespace voxel
 		this->posLabel.setPos(0, 40);
 		this->posLabel.setText("x: " + std::to_string(pos.x) + "\ny: " + std::to_string(pos.y) + "\nz: " + std::to_string(pos.z));
 		this->posLabel.draw(Gui::getMat());
+		this->focusedLabel.setPos(0, 156);
+		ChunkBlock *block = this->worldScreen.getWorld()->getPlayer().getRaycast().isFound() ? this->worldScreen.getWorld()->getBlock(this->worldScreen.getWorld()->getPlayer().getRaycast().getPos()) : NULL;
+		std::string focusedName = block && Blocks::getBlock(block->getType()) ? Blocks::getBlock(block->getType())->getDefaultName() : "None";
+		this->focusedLabel.setText("focused: " + focusedName);
+		this->focusedLabel.draw(Gui::getMat());
 		this->bar.draw();
 		this->lagometer.draw();
 		glDepthFunc(GL_LESS);

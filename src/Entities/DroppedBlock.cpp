@@ -12,27 +12,28 @@ extern int64_t nanotime;
 namespace voxel
 {
 
-	DroppedBlock::DroppedBlock(World &world, uint8_t type)
-	: Entity(world)
-	, world(world)
+	DroppedBlock::DroppedBlock(World &world, Chunk *chunk, uint8_t type, glm::vec3 pos, glm::vec3 vel)
+	: Entity(world, NULL)
 	, created(nanotime)
 	, number(1)
 	, type(type)
 	{
-		this->gravity = .04;
-		setSize(glm::vec3(.5, .5, .5));
-		setPos(glm::vec3(2, 256, 2));
+		this->chunk = chunk;
 		Block *block = Blocks::getBlock(type);
 		if (!block)
 		{
 			this->deleted = true;
 			return;
 		}
+		this->gravity = .04;
+		setSize(glm::vec3(.3, .5, .3));
+		setPos(pos);
+		this->posDst = vel;
 		ChunkTessellator tessellator;
 		float tmp[24];
 		for (uint8_t i = 0; i < 24; ++i)
 			tmp[i] = ChunkBlock::getLightValue(0xf);
-		block->draw(glm::vec3(0, 0, 0), tessellator, 0xff, tmp);
+		block->draw(this->chunk, glm::vec3(0, 0, 0), tessellator, 0xff, tmp);
 		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, tessellator.texCoords.data(), sizeof(glm::vec2) * tessellator.texCoords.size(), GL_FLOAT, 2, GL_STATIC_DRAW);
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, tessellator.vertexes.data(), sizeof(glm::vec3) * tessellator.vertexes.size(), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->indicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, tessellator.indices.data(), sizeof(GLuint) * tessellator.indices.size(), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
@@ -58,14 +59,9 @@ namespace voxel
 		Main::getDroppedShader().texCoordsLocation->setVertexBuffer(this->texCoordsBuffer);
 		Main::getDroppedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
 		Main::getDroppedShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
-		glm::vec4 col(1, 0, 0, 1);
-		Main::getDroppedShader().fogColorLocation->setVec4f(col);
-		Main::getDroppedShader().fogDistanceLocation->setVec1f(16 * 14);
-		Main::getDroppedShader().fogDensityLocation->setVec1f(.2 - .1 * (this->world.getPlayer().getEyeLight() / 15.));
 		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
-		glDisable(GL_CULL_FACE);
-		glDrawElements(GL_TRIANGLES, this->vertexNumber, GL_UNSIGNED_INT, NULL);
 		glEnable(GL_CULL_FACE);
+		glDrawElements(GL_TRIANGLES, this->vertexNumber, GL_UNSIGNED_INT, NULL);
 	}
 
 }

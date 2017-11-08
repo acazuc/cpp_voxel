@@ -16,7 +16,7 @@ namespace voxel
 		this->text.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->text.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->text.setShadowSize(1);
-		this->text.setShadowPos(4, 4);
+		this->text.setShadowPos(Main::getGuiScale(), Main::getGuiScale());
 		this->text.setText(text);
 		this->text.setColor(Gui::getTextColor('f'));
 		this->text.setShadowColor(Gui::getTextShadowColor('f'));

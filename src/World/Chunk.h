@@ -1,11 +1,15 @@
 #ifndef CHUNK_H
 # define CHUNK_H
 
+# include "Particles/ParticlesManager.h"
+# include "Entities/EntitiesManager.h"
 # include "ChunkStorage.h"
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
+# include <librender/Shader/VertexArray.h>
 
 using librender::VertexBuffer;
+using librender::VertexArray;
 
 # define CHUNK_WIDTH 16
 # define CHUNK_HEIGHT 255
@@ -22,6 +26,7 @@ namespace voxel
 		VertexBuffer *vertexesBuffer;
 		VertexBuffer *indicesBuffer;
 		VertexBuffer *colorsBuffer;
+		VertexArray *vertexArray;
 		uint32_t verticesNb;
 		ChunkLayer() : texCoordsBuffer(NULL), vertexesBuffer(NULL), indicesBuffer(NULL), colorsBuffer(NULL), verticesNb(0) {};
 	};
@@ -30,6 +35,8 @@ namespace voxel
 	{
 
 	private:
+		ParticlesManager particlesManager;
+		EntitiesManager entitiesManager;
 		ChunkStorage *storages[16];
 		ChunkLayer layers[3];
 		glm::mat4 modelMat;
@@ -59,6 +66,7 @@ namespace voxel
 		void moveGLBuffersToWorld();
 		void generate();
 		void tick();
+		void drawEntities();
 		void draw(uint8_t layer);
 		void generateBuffers();
 		void regenerateBuffers();
@@ -95,6 +103,8 @@ namespace voxel
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};
 		inline bool isMustGenerateBuffers() {return (this->mustGenerateBuffers);};
+		inline ParticlesManager &getParticlesManager() {return (this->particlesManager);};
+		inline EntitiesManager &getEntitiesManager() {return (this->entitiesManager);};
 
 	};
 

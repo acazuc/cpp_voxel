@@ -8,6 +8,8 @@
 namespace voxel
 {
 
+	class World;
+
 	class Player : public Entity
 	{
 
@@ -32,7 +34,6 @@ namespace voxel
 		inline glm::mat4 &getViewProjMat() {return (this->viewProjMat);};
 		inline glm::mat4 &getProjMat() {return (this->projMat);};
 		inline glm::mat4 &getViewMat() {return (this->viewMat);};
-		inline World &getWorld() {return (this->world);};
 		inline uint8_t getEyeLight() {return (this->eyeLight);};
 		inline bool isEyeInWater() {return (this->eyeInWater);};
 

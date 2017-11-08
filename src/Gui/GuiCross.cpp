@@ -8,7 +8,7 @@ namespace voxel
 	GuiCross::GuiCross()
 	{
 		this->sprite.setTexture(Gui::getGuiTex());
-		this->sprite.setSize(9 * 4, 9 * 4);
+		this->sprite.setSize(9 * Main::getGuiScale(), 9 * Main::getGuiScale());
 		this->sprite.setProgram(Main::getGuiShader().program);
 		this->sprite.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
 		this->sprite.setVertexesLocation(Main::getGuiShader().vertexesLocation);
@@ -21,7 +21,7 @@ namespace voxel
 	void GuiCross::draw()
 	{
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-		this->sprite.setPos((Main::getWindow()->getWidth() - 9 * 4) / 2, (Main::getWindow()->getHeight() - 9 * 4) / 2);
+		this->sprite.setPos((Main::getWindow()->getWidth() - 9 * Main::getGuiScale()) / 2, (Main::getWindow()->getHeight() - 9 * Main::getGuiScale()) / 2);
 		this->sprite.draw(Gui::getMat());
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}

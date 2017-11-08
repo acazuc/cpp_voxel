@@ -15,7 +15,7 @@ namespace voxel
 {
 
 	Player::Player(World &world)
-	: Entity(world)
+	: Entity(world, NULL)
 	, raycast(*this)
 	, oldMouseX(0)
 	, oldMouseY(0)

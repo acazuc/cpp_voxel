@@ -9,6 +9,7 @@
 #include "Entities/Slime.h"
 #include "Entities/Pig.h"
 #include "Entities/Cow.h"
+#include "World/Chunk.h"
 #include "Debug.h"
 #include "Main.h"
 #include <libformat/PNG.h>
@@ -79,39 +80,10 @@ namespace voxel
 			delete (*(textures[i]));
 	}
 
-	EntitiesManager::EntitiesManager(World &world)
-	: world(world)
+	EntitiesManager::EntitiesManager(Chunk &chunk)
+	: chunk(chunk)
 	{
-		Creeper *creeper = new Creeper(this->world);
-		creeper->setPos(glm::vec3(0, 128, 0));
-		addEntity(creeper);
-		Human *human = new Human(this->world);
-		human->setPos(glm::vec3(5, 128, 0));
-		addEntity(human);
-		Pig *pig = new Pig(this->world);
-		pig->setPos(glm::vec3(10, 128, 0));
-		addEntity(pig);
-		Pigman *pigman = new Pigman(this->world);
-		pigman->setPos(glm::vec3(15, 128, 0));
-		addEntity(pigman);
-		Pigzombie *pigzombie = new Pigzombie(this->world);
-		pigzombie->setPos(glm::vec3(20, 128, 0));
-		addEntity(pigzombie);
-		Sheep *sheep = new Sheep(this->world);
-		sheep->setPos(glm::vec3(25, 128, 0));
-		addEntity(sheep);
-		Skeleton *skeleton = new Skeleton(this->world);
-		skeleton->setPos(glm::vec3(30, 128, 0));
-		addEntity(skeleton);
-		Slime *slime = new Slime(this->world);
-		slime->setPos(glm::vec3(35, 128, 0));
-		addEntity(slime);
-		Zombie *zombie = new Zombie(this->world);
-		zombie->setPos(glm::vec3(40, 128, 0));
-		addEntity(zombie);
-		Cow *cow = new Cow(this->world);
-		cow->setPos(glm::vec3(-5, 128, 0));
-		addEntity(cow);
+		//
 	}
 
 	EntitiesManager::~EntitiesManager()
@@ -137,7 +109,45 @@ namespace voxel
 	void EntitiesManager::draw()
 	{
 		if (!this->entities.size())
-			return;
+		{
+			static int a = 0;
+			if (!a)
+			{
+				a = 1;
+				Creeper *creeper = new Creeper(this->chunk.getWorld());
+				creeper->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + .5));
+				addEntity(creeper);
+				Human *human = new Human(this->chunk.getWorld());
+				human->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + .5));
+				addEntity(human);
+				Pig *pig = new Pig(this->chunk.getWorld());
+				pig->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + .5));
+				addEntity(pig);
+				Pigman *pigman = new Pigman(this->chunk.getWorld());
+				pigman->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + .5));
+				addEntity(pigman);
+				Pigzombie *pigzombie = new Pigzombie(this->chunk.getWorld());
+				pigzombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 5.5));
+				addEntity(pigzombie);
+				Sheep *sheep = new Sheep(this->chunk.getWorld());
+				sheep->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 5.5));
+				addEntity(sheep);
+				Skeleton *skeleton = new Skeleton(this->chunk.getWorld());
+				skeleton->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + 5.5));
+				addEntity(skeleton);
+				Slime *slime = new Slime(this->chunk.getWorld());
+				slime->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + 5.5));
+				addEntity(slime);
+				Zombie *zombie = new Zombie(this->chunk.getWorld());
+				zombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 10.5));
+				addEntity(zombie);
+				Cow *cow = new Cow(this->chunk.getWorld());
+				cow->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 10.5));
+				addEntity(cow);
+			}
+			else
+				return;
+		}
 		Main::getEntityShader().program->use();
 		glDisable(GL_CULL_FACE);
 		for (uint32_t i = 0; i < this->entities.size(); ++i)

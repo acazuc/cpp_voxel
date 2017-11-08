@@ -20,6 +20,7 @@ namespace voxel
 		~WorldScreen();
 		void tick();
 		void draw();
+		void mouseScroll(ScrollEvent &event);
 		inline World *getWorld() {return (this->world);};
 
 	};

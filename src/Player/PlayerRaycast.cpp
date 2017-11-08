@@ -206,13 +206,13 @@ namespace voxel
 				Block *blockModel = Blocks::getBlock(block->getType());
 				if (!blockModel || !blockModel->isFocusable())
 					goto nextStep;
-				if (this->pos != pos)
-					doneTicks = 0;
 				float t = 0;
 				AABB aabb = blockModel->getAABB();
 				aabb.move(pos);
 				if (!aabb.intersect(org, dir, t))
 					goto nextStep;
+				if (this->pos != pos)
+					doneTicks = 0;
 				glm::vec3 interPos = org + glm::vec3(dir) * t;
 				float dst[6];
 				dst[0] = std::abs(interPos.x - aabb.getP0().x);
@@ -310,6 +310,9 @@ nextStep:
 			this->found = false;
 			float texX = 0;//blockModel->getTexTopX();
 			float texY = 0;//blockModel->getTexTopY();
+			Chunk *chunk = this->player.getWorld().getChunk(std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH);
+			if (!chunk)
+				return;
 			int32_t nb = 4;
 			for (int32_t x = 0; x < nb; ++x)
 			{
@@ -328,14 +331,14 @@ nextStep:
 						uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 						glm::vec2 uvSize(1. / 16 / 8, 1. / 16 / 8);
 						Particle *particle = new Particle(this->player.getWorld(), pos2, size, dir, uv, uvSize, light);
-						this->player.getWorld().getParticlesManager().addParticle(particle);
+						chunk->getParticlesManager().addParticle(particle);
 					}
 				}
 			}
-			DroppedBlock *tmp = new DroppedBlock(this->player.getWorld(), block->getType());
-			tmp->setPos(pos + std::rand() * 1.f / RAND_MAX);
-			tmp->setPosDst(glm::vec3(std::rand() * .2 / RAND_MAX - .1, std::rand() * .5 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1));
-			this->player.getWorld().getEntitiesManager().addEntity(tmp);
+			glm::vec3 position(pos + .4f + std::rand() * .2f / RAND_MAX);
+			glm::vec3 velocity(std::rand() * .2 / RAND_MAX - .1, .25 + std::rand() * .25 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
+			DroppedBlock *tmp = new DroppedBlock(this->player.getWorld(), chunk, block->getType(), position, velocity);
+			chunk->getEntitiesManager().addEntity(tmp);
 			chunk->destroyBlock(relative);
 		}
 	}

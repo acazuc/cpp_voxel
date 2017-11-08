@@ -43,6 +43,7 @@ namespace voxel
 	Screen *Main::screen;
 	Font *Main::font;
 	int64_t Main::chunkUpdates = 0;
+	uint8_t Main::guiScale = 1;
 	int64_t Main::fps = 0;
 	bool Main::smooth = true;
 	bool Main::ssao = true;
@@ -140,7 +141,7 @@ namespace voxel
 		delete[] (datas);
 		glActiveTexture(GL_TEXTURE0);
 		FontModel *fontModel = new FontModel("./data/minecraftia.ttf");
-		font = fontModel->derive(32);
+		font = fontModel->derive(8 * guiScale);
 		EntitiesManager::init();
 		Blocks::init();
 		Biomes::init();
@@ -151,6 +152,7 @@ namespace voxel
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;
 		TickManager::init();
+		window->setScrollCallback(&Main::mouseScroll);
 		window->setMouseMoveCallback(&Main::mouseMove);
 		window->setMouseDownCallback(&Main::mouseDown);
 		window->setMouseUpCallback(&Main::mouseUp);
@@ -197,6 +199,11 @@ namespace voxel
 		delete (screen);
 		delete (font);
 		delete (window);
+	}
+
+	void Main::mouseScroll(ScrollEvent &event)
+	{
+		screen->mouseScroll(event);
 	}
 
 	void Main::mouseMove()

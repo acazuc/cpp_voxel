@@ -8,7 +8,7 @@ namespace voxel
 	GuiInventory::GuiInventory()
 	{
 		this->background.setTexture(Gui::getInventoryTex());
-		this->background.setSize(176 * 4, 166 * 4);
+		this->background.setSize(176 * Main::getGuiScale(), 166 * Main::getGuiScale());
 		this->background.setProgram(Main::getGuiShader().program);
 		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
 		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
@@ -21,7 +21,7 @@ namespace voxel
 	void GuiInventory::draw()
 	{
 		return;
-		this->background.setPos((Main::getWindow()->getWidth() - 176 * 4) / 2, (Main::getWindow()->getHeight() - 166 * 4) / 2);
+		this->background.setPos((Main::getWindow()->getWidth() - 176 * Main::getGuiScale()) / 2, (Main::getWindow()->getHeight() - 166 * Main::getGuiScale()) / 2);
 		this->background.draw(Gui::getMat());
 	}
 

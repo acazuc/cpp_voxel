@@ -16,6 +16,7 @@
 # include <librender/Font/Font.h>
 # include <librender/Texture.h>
 
+using librender::ScrollEvent;
 using librender::KeyEvent;
 using librender::Texture;
 using librender::Window;
@@ -46,6 +47,7 @@ namespace voxel
 		static Screen *screen;
 		static Font *font;
 		static int64_t chunkUpdates;
+		static uint8_t guiScale;
 		static int64_t fps;
 		static bool smooth;
 		static bool ssao;
@@ -53,6 +55,7 @@ namespace voxel
 		static void mouseMove();
 		static void mouseDown(MouseEvent &event);
 		static void mouseUp(MouseEvent &event);
+		static void mouseScroll(ScrollEvent &event);
 		static void keyDown(KeyEvent &event);
 
 	public:
@@ -77,6 +80,7 @@ namespace voxel
 		static Font *getFont() {return (font);};
 		static void setChunkUpdates(int64_t chunkUpdates) {Main::chunkUpdates = chunkUpdates;};
 		static int64_t getChunkUpdates() {return (chunkUpdates);};
+		static uint8_t getGuiScale() {return (guiScale);};
 		static int64_t getFps() {return (fps);};
 		static bool getSmooth() {return (smooth);};
 		static bool getSsao() {return (ssao);};

@@ -120,6 +120,7 @@ namespace voxel
 
 	void BodyPart::draw(World *world, glm::mat4 model)
 	{
+		Main::getEntityShader().program->use();
 		model = glm::translate(model, this->pos);
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
 		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));

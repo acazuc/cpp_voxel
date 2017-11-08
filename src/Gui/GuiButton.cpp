@@ -24,7 +24,7 @@ namespace voxel
 		this->background.setTexPos(0, .1796);
 		this->background.setTexSize(.7812, .0781);
 		this->text.setText(text);
-		this->text.setPos(this->x + (this->width * 4 - this->text.getWidth()) / 2, this->y + (this->height * 4 - this->text.getLineHeight()) / 2);
+		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
 
 	void GuiButton::draw(glm::mat4 &viewProj)
@@ -44,7 +44,7 @@ namespace voxel
 			this->text.setColor('f');
 			this->background.setTexY(.2578);
 		}
-		this->background.setSize(this->width * 4, this->height * 4);
+		this->background.setSize(this->width * Main::getGuiScale(), this->height * Main::getGuiScale());
 		this->background.draw(viewProj);
 		this->text.draw(viewProj);
 	}
@@ -56,14 +56,16 @@ namespace voxel
 			this->hover = false;
 			return;
 		}
-		if (Main::getWindow()->getMouseX() >= this->x && Main::getWindow()->getMouseX() <= this->x + this->width * 4
-				&& Main::getWindow()->getMouseY() >= this->y && Main::getWindow()->getMouseY() <= this->y + this->height * 4)
+		if (Main::getWindow()->getMouseX() >= this->x && Main::getWindow()->getMouseX() <= this->x + this->width * Main::getGuiScale()
+				&& Main::getWindow()->getMouseY() >= this->y && Main::getWindow()->getMouseY() <= this->y + this->height * Main::getGuiScale())
 		{
 			this->hover = true;
 			alreadyHovered = true;
 		}
 		else
+		{
 			this->hover = false;
+		}
 	}
 
 	bool GuiButton::mouseDown(MouseEvent &event)
@@ -80,14 +82,14 @@ namespace voxel
 		this->x = x;
 		this->y = y;
 		this->background.setPos(this->x, this->y);
-		this->text.setPos(this->x + (this->width * 4 - this->text.getWidth()) / 2, this->y + (this->height * 4 - this->text.getLineHeight()) / 2);
+		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
 
 	void GuiButton::setSize(int32_t width, int32_t height)
 	{
 		this->width = width;
 		this->height = height;
-		this->text.setPos(this->x + (this->width * 4 - this->text.getWidth()) / 2, this->y + (this->height * 4 - this->text.getLineHeight()) / 2);
+		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
 
 	void GuiButton::setDisabled(bool disabled)

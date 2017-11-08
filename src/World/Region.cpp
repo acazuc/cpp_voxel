@@ -29,6 +29,15 @@ namespace voxel
 		}
 	}
 
+	void Region::drawEntities()
+	{
+		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		{
+			if (this->chunks[i])
+				this->chunks[i]->drawEntities();
+		}
+	}
+
 	void Region::draw(uint8_t layer)
 	{
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)

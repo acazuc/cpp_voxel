@@ -8,8 +8,9 @@ extern int64_t nanotime;
 namespace voxel
 {
 
-	Entity::Entity(World &world)
+	Entity::Entity(World &world, Chunk *chunk)
 	: world(world)
+	, chunk(chunk)
 	, aabb()
 	, gravity(.08)
 	, isOnFloor(false)
@@ -26,6 +27,14 @@ namespace voxel
 
 	void Entity::tick()
 	{
+		if (this != &this->world.getPlayer() && !this->chunk)
+		{
+			if (!(this->chunk = this->world.getChunk(std::floor(this->pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(this->pos.z / CHUNK_WIDTH) * CHUNK_WIDTH)))
+			{
+				this->deleted = true;
+				return;
+			}
+		}
 		this->posOrg = this->pos;
 		if (!this->flying)
 			this->posDst.y -= this->gravity;
@@ -111,7 +120,18 @@ namespace voxel
 		}
 		this->isOnFloor = org.y < 0 && dir.y != org.y;
 		if (this->pos.y < -100)
+		{
 			this->deleted = true;
+			return;
+		}
+		if (dir.x != org.x || dir.y != org.y || dir.z != org.z)
+		{
+			if (!(this->chunk = this->world.getChunk(std::floor(this->pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(this->pos.z / CHUNK_WIDTH) * CHUNK_WIDTH)))
+			{
+				this->deleted = true;
+				return;
+			}
+		}
 	}
 
 	void Entity::setSize(glm::vec3 size)

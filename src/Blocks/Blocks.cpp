@@ -1,6 +1,8 @@
 #include "Blocks.h"
+#include "./BlockRedstone.h"
 #include "./BlockSapling.h"
 #include "./BlockBase.h"
+#include "./BlockRail.h"
 #include <cstring>
 
 namespace voxel
@@ -63,6 +65,10 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[24])->setTexTop(0, 11. / 16)->setTexSide(0, 12. / 16)->setTexBot(0, 13. / 16);
 		blocks[25] = (new BlockBase(25))->setDefaultName("noteblock")->setHardness(.8);
 		reinterpret_cast<BlockBase*>(blocks[25])->setTex(10. / 16, 4. / 16);
+		blocks[26] = (new BlockRail(26))->setDefaultName("golden_rail")->setHardness(.7)->setTransparent(true)->setOpacity(0);
+		reinterpret_cast<BlockRail*>(blocks[26])->setTex(0, 8. / 16);
+		blocks[27] = (new BlockRail(27))->setDefaultName("detector_rail")->setHardness(.7)->setTransparent(true)->setOpacity(0);
+		reinterpret_cast<BlockRail*>(blocks[27])->setTex(0, 8. / 16);
 		//
 		blocks[37] = (new BlockSapling(37))->setDefaultName("yellow_flower")->setHardness(0)->setFullCube(false)->setOpacity(0)->setSolid(false)->setLayer(1)->setTransparent(true)->setReplaceable(true);
 		reinterpret_cast<BlockSapling*>(blocks[37])->setTex(13. / 16, 0);
@@ -92,8 +98,9 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[52])->setTex(1. / 16, 4. / 16);
 		//
 		blocks[54] = (new BlockBase(54))->setDefaultName("chest")->setHardness(2.5);
-		reinterpret_cast<BlockBase*>(blocks[54])->setTex(11. / 16, 1. / 16);
-		//
+		reinterpret_cast<BlockBase*>(blocks[54])->setTex(10. / 16, 1. / 16)->setTexFront(11. / 16, 1. / 16)->setTexTop(9. / 16, 1. / 16)->setTexBot(9. / 16, 1. / 16);
+		blocks[55] = (new BlockRedstone(55))->setDefaultName("redstone")->setHardness(0)->setTransparent(true)->setOpacity(0);
+		reinterpret_cast<BlockRedstone*>(blocks[55])->setTex(4. / 16, 10. / 16);
 		blocks[56] = (new BlockBase(56))->setDefaultName("diamond_ore")->setHardness(3);
 		reinterpret_cast<BlockBase*>(blocks[56])->setTex(2. / 16, 3. / 16);
 		blocks[57] = (new BlockBase(57))->setDefaultName("diamond_block")->setHardness(5);

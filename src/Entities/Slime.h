@@ -7,8 +7,6 @@
 namespace voxel
 {
 
-	class World;
-
 	class Slime : public Entity
 	{
 

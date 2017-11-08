@@ -15,7 +15,7 @@ namespace voxel
 
 	public:
 		BlockSapling(uint8_t id);
-		virtual void draw(glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
+		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
 		BlockSapling *setTex(float texX, float texY);
 		BlockSapling *setTexX(float texX);
 		BlockSapling *setTexY(float texY);

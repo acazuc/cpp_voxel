@@ -57,7 +57,7 @@ namespace voxel
 		color.z = ((biome & 0x3f) >> 4) / 3.;*/
 		float lights[24];
 		smoothLights(lights, visibleFaces, lightsLevels, blocksTransparent, blocksLights);
-		blockModel->draw(pos, tessellator, visibleFaces, lights);
+		blockModel->draw(chunk, pos, tessellator, visibleFaces, lights);
 	}
 
 	bool ChunkBlock::shouldRenderFaceNear(ChunkBlock *block)

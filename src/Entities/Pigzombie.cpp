@@ -45,7 +45,7 @@ namespace voxel
 	}
 
 	Pigzombie::Pigzombie(World &world)
-	: Entity(world)
+	: Entity(world, NULL)
 	{
 		setSize(glm::vec3(.6, 1.8, .6));
 	}
@@ -62,7 +62,7 @@ namespace voxel
 		model = glm::scale(model, glm::vec3(.06, .06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
 		glm::vec4 col(1, 1, 1, 1);
-		col *= ChunkBlock::getLightValue(15);
+		col *= ChunkBlock::getLightValue(this->world.getLight(this->pos));
 		col.w = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);
 		float time = nanotime / 1000000000.;

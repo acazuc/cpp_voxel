@@ -16,13 +16,13 @@ namespace voxel
 		for (uint8_t i = 0; i < 10; ++i)
 		{
 			this->spriteBatch.addEntry(&this->heartsBackgrounds[i]);
-			this->heartsBackgrounds[i].setPos(8 * 4 * i, 0);
-			this->heartsBackgrounds[i].setSize(9 * 4, 9 * 4);
+			this->heartsBackgrounds[i].setPos(8 * Main::getGuiScale() * i, 0);
+			this->heartsBackgrounds[i].setSize(9 * Main::getGuiScale(), 9 * Main::getGuiScale());
 			this->heartsBackgrounds[i].setTexSize(.0351, .0351);
 			this->heartsBackgrounds[i].setTexPos(.0625, 0);
 			this->spriteBatch.addEntry(&this->hearts[i]);
-			this->hearts[i].setPos(8 * 4 * i, 0);
-			this->hearts[i].setSize(9 * 4, 9 * 4);
+			this->hearts[i].setPos(8 * Main::getGuiScale() * i, 0);
+			this->hearts[i].setSize(9 * Main::getGuiScale(), 9 * Main::getGuiScale());
 			this->hearts[i].setTexSize(.0351, .0351);
 			this->hearts[i].setTexPos(.2031, 0);
 		}
@@ -30,7 +30,7 @@ namespace voxel
 
 	void GuiHearts::draw()
 	{
-		this->spriteBatch.setPos((Main::getWindow()->getWidth() - 182 * 4) / 2, Main::getWindow()->getHeight() - 22 * 4 - 1 * 4 - 9 * 4);
+		this->spriteBatch.setPos((Main::getWindow()->getWidth() - 182 * Main::getGuiScale()) / 2, Main::getWindow()->getHeight() - 22 * Main::getGuiScale() - 1 * Main::getGuiScale() - 9 * Main::getGuiScale());
 		this->spriteBatch.draw(Gui::getMat());
 	}
 

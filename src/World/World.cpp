@@ -10,9 +10,7 @@ namespace voxel
 {
 
 	World::World()
-	: particlesManager(*this)
-	, entitiesManager(*this)
-	, chunkUpdater(this)
+	: chunkUpdater(this)
 	, chunkLoader(this)
 	, biomeTempNoise(16, .70, 1334538)
 	, biomeRainNoise(16, .70, 1222222339)
@@ -25,8 +23,6 @@ namespace voxel
 		this->random.seed(1337);
 		this->chunkUpdater.start();
 		this->chunkLoader.start();
-		DroppedBlock *tmp = new DroppedBlock(*this, 2);
-		this->entitiesManager.addEntity(tmp);
 	}
 
 	World::~World()
@@ -38,19 +34,19 @@ namespace voxel
 			this->regions[i]->moveGLBuffersToWorld();
 			delete (this->regions[i]);
 		}
-		clearBuffersToDelete();
+		clearVBOToDelete();
+		clearVAOToDelete();
 	}
 
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		checkEmptyRegions();
-		clearBuffersToDelete();
+		clearVBOToDelete();
+		clearVAOToDelete();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->tick();
 		this->player.tick();
-		this->entitiesManager.tick();
-		this->particlesManager.tick();
 		this->clouds.tick();
 	}
 
@@ -75,11 +71,18 @@ nextRegion:
 		}
 	}
 
-	void World::clearBuffersToDelete()
+	void World::clearVBOToDelete()
 	{
-		for (uint32_t i = 0; i < this->buffersToDelete.size(); ++i)
-			delete (this->buffersToDelete[i]);
-		this->buffersToDelete.clear();
+		for (uint32_t i = 0; i < this->VBOToDelete.size(); ++i)
+			delete (this->VBOToDelete[i]);
+		this->VBOToDelete.clear();
+	}
+
+	void World::clearVAOToDelete()
+	{
+		for (uint32_t i = 0; i < this->VAOToDelete.size(); ++i)
+			delete (this->VAOToDelete[i]);
+		this->VAOToDelete.clear();
 	}
 
 	void World::draw()
@@ -94,26 +97,45 @@ nextRegion:
 		if (this->player.isEyeInWater())
 		{
 			glm::vec4 color(0, 0, .05, 1);
+			Main::getBlocksShader().program->use();
 			Main::getBlocksShader().fogColorLocation->setVec4f(color);
 			Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+			Main::getEntityShader().program->use();
+			Main::getEntityShader().fogColorLocation->setVec4f(color);
+			Main::getEntityShader().fogDistanceLocation->setVec1f(0);
+			Main::getEntityShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+			Main::getDroppedShader().program->use();
+			Main::getDroppedShader().fogColorLocation->setVec4f(color);
+			Main::getDroppedShader().fogDistanceLocation->setVec1f(0);
+			Main::getDroppedShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
 		}
 		else
 		{
+			Main::getBlocksShader().program->use();
 			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
 			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 140);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
+			Main::getEntityShader().program->use();
+			Main::getEntityShader().fogColorLocation->setVec4f(Main::getSkyColor());
+			Main::getEntityShader().fogDistanceLocation->setVec1f(16 * 140);
+			Main::getEntityShader().fogDensityLocation->setVec1f(.1);
+			Main::getDroppedShader().program->use();
+			Main::getDroppedShader().fogColorLocation->setVec4f(Main::getSkyColor());
+			Main::getDroppedShader().fogDistanceLocation->setVec1f(16 * 140);
+			Main::getDroppedShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();
+		Main::getBlocksShader().program->use();
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(0);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(1);
 		this->player.draw();
-		this->particlesManager.draw();
-		this->entitiesManager.draw();
 		this->skybox.draw();
 		this->clouds.draw();
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
+			(*iter)->drawEntities();
 		Main::getBlocksShader().program->use();
 		Main::getTerrain()->bind();
 		glDisable(GL_CULL_FACE);

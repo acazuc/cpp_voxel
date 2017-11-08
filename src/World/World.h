@@ -1,8 +1,6 @@
 #ifndef WORLD_H
 # define WORLD_H
 
-# include "Particles/ParticlesManager.h"
-# include "Entities/EntitiesManager.h"
 # include "Noise/SimplexNoise.h"
 # include "Player/Player.h"
 # include "ChunkUpdater.h"
@@ -29,13 +27,12 @@ namespace voxel
 	{
 
 	private:
-		std::vector<VertexBuffer*> buffersToDelete;
+		std::vector<VertexBuffer*> VBOToDelete;
+		std::vector<VertexArray*> VAOToDelete;
 		std::recursive_mutex chunksMutex;
 		std::vector<Region*> regions;
 		std::list<Chunk*> chunksToUpdate;
 		std::minstd_rand random;
-		ParticlesManager particlesManager;
-		EntitiesManager entitiesManager;
 		ChunkUpdater chunkUpdater;
 		ChunkLoader chunkLoader;
 		SimplexNoise biomeTempNoise;
@@ -47,7 +44,8 @@ namespace voxel
 		Skybox skybox;
 		int64_t lastRegionCheck;
 		void checkEmptyRegions();
-		void clearBuffersToDelete();
+		void clearVBOToDelete();
+		void clearVAOToDelete();
 
 	public:
 		World();
@@ -62,13 +60,12 @@ namespace voxel
 		Chunk *getChunk(int32_t x, int32_t z);
 		ChunkBlock *getBlock(glm::vec3 pos);
 		uint8_t getLight(glm::vec3 pos);
-		inline std::vector<VertexBuffer*> &getBuffersToDelete() {return (this->buffersToDelete);};
+		inline std::vector<VertexBuffer*> &getVBOToDelete() {return (this->VBOToDelete);};
+		inline std::vector<VertexArray*> &getVAOToDelete() {return (this->VAOToDelete);};
 		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
 		inline std::vector<Region*> &getRegions() {return (this->regions);};
 		inline std::list<Chunk*> &getChunksToUpdate() {return (this->chunksToUpdate);};
 		inline std::minstd_rand &getRandom() {return (this->random);};
-		inline ParticlesManager &getParticlesManager() {return (this->particlesManager);};
-		inline EntitiesManager &getEntitiesManager() {return (this->entitiesManager);};
 		inline SimplexNoise &getBiomeTempNoise() {return (this->biomeTempNoise);};
 		inline SimplexNoise &getBiomeRainNoise() {return (this->biomeRainNoise);};
 		inline SimplexNoise &getNoise() {return (this->noise);};

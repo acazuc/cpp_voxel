@@ -48,10 +48,10 @@ namespace voxel
 		}
 		this->fpsLabel.draw(Gui::getMat());
 		glm::vec3 pos = this->worldScreen.getWorld()->getPlayer().getPos();
-		this->posLabel.setPos(0, 40);
+		this->posLabel.setPos(0, 10 * Main::getGuiScale());
 		this->posLabel.setText("x: " + std::to_string(pos.x) + "\ny: " + std::to_string(pos.y) + "\nz: " + std::to_string(pos.z));
 		this->posLabel.draw(Gui::getMat());
-		this->focusedLabel.setPos(0, 156);
+		this->focusedLabel.setPos(0, 39 * Main::getGuiScale());
 		ChunkBlock *block = this->worldScreen.getWorld()->getPlayer().getRaycast().isFound() ? this->worldScreen.getWorld()->getBlock(this->worldScreen.getWorld()->getPlayer().getRaycast().getPos()) : NULL;
 		std::string focusedName = block && Blocks::getBlock(block->getType()) ? Blocks::getBlock(block->getType())->getDefaultName() : "None";
 		this->focusedLabel.setText("focused: " + focusedName);

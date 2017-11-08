@@ -5,7 +5,7 @@ namespace voxel
 {
 
 	Particle::Particle(World &world, glm::vec3 pos, glm::vec2 size, glm::vec3 vel, glm::vec2 uv, glm::vec2 uvSize, uint8_t light)
-	: Entity(world)
+	: Entity(world, NULL)
 	, uvSize(uvSize)
 	, size(size)
 	, uv(uv)

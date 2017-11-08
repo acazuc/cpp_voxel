@@ -9,11 +9,15 @@
 #include "Main.h"
 #include <cstring>
 
+extern int64_t nanotime;
+
 namespace voxel
 {
 
 	Chunk::Chunk(World &world, int32_t x, int32_t z)
-	: world(world)
+	: particlesManager(*this)
+	, entitiesManager(*this)
+	, world(world)
 	, aabb(glm::vec3(x, 0, z), glm::vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
 	, x(x)
 	, z(z)
@@ -69,13 +73,15 @@ namespace voxel
 		{
 			ChunkLayer &layer = this->layers[i];
 			if (layer.texCoordsBuffer)
-				this->world.getBuffersToDelete().push_back(layer.texCoordsBuffer);
+				this->world.getVBOToDelete().push_back(layer.texCoordsBuffer);
 			if (layer.vertexesBuffer)
-				this->world.getBuffersToDelete().push_back(layer.vertexesBuffer);
+				this->world.getVBOToDelete().push_back(layer.vertexesBuffer);
 			if (layer.indicesBuffer)
-				this->world.getBuffersToDelete().push_back(layer.indicesBuffer);
+				this->world.getVBOToDelete().push_back(layer.indicesBuffer);
 			if (layer.colorsBuffer)
-				this->world.getBuffersToDelete().push_back(layer.colorsBuffer);
+				this->world.getVBOToDelete().push_back(layer.colorsBuffer);
+			if (layer.vertexArray)
+				this->world.getVAOToDelete().push_back(layer.vertexArray);
 		}
 	}
 
@@ -139,7 +145,16 @@ namespace voxel
 
 	void Chunk::tick()
 	{
-		//
+		this->entitiesManager.tick();
+		this->particlesManager.tick();
+	}
+
+	void Chunk::drawEntities()
+	{
+		if (!this->generated || !this->visible)
+			return;
+		this->particlesManager.draw();
+		this->entitiesManager.draw();
 	}
 
 	void Chunk::draw(uint8_t layer)
@@ -157,11 +172,22 @@ namespace voxel
 		}
 		if (!this->layers[layer].verticesNb)
 			return;
+		//this->layers[layer].vertexArray->bind();
 		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
 		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
 		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
 		this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
+		/*glm::mat4 mvp = this->world.getPlayer().getViewProjMat();
+		Main::getBlocksShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
+		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
+		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
+		glm::vec4 color(1);
+		Main::getBlocksShader().fogColorLocation->setVec4f(color);
+		Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
+		Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->world.getPlayer().getEyeLight() / 15.));
+		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());*/
 		glDrawElements(GL_TRIANGLES, this->layers[layer].verticesNb, GL_UNSIGNED_INT, NULL);
+		//this->layers[layer].vertexArray->unbind();
 	}
 
 	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
@@ -359,6 +385,10 @@ endNearTop:
 		this->mustUpdateBuffers = false;
 		for (uint8_t layer = 0; layer < 3; ++layer)
 		{
+			//if (!this->layers[layer].vertexArray)
+			//	this->layers[layer].vertexArray = new VertexArray();
+			//this->layers[layer].vertexArray->bind();
+			Main::getBlocksShader().program->use();
 			if (!this->layers[layer].texCoordsBuffer)
 				this->layers[layer].texCoordsBuffer = new VertexBuffer();
 			if (!this->layers[layer].vertexesBuffer)
@@ -380,6 +410,11 @@ endNearTop:
 			this->layers[layer].tessellator.vertexes.swap(emptyVertexes);
 			this->layers[layer].tessellator.colors.swap(emptyColors);
 			this->layers[layer].tessellator.indices.swap(emptyIndices);
+			/*Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
+			Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
+			Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
+			this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
+			this->layers[layer].vertexArray->unbind();*/
 		}
 	}
 

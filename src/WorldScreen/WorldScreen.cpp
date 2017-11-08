@@ -28,4 +28,9 @@ namespace voxel
 		this->gui.draw();
 	}
 
+	void WorldScreen::mouseScroll(ScrollEvent &event)
+	{
+		(void)event;
+	}
+
 }

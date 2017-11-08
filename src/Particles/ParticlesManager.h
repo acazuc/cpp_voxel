@@ -9,7 +9,7 @@ using librender::VertexBuffer;
 namespace voxel
 {
 
-	class World;
+	class Chunk;
 
 	class ParticlesManager
 	{
@@ -20,14 +20,15 @@ namespace voxel
 		std::vector<glm::vec3> vertexes;
 		std::vector<glm::vec3> colors;
 		std::vector<GLuint> indices;
-		VertexBuffer texCoordsBuffer;
-		VertexBuffer vertexesBuffer;
-		VertexBuffer indicesBuffer;
-		VertexBuffer colorsBuffer;
-		World &world;
+		VertexBuffer *texCoordsBuffer;
+		VertexBuffer *vertexesBuffer;
+		VertexBuffer *indicesBuffer;
+		VertexBuffer *colorsBuffer;
+		Chunk &chunk;
+		bool initialized;
 
 	public:
-		ParticlesManager(World &world);
+		ParticlesManager(Chunk &chunk);
 		~ParticlesManager();
 		void tick();
 		void draw();

@@ -13,16 +13,16 @@ namespace voxel
 		setTex(0, 0);
 	}
 
-	void BlockBase::draw(glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
+	void BlockBase::draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
 	{
+		(void)chunk;
 		glm::vec3 color(1);
 		std::vector<glm::vec2> &texCoords = tessellator.texCoords;
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
 		std::vector<glm::vec3> &colors = tessellator.colors;
 		std::vector<GLuint> &indices = tessellator.indices;
 		glm::vec3 org(pos);
-		glm::vec3 dst(pos);
-		dst++;
+		glm::vec3 dst(pos + 1.f);
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			glm::vec2 texOrg(this->texFrontX, this->texFrontY);

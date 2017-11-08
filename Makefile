@@ -38,6 +38,8 @@ SRCS_NAME = Main.cpp \
 	    Blocks/Block.cpp \
 	    Blocks/BlockBase.cpp \
 	    Blocks/BlockSapling.cpp \
+	    Blocks/BlockRail.cpp \
+	    Blocks/BlockRedstone.cpp \
 	    Shaders/BlocksShader.cpp \
 	    Shaders/CloudsShader.cpp \
 	    Shaders/SkyboxShader.cpp \

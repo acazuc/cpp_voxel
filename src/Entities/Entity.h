@@ -8,6 +8,7 @@ namespace voxel
 {
 
 	class World;
+	class Chunk;
 
 	class Entity
 	{
@@ -20,6 +21,7 @@ namespace voxel
 		glm::vec3 pos;
 		glm::vec3 rot;
 		World &world;
+		Chunk *chunk;
 		AABB aabb;
 		float gravity;
 		bool isOnFloor;
@@ -29,7 +31,7 @@ namespace voxel
 		void updateGravitySliperness();
 
 	public:
-		Entity(World &world);
+		Entity(World &world, Chunk *chunk);
 		virtual ~Entity();
 		virtual void tick();
 		virtual void draw();
@@ -41,6 +43,7 @@ namespace voxel
 		inline void setPosDst(glm::vec3 posDst) {this->posDst = posDst;};
 		inline glm::vec3 &getPos() {return (this->pos);};
 		inline glm::vec3 &getRot() {return (this->rot);};
+		inline World &getWorld() {return (this->world);};
 		inline AABB &getAABB() {return (this->aabb);};
 		inline bool isDeleted() {return (this->deleted);};
 		inline bool isInWater() {return (this->inWater);};

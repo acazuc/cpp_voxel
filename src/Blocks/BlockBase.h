@@ -25,7 +25,7 @@ namespace voxel
 
 	public:
 		BlockBase(uint8_t id);
-		virtual void draw(glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
+		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
 		BlockBase *setTexSide(float texSideX, float texSideY);
 		BlockBase *setTexSideX(float texSideX);
 		BlockBase *setTexSideY(float texSideY);

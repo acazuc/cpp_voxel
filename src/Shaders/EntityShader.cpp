@@ -15,6 +15,7 @@ namespace voxel
 	EntityShader::~EntityShader()
 	{
 		delete (this->fogDistanceLocation);
+		delete (this->fogDensityLocation);
 		delete (this->texCoordsLocation);
 		delete (this->vertexesLocation);
 		delete (this->fogColorLocation);
@@ -41,6 +42,7 @@ namespace voxel
 		this->program->attachShader(this->fShad);
 		this->program->link();
 		this->fogDistanceLocation = this->program->getUniformLocation("fogDistance");
+		this->fogDensityLocation = this->program->getUniformLocation("fogDensity");
 		this->texCoordsLocation = this->program->getAttribLocation("vertexUV");
 		this->texCoordsLocation->setVertexAttribArray(true);
 		this->vertexesLocation = this->program->getAttribLocation("vertexPosition");

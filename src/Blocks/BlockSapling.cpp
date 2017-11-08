@@ -1,6 +1,7 @@
 #include "BlockSapling.h"
 #include "World/ChunkTessellator.h"
 #include "World/ChunkBlock.h"
+#include "World/Chunk.h"
 
 namespace voxel
 {
@@ -13,10 +14,11 @@ namespace voxel
 		setAABB(AABB(glm::vec3(.1, 0, .1), glm::vec3(.9, .8, .9)));
 	}
 	
-	void BlockSapling::draw(glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
+	void BlockSapling::draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
 	{
 		(void)visibleFaces;
-		glm::vec3 color(1);
+		(void)lights;
+		glm::vec3 color(ChunkBlock::getLightValue(chunk->getLight(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ()))));
 		float diff = (1 - 0.707) / 2 * BLOCK_SIZE;
 		std::vector<glm::vec2> &texCoords = tessellator.texCoords;
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;
@@ -30,16 +32,16 @@ namespace voxel
 		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(org.x, org.y, org.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, org.y, dst.z));
 		texCoords.push_back(glm::vec2(texDst.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, dst.y, dst.z));
 		texCoords.push_back(glm::vec2(texDst.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, dst.y, org.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		indices.push_back(currentIndice + 0);
 		indices.push_back(currentIndice + 1);
 		indices.push_back(currentIndice + 3);
@@ -49,16 +51,16 @@ namespace voxel
 		currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(org.x, org.y, org.z));
 		texCoords.push_back(glm::vec2(texDst.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, org.y, dst.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, dst.y, dst.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, dst.y, org.z));
 		texCoords.push_back(glm::vec2(texDst.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		indices.push_back(currentIndice + 0);
 		indices.push_back(currentIndice + 3);
 		indices.push_back(currentIndice + 1);
@@ -68,16 +70,16 @@ namespace voxel
 		currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(dst.x, org.y, org.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, org.y, dst.z));
 		texCoords.push_back(glm::vec2(texDst.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, dst.y, dst.z));
 		texCoords.push_back(glm::vec2(texDst.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, dst.y, org.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		indices.push_back(currentIndice + 0);
 		indices.push_back(currentIndice + 1);
 		indices.push_back(currentIndice + 3);
@@ -87,16 +89,16 @@ namespace voxel
 		currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec3(dst.x, org.y, org.z));
 		texCoords.push_back(glm::vec2(texDst.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, org.y, dst.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texDst.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(org.x, dst.y, dst.z));
 		texCoords.push_back(glm::vec2(texOrg.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		vertexes.push_back(glm::vec3(dst.x, dst.y, org.z));
 		texCoords.push_back(glm::vec2(texDst.x, texOrg.y));
-		colors.push_back(color * lights[F1P1]);
+		colors.push_back(color);
 		indices.push_back(currentIndice + 0);
 		indices.push_back(currentIndice + 3);
 		indices.push_back(currentIndice + 1);

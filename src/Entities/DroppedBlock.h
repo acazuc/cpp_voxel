@@ -17,14 +17,13 @@ namespace voxel
 		VertexBuffer vertexesBuffer;
 		VertexBuffer indicesBuffer;
 		VertexBuffer colorsBuffer;
-		World &world;
 		uint64_t vertexNumber;
 		int64_t created;
 		uint8_t number;
 		uint8_t type;
 
 	public:
-		DroppedBlock(World &world, uint8_t type);
+		DroppedBlock(World &world, Chunk *chunk, uint8_t type, glm::vec3 pos, glm::vec3 vel);
 		void draw();
 
 	};

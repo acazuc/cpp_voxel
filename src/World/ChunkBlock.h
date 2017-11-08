@@ -17,12 +17,12 @@
 # define BLOCK_FACE_DOWN	0x20
 # define BLOCK_SIZE 1
 
-# define FRONT_COLOR_FACTOR .95f
-# define BACK_COLOR_FACTOR .95f
-# define LEFT_COLOR_FACTOR .85f
-# define RIGHT_COLOR_FACTOR .85f
-# define UP_COLOR_FACTOR 1.f
-# define DOWN_COLOR_FACTOR .75f
+# define FRONT_COLOR_FACTOR .787f
+# define BACK_COLOR_FACTOR .787f
+# define LEFT_COLOR_FACTOR .59f
+# define RIGHT_COLOR_FACTOR .59f
+# define UP_COLOR_FACTOR .985f
+# define DOWN_COLOR_FACTOR .496f
 
 # define F1P1 0
 # define F1P2 1

@@ -6,8 +6,9 @@
 namespace voxel
 {
 
-	ParticlesManager::ParticlesManager(World &world)
-	: world(world)
+	ParticlesManager::ParticlesManager(Chunk &chunk)
+	: chunk(chunk)
+	, initialized(false)
 	{
 		//Empty
 	}
@@ -36,30 +37,38 @@ namespace voxel
 	{
 		if (!this->particles.size())
 			return;
+		if (!this->initialized)
+		{
+			this->texCoordsBuffer = new VertexBuffer();
+			this->vertexesBuffer = new VertexBuffer();
+			this->indicesBuffer = new VertexBuffer();
+			this->colorsBuffer = new VertexBuffer();
+			this->initialized = true;
+		}
 		this->texCoords.clear();
 		this->vertexes.clear();
 		this->indices.clear();
 		this->colors.clear();
 		glm::mat4 playerMat(1);
-		playerMat = glm::rotate(playerMat, glm::vec2(-this->world.getPlayer().getRot().z / 180. * M_PI, 0).x, glm::vec3(0, 0, 1));
-		playerMat = glm::rotate(playerMat, glm::vec2(-this->world.getPlayer().getRot().y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
-		playerMat = glm::rotate(playerMat, glm::vec2(-this->world.getPlayer().getRot().x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
+		playerMat = glm::rotate(playerMat, glm::vec2(-this->chunk.getWorld().getPlayer().getRot().z / 180. * M_PI, 0).x, glm::vec3(0, 0, 1));
+		playerMat = glm::rotate(playerMat, glm::vec2(-this->chunk.getWorld().getPlayer().getRot().y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
+		playerMat = glm::rotate(playerMat, glm::vec2(-this->chunk.getWorld().getPlayer().getRot().x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
 		for (uint32_t i = 0; i < this->particles.size(); ++i)
 			this->particles[i]->draw(vertexes, colors, texCoords, indices, playerMat);
-		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords.data(), texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes.data(), vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->indicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
-		this->colorsBuffer.setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->texCoordsBuffer->setData(GL_ARRAY_BUFFER, texCoords.data(), texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+		this->vertexesBuffer->setData(GL_ARRAY_BUFFER, vertexes.data(), vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
+		this->colorsBuffer->setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		Main::getParticlesShader().program->use();
-		glm::mat4 mvp = this->world.getPlayer().getProjMat() * this->world.getPlayer().getViewMat();
-		Main::getParticlesShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
+		glm::mat4 mvp = this->chunk.getWorld().getPlayer().getProjMat() * this->chunk.getWorld().getPlayer().getViewMat();
+		Main::getParticlesShader().vLocation->setMat4f(this->chunk.getWorld().getPlayer().getViewMat());
 		Main::getParticlesShader().mvpLocation->setMat4f(mvp);
 		glm::mat4 model(1);
 		Main::getParticlesShader().mLocation->setMat4f(model);
-		Main::getParticlesShader().texCoordsLocation->setVertexBuffer(this->texCoordsBuffer);
-		Main::getParticlesShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
-		Main::getParticlesShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
-		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		Main::getParticlesShader().texCoordsLocation->setVertexBuffer(*this->texCoordsBuffer);
+		Main::getParticlesShader().vertexesLocation->setVertexBuffer(*this->vertexesBuffer);
+		Main::getParticlesShader().colorsLocation->setVertexBuffer(*this->colorsBuffer);
+		this->indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
 		Main::getTerrain()->bind();
 		glDisable(GL_CULL_FACE);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);

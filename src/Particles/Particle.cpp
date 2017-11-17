@@ -17,7 +17,7 @@ namespace voxel
 		this->posDst = vel;
 		this->duration = 4 / (rand() * .9 / RAND_MAX + .1);
 		float lightVal = ChunkBlock::getLightValue(light);
-		this->light = glm::vec3(lightVal, lightVal, lightVal);
+		this->light = glm::vec3(lightVal);
 	}
 
 	void Particle::tick()

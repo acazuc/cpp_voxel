@@ -22,6 +22,7 @@ namespace voxel
 	public:
 		Region(World &world, int32_t x, int32_t z);
 		~Region();
+		void save();
 		void moveGLBuffersToWorld();
 		void tick();
 		void drawEntities();

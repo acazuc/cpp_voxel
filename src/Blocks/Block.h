@@ -22,8 +22,6 @@ namespace voxel
 		uint8_t light;
 		uint8_t layer;
 		uint8_t id;
-		float destroyTexX;
-		float destroyTexY;
 		float resistance;
 		float hardness;
 		bool renderSameNeighbor;
@@ -47,10 +45,8 @@ namespace voxel
 		inline uint8_t getOpacity() {return (this->opacity);};
 		Block *setLight(uint8_t light);
 		inline uint8_t getLight() {return (this->light);};
-		Block *setDestroyTexX(float destroyTexX);
-		inline float getDestroyTexX() {return (this->destroyTexX);};
-		Block *setDestroyTexY(float destroyTexY);
-		inline float getDestroyTexY() {return (this->destroyTexY);};
+		inline virtual float getDestroyTexX() {return (0);};
+		inline virtual float getDestroyTexY() {return (0);};
 		Block *setResistance(float resistance);
 		inline float getResistance() {return (this->resistance);};
 		Block *setHardness(float hardness);

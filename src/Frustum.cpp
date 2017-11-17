@@ -25,7 +25,7 @@ namespace voxel
 		glm::normalize(this->data[2]);
 		this->data[3][0] = clip[3] - clip[1];
 		this->data[3][1] = clip[7] - clip[5];
-		this->data[3][2] = clip[11] - clip[ 9];
+		this->data[3][2] = clip[11] - clip[9];
 		this->data[3][3] = clip[15] - clip[13];
 		glm::normalize(this->data[3]);
 		this->data[4][0] = clip[3] - clip[2];

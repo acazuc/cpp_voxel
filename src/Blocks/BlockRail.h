@@ -16,6 +16,8 @@ namespace voxel
 	public:
 		BlockRail(uint8_t id);
 		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
+		virtual float getDestroyTexX();
+		virtual float getDestroyTexY();
 		BlockRail *setTex(float texX, float texY);
 		BlockRail *setTexX(float texX);
 		BlockRail *setTexY(float texY);

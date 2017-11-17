@@ -49,6 +49,16 @@ namespace voxel
 		indices.push_back(currentIndice + 3);
 	}
 
+	float BlockRedstone::getDestroyTexX()
+	{
+		return (this->texX);
+	}
+
+	float BlockRedstone::getDestroyTexY()
+	{
+		return (this->texY);
+	}
+
 	BlockRedstone *BlockRedstone::setTex(float texX, float texY)
 	{
 		setTexX(texX);

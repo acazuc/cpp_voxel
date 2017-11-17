@@ -20,6 +20,11 @@ namespace voxel
 			delete (this->chunks[i]);
 	}
 
+	void Region::save()
+	{
+		//
+	}
+
 	void Region::tick()
 	{
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)

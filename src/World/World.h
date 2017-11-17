@@ -50,6 +50,7 @@ namespace voxel
 	public:
 		World();
 		~World();
+		void save();
 		void tick();
 		void draw();
 		void getAABBs(AABB &aabb, std::vector<AABB> &aabbs);

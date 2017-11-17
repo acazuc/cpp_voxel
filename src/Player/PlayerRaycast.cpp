@@ -7,8 +7,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <cstring>
 
-#define OFFSET .001
-#define BREAK_OFFSET .0001
+#define OFFSET .002
+#define BREAK_OFFSET .002
 #define PICK_DISTANCE 500
 #define PICK_EPSILON .001
 
@@ -23,35 +23,35 @@ namespace voxel
 		{
 			glm::vec3 vertexes[24];
 			//Front
-			vertexes[0]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[1]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[2]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[3]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[0]  = glm::vec3(0         , 0         , BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[1]  = glm::vec3(BLOCK_SIZE, 0         , BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[2]  = glm::vec3(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[3]  = glm::vec3(0         , BLOCK_SIZE, BLOCK_SIZE + BREAK_OFFSET);
 			//Back
-			vertexes[4]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[5]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[6]  = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[7]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
+			vertexes[4]  = glm::vec3(0         , 0         ,             -BREAK_OFFSET);
+			vertexes[5]  = glm::vec3(BLOCK_SIZE, 0         ,             -BREAK_OFFSET);
+			vertexes[6]  = glm::vec3(BLOCK_SIZE, BLOCK_SIZE,             -BREAK_OFFSET);
+			vertexes[7]  = glm::vec3(0         , BLOCK_SIZE,             -BREAK_OFFSET);
 			//Left
-			vertexes[8]  = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[9]  = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[10] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[11] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[8]  = glm::vec3(0           -BREAK_OFFSET, 0         , 0         );
+			vertexes[9]  = glm::vec3(0           -BREAK_OFFSET, BLOCK_SIZE, 0         );
+			vertexes[10] = glm::vec3(0           -BREAK_OFFSET, BLOCK_SIZE, BLOCK_SIZE);
+			vertexes[11] = glm::vec3(0           -BREAK_OFFSET, 0         , BLOCK_SIZE);
 			//Right
-			vertexes[12] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[13] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[14] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[15] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[12] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, 0         , 0         );
+			vertexes[13] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE, 0         );
+			vertexes[14] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE, BLOCK_SIZE);
+			vertexes[15] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, 0         , BLOCK_SIZE);
 			//Up
-			vertexes[16] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[17] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[18] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[19] = glm::vec3(            -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[16] = glm::vec3(0         , BLOCK_SIZE + BREAK_OFFSET, 0         );
+			vertexes[17] = glm::vec3(BLOCK_SIZE, BLOCK_SIZE + BREAK_OFFSET, 0         );
+			vertexes[18] = glm::vec3(BLOCK_SIZE, BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE);
+			vertexes[19] = glm::vec3(0         , BLOCK_SIZE + BREAK_OFFSET, BLOCK_SIZE);
 			//Down
-			vertexes[20] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[21] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET,             -BREAK_OFFSET);
-			vertexes[22] = glm::vec3(BLOCK_SIZE + BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
-			vertexes[23] = glm::vec3(            -BREAK_OFFSET,             -BREAK_OFFSET, BLOCK_SIZE + BREAK_OFFSET);
+			vertexes[20] = glm::vec3(0         ,             -BREAK_OFFSET, 0         );
+			vertexes[21] = glm::vec3(BLOCK_SIZE,             -BREAK_OFFSET, 0         );
+			vertexes[22] = glm::vec3(BLOCK_SIZE,             -BREAK_OFFSET, BLOCK_SIZE);
+			vertexes[23] = glm::vec3(0         ,             -BREAK_OFFSET, BLOCK_SIZE);
 			this->breakVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 			GLuint indices[36];
 			//Front
@@ -305,14 +305,17 @@ nextStep:
 		this->todoTicks = 20 * blockModel->getHardness();
 		buildBreakTexCoords();
 		uint8_t light = chunk->getLight(relative);
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x - 1, pos.y, pos.z)));
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x + 1, pos.y, pos.z)));
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y - 1, pos.z)));
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y + 1, pos.z)));
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y, pos.z - 1)));
+		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y, pos.z + 1)));
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{
 			this->found = false;
-			float texX = 0;//blockModel->getTexTopX();
-			float texY = 0;//blockModel->getTexTopY();
-			Chunk *chunk = this->player.getWorld().getChunk(std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH);
-			if (!chunk)
-				return;
+			float texX = blockModel->getDestroyTexX();
+			float texY = blockModel->getDestroyTexY();
 			int32_t nb = 4;
 			for (int32_t x = 0; x < nb; ++x)
 			{
@@ -320,12 +323,22 @@ nextStep:
 				{
 					for (int32_t z = 0; z < nb; ++z)
 					{
-						glm::vec3 pos2(pos.x + (x + .5) / nb, pos.y + (y + .5) / nb, pos.z + (z + .5) / nb);
+						float tmpx = (x + .5) / nb;
+						float tmpy = (y + .5) / nb;
+						float tmpz = (z + .5) / nb;
+						glm::vec3 pos2(pos.x + tmpx, pos.y + tmpy, pos.z + tmpz);
 						pos.x += std::rand() * .1 / RAND_MAX - .05;
 						pos.y += std::rand() * .1 / RAND_MAX - .05;
 						pos.z += std::rand() * .1 / RAND_MAX - .05;
-						glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .2, (std::rand() * .5 / RAND_MAX + .5) * .2);
-						glm::vec3 dir(std::rand() * .2 / RAND_MAX - .1, std::rand() * .3 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
+						glm::vec2 size((std::rand() * .5 / RAND_MAX + .5) * .2, 0);
+						size.y = size.x;
+						glm::vec3 dir(tmpx - .5, tmpy - .5, tmpz - .5);
+						dir.x += (std::rand() * 2. / RAND_MAX - 1.) * .4;
+						dir.y += (std::rand() * 2. / RAND_MAX - 1.) * .4;
+						dir.z += (std::rand() * 2. / RAND_MAX - 1.) * .4;
+						float len = dir.length();
+						dir = dir / len * (std::rand() / (float)RAND_MAX + std::rand() / (float)RAND_MAX + 1) * .3f * .4f;
+						dir.y += .1f;
 						glm::vec2 uv(texX, texY);
 						uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 						uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;

@@ -107,6 +107,16 @@ namespace voxel
 		indices.push_back(currentIndice + 3);
 	}
 
+	float BlockSapling::getDestroyTexX()
+	{
+		return (this->texX);
+	}
+
+	float BlockSapling::getDestroyTexY()
+	{
+		return (this->texY);
+	}
+
 	BlockSapling *BlockSapling::setTex(float texX, float texY)
 	{
 		setTexX(texX);

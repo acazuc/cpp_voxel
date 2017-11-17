@@ -139,7 +139,7 @@ namespace voxel
 				}
 			}
 		}
-		//Biomes::getBiome(1)->generate(*this);
+		Biomes::getBiome(1)->generate(*this);
 		regenerateLightMapRec();
 	}
 

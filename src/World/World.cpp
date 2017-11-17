@@ -38,6 +38,12 @@ namespace voxel
 		clearVAOToDelete();
 	}
 
+	void World::save()
+	{
+		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
+			(*iter)->save();
+	}
+
 	void World::tick()
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);

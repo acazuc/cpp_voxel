@@ -50,6 +50,16 @@ namespace voxel
 		indices.push_back(currentIndice + 1);
 	}
 
+	float BlockRail::getDestroyTexX()
+	{
+		return (this->texX);
+	}
+
+	float BlockRail::getDestroyTexY()
+	{
+		return (this->texY);
+	}
+
 	BlockRail *BlockRail::setTex(float texX, float texY)
 	{
 		setTexX(texX);

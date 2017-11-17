@@ -253,6 +253,38 @@ namespace voxel
 		}
 	}
 
+	float BlockBase::getDestroyTexX()
+	{
+		uint8_t nb = rand() / (RAND_MAX / 6.);
+		if (nb == 0)
+			return (this->texLeftX);
+		if (nb == 1)
+			return (this->texRightX);
+		if (nb == 3)
+			return (this->texFrontX);
+		if (nb == 4)
+			return (this->texBackX);
+		if (nb == 5)
+			return (this->texTopX);
+		return (this->texBotX);
+	}
+
+	float BlockBase::getDestroyTexY()
+	{
+		uint8_t nb = rand() / (RAND_MAX / 6.);
+		if (nb == 0)
+			return (this->texLeftY);
+		if (nb == 1)
+			return (this->texRightY);
+		if (nb == 3)
+			return (this->texFrontY);
+		if (nb == 4)
+			return (this->texBackY);
+		if (nb == 5)
+			return (this->texTopY);
+		return (this->texBotY);
+	}
+
 	BlockBase *BlockBase::setTexSide(float texSideX, float texSideY)
 	{
 		setTexSideX(texSideX);

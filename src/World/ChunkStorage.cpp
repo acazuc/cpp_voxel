@@ -39,6 +39,7 @@ namespace voxel
 	void ChunkStorage::resetLights()
 	{
 		std::memset(this->skyLights, 0, sizeof(this->skyLights));
+		std::memset(this->blockLights, 0, sizeof(this->blockLights));
 	}
 
 	void ChunkStorage::setBlock(glm::vec3 pos, uint8_t type)

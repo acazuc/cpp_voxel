@@ -31,7 +31,7 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[7])->setTex(1. / 16, 1. / 16);
 		blocks[8] = (new BlockBase(8))->setDefaultName("flowing_water")->setHardness(100)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
 		reinterpret_cast<BlockBase*>(blocks[8])->setTex(15. / 16, 13. / 16);
-		blocks[9] = (new BlockBase(9))->setDefaultName("water")->setHardness(100)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
+		blocks[9] = (new BlockBase(9))->setDefaultName("water")->setHardness(100)->setLayer(2)->setTransparent(false)->setFocusable(false)->setSolid(false)->setReplaceable(true);
 		reinterpret_cast<BlockBase*>(blocks[9])->setTex(15. / 16, 13. / 16);
 		blocks[10] = (new BlockBase(10))->setDefaultName("flowing_lava")->setHardness(100)->setLayer(2)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
 		reinterpret_cast<BlockBase*>(blocks[10])->setTex(15. / 16, 15. / 16);

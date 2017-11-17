@@ -20,19 +20,27 @@ namespace voxel
 		this->topGradient.setVertexesLocation(Main::getGuiShader().vertexesLocation);
 		this->topGradient.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->topGradient.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->topGradient.setTexture(Main::getEmpty());
 		this->botGradient.setProgram(Main::getGuiShader().program);
 		this->botGradient.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
 		this->botGradient.setVertexesLocation(Main::getGuiShader().vertexesLocation);
 		this->botGradient.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->botGradient.setMvpLocation(Main::getGuiShader().mvpLocation);
-		this->topGradient.setTexture(Main::getEmpty());
 		this->botGradient.setTexture(Main::getEmpty());
+		this->bgDarker.setProgram(Main::getGuiShader().program);
+		this->bgDarker.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
+		this->bgDarker.setVertexesLocation(Main::getGuiShader().vertexesLocation);
+		this->bgDarker.setColorsLocation(Main::getGuiShader().colorsLocation);
+		this->bgDarker.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->bgDarker.setTexture(Gui::getBgTex());
 		Color color(0, 1);
 		this->topGradient.setTopColor(color);
 		this->botGradient.setBotColor(color);
 		color.set(0, 0);
 		this->topGradient.setBotColor(color);
 		this->botGradient.setTopColor(color);
+		color.set(.25 * .5);
+		this->bgDarker.setColor(color);
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 0));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 1));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 2));
@@ -40,17 +48,19 @@ namespace voxel
 
 	void GuiSingleplayer::draw()
 	{
+		this->bgDarker.setPos(0, 16 * Main::getGuiScale() * 2);
+		this->bgDarker.setSize(Main::getWindow()->getWidth(), Main::getWindow()->getHeight() - Main::getGuiScale() * 4 * 24);
+		this->bgDarker.setTexSize(Main::getWindow()->getWidth() / (16 * 2. * Main::getGuiScale()), (Main::getWindow()->getHeight() - Main::getGuiScale() * 4 * 24) / (16 * 2.f * Main::getGuiScale()));
+		this->bgDarker.draw(Gui::getMat());
 		glm::mat4 mat = Gui::getMat();
-		mat = glm::translate(mat, glm::vec3((Main::getWindow()->getWidth() - 270 * 4) / 2, 17 * 4 * 2, 0));
+		mat = glm::translate(mat, glm::vec3((Main::getWindow()->getWidth() - 270 * Main::getGuiScale()) / 2, 17 * Main::getGuiScale() * 2, 0));
 		for (uint32_t i = 0; i < this->entries.size(); ++i)
-		{
 			this->entries[i]->draw(mat);
-		}
-		this->topGradient.setPos(0, 16 * 4 * 2);
-		this->topGradient.setSize(Main::getWindow()->getWidth(), 4 * 4);
+		this->topGradient.setPos(0, 16 * Main::getGuiScale() * 2);
+		this->topGradient.setSize(Main::getWindow()->getWidth(), Main::getGuiScale() * 4);
 		this->topGradient.draw(Gui::getMat());
-		this->botGradient.setPos(0, Main::getWindow()->getHeight() - 16 * 2 * 4 * 2 - 4 * 4);
-		this->botGradient.setSize(Main::getWindow()->getWidth(), 4 * 4);
+		this->botGradient.setPos(0, Main::getWindow()->getHeight() - 16 * 2 * Main::getGuiScale() * 2 - Main::getGuiScale() * 4);
+		this->botGradient.setSize(Main::getWindow()->getWidth(), 4 * Main::getGuiScale());
 		this->botGradient.draw(Gui::getMat());
 	}
 

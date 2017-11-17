@@ -29,7 +29,7 @@ namespace voxel
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
 		this->background.setSize(Main::getWindow()->getWidth(), Main::getWindow()->getHeight());
-		this->background.setTexSize(Main::getWindow()->getWidth() / (16 * 8.f), Main::getWindow()->getHeight() / (16 * 8.f));
+		this->background.setTexSize(Main::getWindow()->getWidth() / (16 * 2. * Main::getGuiScale()), Main::getWindow()->getHeight() / (16 * 2.f * Main::getGuiScale()));
 		this->background.draw(Gui::getMat());
 		if (this->mode == TITLE_SCREEN_TITLE)
 			this->title.draw();

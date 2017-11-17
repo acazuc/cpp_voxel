@@ -19,7 +19,7 @@ namespace voxel
 		this->logo.setVertexesLocation(Main::getGuiShader().vertexesLocation);
 		this->logo.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->logo.setMvpLocation(Main::getGuiShader().mvpLocation);
-		this->logo.setSize(256 * 4, 48 * 4);
+		this->logo.setSize(256 * Main::getGuiScale(), 48 * Main::getGuiScale());
 		this->logo.setTexSize(1, .1875);
 		this->logo.setTexPos(0, 0);
 		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback);
@@ -44,14 +44,14 @@ namespace voxel
 
 	void GuiTitle::draw()
 	{
-		this->logo.setPos((Main::getWindow()->getWidth() - 256 * 4) / 2, 19 * 8);
+		this->logo.setPos((Main::getWindow()->getWidth() - 256 * Main::getGuiScale()) / 2, 19 * 8);
 		this->logo.draw(Gui::getMat());
-		int32_t offset = 48 * 4 + 19 * 8 * 2;
-		this->singleplayer.setPos((Main::getWindow()->getWidth() - this->singleplayer.getWidth() * 4) / 2, offset);
+		int32_t offset = 48 * Main::getGuiScale() + 19 * 8 * 2;
+		this->singleplayer.setPos((Main::getWindow()->getWidth() - this->singleplayer.getWidth() * Main::getGuiScale()) / 2, offset);
 		this->singleplayer.draw(Gui::getMat());
-		this->multiplayer.setPos((Main::getWindow()->getWidth() - this->multiplayer.getWidth() * 4) / 2, offset + 24 * 4);
+		this->multiplayer.setPos((Main::getWindow()->getWidth() - this->multiplayer.getWidth() * Main::getGuiScale()) / 2, offset + 24 * Main::getGuiScale());
 		this->multiplayer.draw(Gui::getMat());
-		this->texturePack.setPos((Main::getWindow()->getWidth() - this->texturePack.getWidth() * 4) / 2, offset + 48 * 4);
+		this->texturePack.setPos((Main::getWindow()->getWidth() - this->texturePack.getWidth() * Main::getGuiScale()) / 2, offset + 48 * Main::getGuiScale());
 		this->texturePack.draw(Gui::getMat());
 	}
 

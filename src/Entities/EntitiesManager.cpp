@@ -148,12 +148,10 @@ namespace voxel
 			else
 				return;
 		}
-		Main::getEntityShader().program->use();
 		glDisable(GL_CULL_FACE);
+		Main::getEntityShader().program->use();
 		for (uint32_t i = 0; i < this->entities.size(); ++i)
-		{
 			this->entities[i]->draw();
-		}
 		glEnable(GL_CULL_FACE);
 	}
 

@@ -44,8 +44,8 @@ namespace voxel
 
 	void DroppedBlock::draw()
 	{
-		Main::getTerrain()->bind();
 		Main::getDroppedShader().program->use();
+		Main::getTerrain()->bind();
 		glm::mat4 model(1);
 		model = glm::translate(model, this->pos);
 		model = glm::translate(model, glm::vec3(0, std::sin((nanotime + this->created) / 500000000.) * .1, 0));

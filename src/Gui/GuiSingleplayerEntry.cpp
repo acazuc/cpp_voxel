@@ -22,8 +22,8 @@ namespace voxel
 		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->background.setTexture(Main::getEmpty());
-		this->background.setSize(270 * 4 - 4 * 2, 36 * 4 - 4 * 2);
-		this->background.setPos(4, 4);
+		this->background.setSize((270 - 2) * Main::getGuiScale(), (36 - 2) * Main::getGuiScale());
+		this->background.setPos(Main::getGuiScale(), Main::getGuiScale());
 		this->background.setColor(Color::BLACK);
 		this->border.setProgram(Main::getGuiShader().program);
 		this->border.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
@@ -31,7 +31,7 @@ namespace voxel
 		this->border.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->border.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->border.setTexture(Main::getEmpty());
-		this->border.setSize(270 * 4, 36 * 4);
+		this->border.setSize(270 * Main::getGuiScale(), 36 * Main::getGuiScale());
 		Color color(.666);
 		this->border.setColor(color);
 		this->image.setProgram(Main::getGuiShader().program);
@@ -47,27 +47,29 @@ namespace voxel
 	void GuiSingleplayerEntry::draw(glm::mat4 &mat)
 	{
 		glm::mat4 m2(mat);
-		m2 = glm::translate(m2, glm::vec3(0, this->pos * 36 * 4, 0));
+		m2 = glm::translate(m2, glm::vec3(0, this->pos * 36 * Main::getGuiScale(), 0));
 		if (this->parent.getSelected() == this->pos)
 		{
 			this->border.draw(m2);
 			this->background.draw(m2);
 		}
-		this->image.setSize(16 * 4 * 2, 16 * 4 * 2);
-		this->image.setPos(2 * 4, 2 * 4);
+		this->image.setSize(16 * Main::getGuiScale() * 2, 16 * Main::getGuiScale() * 2);
+		this->image.setPos(2 * Main::getGuiScale(), 2 * Main::getGuiScale());
 		this->image.draw(m2);
-		this->name.setPos(37 * 4, 2 * 4);
+		this->name.setPos(37 * Main::getGuiScale(), 2 * Main::getGuiScale());
 		this->name.draw(m2);
-		this->dirDate.setPos(37 * 4, 13 * 4);
+		this->dirDate.setPos(37 * Main::getGuiScale(), 13 * Main::getGuiScale());
 		this->dirDate.draw(m2);
-		this->other.setPos(37 * 4, (9 + 13) * 4);
+		this->other.setPos(37 * Main::getGuiScale(), (9 + 13) * Main::getGuiScale());
 		this->other.draw(m2);
 	}
 
 	void GuiSingleplayerEntry::mouseMove(bool &alreadyHovered)
 	{
-		if (Main::getWindow()->getMouseX() >= (Main::getWindow()->getWidth() - 270 * 4) / 2 && Main::getWindow()->getMouseX() <= (Main::getWindow()->getWidth() + 270 * 4) / 2
-				&& Main::getWindow()->getMouseY() >= 17 * 4 * 2 + this->pos * 36 * 4 && Main::getWindow()->getMouseY() <= 17 * 4 * 2 + this->pos * 36 * 4 + 36 * 4)
+		if (Main::getWindow()->getMouseX() >= (Main::getWindow()->getWidth() - 270 * Main::getGuiScale()) / 2
+				&& Main::getWindow()->getMouseX() <= (Main::getWindow()->getWidth() + 270 * Main::getGuiScale()) / 2
+				&& Main::getWindow()->getMouseY() >= 17 * Main::getGuiScale() * 2 + this->pos * 36 * Main::getGuiScale()
+				&& Main::getWindow()->getMouseY() <= 17 * Main::getGuiScale() * 2 + this->pos * 36 * Main::getGuiScale() + 36 * Main::getGuiScale())
 		{
 			this->hover = true;
 			alreadyHovered = true;

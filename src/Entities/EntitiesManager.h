@@ -1,6 +1,7 @@
 #ifndef ENTITIES_MANAGER_H
 # define ENTITIES_MANAGER_H
 
+# include "DroppedBlock.h"
 # include "Entity.h"
 # include <vector>
 # include <librender/Texture.h>

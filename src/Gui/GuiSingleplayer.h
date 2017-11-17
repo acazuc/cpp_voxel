@@ -19,6 +19,7 @@ namespace voxel
 		ShaderSprite topGradient;
 		ShaderSprite botGradient;
 		ShaderSprite background;
+		ShaderSprite bgDarker;
 		GuiButton recreate;
 		GuiButton cancel;
 		GuiButton remove;

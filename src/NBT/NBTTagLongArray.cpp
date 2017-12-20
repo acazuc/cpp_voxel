@@ -1,4 +1,5 @@
 #include "NBTTagLongArray.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,21 +15,31 @@ namespace voxel
 	void NBTTagLongArray::readDataFromFile(NBTFile *file)
 	{
 		int32_t size;
-		file->readInt32(&size);
-		//LOG("Tag_LongArray(\"" << this->name << "\") : [" << size << " longs]");
+		if (!file->readInt32(&size))
+			throw NBTException("NBTTagLongArray: invalid read size");
+		int64_t value;
 		for (int32_t i = 0; i < size; ++i)
 		{
-			int64_t value;
-			file->readInt64(&value);
+			if (!file->readInt64(&value))
+				throw NBTException("NBTTagLongArray: invalid read value");
 			this->values.push_back(value);
 		}
 	}
 
 	void NBTTagLongArray::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt32(this->values.size());
+		if (!file->writeInt32(this->values.size()))
+			throw NBTException("NBTTagLongArray: invalid write size");
 		for (uint32_t i = 0; i < this->values.size(); ++i)
-			file->writeInt64(this->values[i]);
+		{
+			if (!file->writeInt64(this->values[i]))
+				throw NBTException("NBTTabLongArray: invalid write value");
+		}
+	}
+
+	void NBTTagLongArray::printDebug()
+	{
+		LOG("NBTTag_LongArray(\"" << this->name << "\") : [" << this->values.size() << " longs]");
 	}
 
 }

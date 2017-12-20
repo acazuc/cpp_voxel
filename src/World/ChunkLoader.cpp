@@ -75,8 +75,8 @@ namespace voxel
 				playerZ = world.getPlayer().getPos().z;
 				frustum.update(world.getPlayer().getViewProjMat());
 			}
-			int32_t playerChunkX = std::floor((float)playerX / CHUNK_WIDTH) * CHUNK_WIDTH;
-			int32_t playerChunkZ = std::floor((float)playerZ / CHUNK_WIDTH) * CHUNK_WIDTH;
+			int32_t playerChunkX = World::getChunkCoord(playerX);
+			int32_t playerChunkZ = World::getChunkCoord(playerZ);
 			{
 				std::vector<Region*> &regions = world.getRegions();
 				for (uint32_t i = 0; i < regions.size(); ++i)

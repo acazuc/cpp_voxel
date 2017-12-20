@@ -21,8 +21,13 @@ namespace voxel
 		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
 		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
 		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
-		this->background.setTexPos(0, .1796);
-		this->background.setTexSize(.7812, .0781);
+		this->background.addEntry(&this->bgLeft);
+		this->background.addEntry(&this->bgRight);
+		this->bgLeft.setTexX(0);
+		this->bgLeft.setTexSize(width / 2 / 256., 20 / 256.);
+		this->bgRight.setTexX((200 - width / 2) / 256.);
+		this->bgRight.setTexSize(width / 2 / 256., 20 / 256.);
+		this->bgRight.setX(width / 2 * Main::getGuiScale());
 		this->text.setText(text);
 		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
@@ -32,19 +37,23 @@ namespace voxel
 		if (this->disabled)
 		{
 			this->text.setColor('7');
-			this->background.setTexY(.1796);
+			this->bgLeft.setTexY(46 / 256.);
+			this->bgRight.setTexY(46 / 256.);
 		}
 		else if (this->hover)
 		{
 			this->text.setColor('e');
-			this->background.setTexY(.3359);
+			this->bgLeft.setTexY(86 / 256.);
+			this->bgRight.setTexY(86 / 256.);
 		}
 		else
 		{
 			this->text.setColor('f');
-			this->background.setTexY(.2578);
+			this->bgLeft.setTexY(66 / 256.);
+			this->bgRight.setTexY(66 / 256.);
 		}
-		this->background.setSize(this->width * Main::getGuiScale(), this->height * Main::getGuiScale());
+		this->bgLeft.setSize(this->width / 2 * Main::getGuiScale(), this->height * Main::getGuiScale());
+		this->bgRight.setSize(this->width / 2 * Main::getGuiScale(), this->height * Main::getGuiScale());
 		this->background.draw(viewProj);
 		this->text.draw(viewProj);
 	}
@@ -89,6 +98,10 @@ namespace voxel
 	{
 		this->width = width;
 		this->height = height;
+		this->bgLeft.setTexSize(width / 2 / 256., 20 / 256.);
+		this->bgRight.setTexSize(width / 2 / 256., 20 / 256.);
+		this->bgRight.setX(this->width / 2 * Main::getGuiScale());
+		this->bgRight.setTexX((200 - width / 2) / 256.);
 		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
 
@@ -97,7 +110,6 @@ namespace voxel
 		if (this->disabled == disabled)
 			return;
 		this->disabled = disabled;
-		this->background.setTexPos(0, .1796);
 	}
 
 }

@@ -40,37 +40,38 @@ namespace voxel
 		positions[22] = glm::vec3(pos.x + size.x, pos.y         , pos.z + size.z);
 		positions[23] = glm::vec3(pos.x         , pos.y         , pos.z + size.z);
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, positions, sizeof(positions), GL_FLOAT, 3, GL_STATIC_DRAW);
+		const glm::vec2 texSize(64, 32);
 		glm::vec2 texCoords[24];
 		//Front
-		texCoords[0]  = glm::vec2((uv.x + size.z         ) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[1]  = glm::vec2((uv.x + size.z + size.x) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[2]  = glm::vec2((uv.x + size.z + size.x) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[3]  = glm::vec2((uv.x + size.z         ) / 64., (uv.y + size.z         ) / 32.);
+		texCoords[0]  = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[1]  = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[2]  = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[3]  = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
 		//Back
-		texCoords[4]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[5]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[6]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[7]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / 64., (uv.y + size.z         ) / 32.);
+		texCoords[4]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[5]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[6]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[7]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
 		//Left
-		texCoords[8]  = glm::vec2((uv.x         ) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[9]  = glm::vec2((uv.x         ) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[10] = glm::vec2((uv.x + size.z) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[11] = glm::vec2((uv.x + size.z) / 64., (uv.y + size.z + size.y) / 32.);
+		texCoords[8]  = glm::vec2((uv.x         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[9]  = glm::vec2((uv.x         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[10] = glm::vec2((uv.x + size.z) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[11] = glm::vec2((uv.x + size.z) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
 		//Right
-		texCoords[12] = glm::vec2((uv.x + size.x + size.z * 2) / 64., (uv.y + size.z + size.y) / 32.);
-		texCoords[13] = glm::vec2((uv.x + size.x + size.z * 2) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[14] = glm::vec2((uv.x + size.x + size.z * 1) / 64., (uv.y + size.z         ) / 32.);
-		texCoords[15] = glm::vec2((uv.x + size.x + size.z * 1) / 64., (uv.y + size.z + size.y) / 32.);
+		texCoords[12] = glm::vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[13] = glm::vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[14] = glm::vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[15] = glm::vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
 		//Up
-		texCoords[16] = glm::vec2((uv.x + size.z         ) / 64., (uv.y         ) / 32.);
-		texCoords[17] = glm::vec2((uv.x + size.z + size.x) / 64., (uv.y         ) / 32.);
-		texCoords[18] = glm::vec2((uv.x + size.z + size.x) / 64., (uv.y + size.z) / 32.);
-		texCoords[19] = glm::vec2((uv.x + size.z         ) / 64., (uv.y + size.z) / 32.);
+		texCoords[16] = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y         ) / texSize.y);
+		texCoords[17] = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y         ) / texSize.y);
+		texCoords[18] = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z) / texSize.y);
+		texCoords[19] = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z) / texSize.y);
 		//Down
-		texCoords[20] = glm::vec2((uv.x + size.z + size.x * 1) / 64., (uv.y + size.z * 1) / 32.);
-		texCoords[21] = glm::vec2((uv.x + size.z + size.x * 2) / 64., (uv.y + size.z * 1) / 32.);
-		texCoords[22] = glm::vec2((uv.x + size.z + size.x * 2) / 64., (uv.y             ) / 32.);
-		texCoords[23] = glm::vec2((uv.x + size.z + size.x * 1) / 64., (uv.y             ) / 32.);
+		texCoords[20] = glm::vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y + size.z * 1) / texSize.y);
+		texCoords[21] = glm::vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y + size.z * 1) / texSize.y);
+		texCoords[22] = glm::vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y             ) / texSize.y);
+		texCoords[23] = glm::vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y             ) / texSize.y);
 		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords, sizeof(texCoords), GL_FLOAT, 2, GL_STATIC_DRAW);
 		GLuint indices[36];
 		//Front

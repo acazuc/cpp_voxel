@@ -1,6 +1,7 @@
 #ifndef GUI_INVENTORY_H
 # define GUI_INVENTORY_H
 
+# include "GuiLabel.h"
 # include <librender/Shader/Sprite/ShaderSprite.h>
 
 using librender::ShaderSprite;
@@ -13,6 +14,7 @@ namespace voxel
 
 	private:
 		ShaderSprite background;
+		GuiLabel label;
 
 	public:
 		GuiInventory();

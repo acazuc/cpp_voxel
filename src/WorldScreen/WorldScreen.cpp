@@ -30,7 +30,12 @@ namespace voxel
 
 	void WorldScreen::mouseScroll(ScrollEvent &event)
 	{
-		(void)event;
+		this->gui.mouseScroll(event);
+	}
+
+	void WorldScreen::keyDown(KeyEvent &event)
+	{
+		this->gui.keyDown(event);
 	}
 
 }

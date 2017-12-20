@@ -10,11 +10,15 @@ namespace voxel
 	{
 
 	private:
-		uint8_t level;
+		float texX;
+		float texY;
 
 	public:
 		BlockLiquid(uint8_t id);
-		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tesselator, uint8_t visibleFaces, float *lights);
+		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights);
+		BlockLiquid *setTex(float texX, float texY);
+		BlockLiquid *setTexX(float texX);
+		BlockLiquid *setTexY(float texY);
 
 	};
 

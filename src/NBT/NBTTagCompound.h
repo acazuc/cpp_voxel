@@ -17,6 +17,7 @@ namespace voxel
 		NBTTagCompound(std::string name);
 		void readDataFromFile(NBTFile *file);
 		void writeDataToFile(NBTFile *file);
+		void printDebug();
 		inline std::vector<NBTTag*> &getTags() {return (this->tags);};
 
 	};

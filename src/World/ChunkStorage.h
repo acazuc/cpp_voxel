@@ -22,14 +22,13 @@ namespace voxel
 		~ChunkStorage();
 		void fillBuffers(Chunk *chunk, ChunkTessellator &tessellator, uint8_t layer);
 		void resetLights();
-		void setBlock(glm::vec3 pos, uint8_t type);
-		ChunkBlock *getBlock(glm::vec3 pos);
-		uint8_t getLight(glm::vec3 pos);
-		void setSkyLight(glm::vec3 pos, uint8_t light);
-		uint8_t getSkyLight(glm::vec3 pos);
-		void setBlockLight(glm::vec3 pos, uint8_t light);
-		uint8_t getBlockLight(glm::vec3 pos);
-		uint32_t getXYZId(glm::vec3 pos);
+		void setBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
+		ChunkBlock *getBlock(int32_t x, int32_t y, int32_t z);
+		uint8_t getLight(int32_t x, int32_t y, int32_t z);
+		void setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light);
+		uint8_t getSkyLight(int32_t x, int32_t y, int32_t z);
+		void setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light);
+		uint8_t getBlockLight(int32_t x, int32_t y, int32_t z);
 		uint32_t getXYZId(int8_t x, int8_t y, int8_t z);
 
 	};

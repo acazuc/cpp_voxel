@@ -9,6 +9,9 @@ namespace voxel
 	class BlockLava : public BlockLiquid
 	{
 
+	public:
+		BlockLava(uint8_t id);
+
 	};
 
 }

@@ -42,6 +42,7 @@ namespace voxel
 		NBTFile(std::string name);
 		void load();
 		void save();
+		void printDebug();
 		bool readInt8(int8_t *data);
 		bool readInt16(int16_t *data);
 		bool readInt32(int32_t *data);

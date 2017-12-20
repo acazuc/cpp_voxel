@@ -28,13 +28,7 @@ namespace voxel
 	void Entity::tick()
 	{
 		if (this != &this->world.getPlayer() && !this->chunk)
-		{
-			if (!(this->chunk = this->world.getChunk(std::floor(this->pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(this->pos.z / CHUNK_WIDTH) * CHUNK_WIDTH)))
-			{
-				this->deleted = true;
-				return;
-			}
-		}
+			updateParentChunk();
 		this->posOrg = this->pos;
 		if (!this->flying)
 			this->posDst.y -= this->gravity;
@@ -66,24 +60,19 @@ namespace voxel
 		this->pos = pos;
 		glm::vec3 semiSize = this->size / 2.f;
 		this->aabb.set(pos - semiSize, pos + semiSize);
+		updateParentChunk();
 	}
 
 	void Entity::updateGravitySliperness()
 	{
 		glm::vec3 pos(this->world.getPlayer().getPos());
 		pos.y -= this->size.y / 2 - .4;
-		ChunkBlock *block = this->world.getBlock(pos);
+		ChunkBlock *block = this->world.getBlock(pos.x, pos.y, pos.z);
 		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
 		if (this->inWater)
-		{
 			this->sliperness = glm::vec3(.8);
-			this->gravity = 0.02;
-		}
 		else
-		{
 			this->sliperness = glm::vec3(.91, .98, .91);
-			this->gravity = 0.08;
-		}
 	}
 
 	void Entity::move(glm::vec3 dir)
@@ -125,13 +114,7 @@ namespace voxel
 			return;
 		}
 		if (dir.x != org.x || dir.y != org.y || dir.z != org.z)
-		{
-			if (!(this->chunk = this->world.getChunk(std::floor(this->pos.x / CHUNK_WIDTH) * CHUNK_WIDTH, std::floor(this->pos.z / CHUNK_WIDTH) * CHUNK_WIDTH)))
-			{
-				this->deleted = true;
-				return;
-			}
-		}
+			updateParentChunk();
 	}
 
 	void Entity::setSize(glm::vec3 size)
@@ -148,6 +131,27 @@ namespace voxel
 	glm::vec3 Entity::getRealPos()
 	{
 		return (this->posOrg + ((this->pos - this->posOrg) * TickManager::getDelta()));
+	}
+
+	void Entity::updateParentChunk()
+	{
+		if (this->deleted)
+			return;
+		int32_t chunkX = World::getChunkCoord(this->pos.x);
+		int32_t chunkZ = World::getChunkCoord(this->pos.z);
+		if (!this->chunk || (this->chunk->getX() != chunkX && this->chunk->getZ() != chunkZ))
+		{
+			Chunk *chunk = NULL;
+			if (!(chunk = this->world.getChunk(chunkX, chunkZ)))
+			{
+				this->deleted = true;
+				return;
+			}
+			if (this->chunk)
+				this->chunk->getEntitiesManager().removeEntity(this);
+			this->chunk = chunk;
+			this->chunk->getEntitiesManager().addEntity(this);
+		}
 	}
 
 }

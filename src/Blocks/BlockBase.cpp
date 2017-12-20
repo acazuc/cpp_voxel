@@ -63,7 +63,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
-			glm::vec2 texOrg(texLeftX, texLeftY);
+			glm::vec2 texOrg(this->texLeftX, this->texLeftY);
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
 			GLuint currentIndice = vertexes.size();
@@ -101,7 +101,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
-			glm::vec2 texOrg(texLeftX, texLeftY);
+			glm::vec2 texOrg(this->texLeftX, this->texLeftY);
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
 			GLuint currentIndice = vertexes.size();
@@ -139,7 +139,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
-			glm::vec2 texOrg(texRightX, texRightY);
+			glm::vec2 texOrg(this->texRightX, this->texRightY);
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
 			GLuint currentIndice = vertexes.size();
@@ -177,7 +177,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_UP)
 		{
-			glm::vec2 texOrg(texTopX, texTopY);
+			glm::vec2 texOrg(this->texTopX, this->texTopY);
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
 			GLuint currentIndice = vertexes.size();
@@ -215,7 +215,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_DOWN)
 		{
-			glm::vec2 texOrg(texBotX, texBotY);
+			glm::vec2 texOrg(this->texBotX, this->texBotY);
 			glm::vec2 texDst(texOrg);
 			texDst += texSize;
 			GLuint currentIndice = vertexes.size();

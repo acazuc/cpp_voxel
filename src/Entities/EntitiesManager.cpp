@@ -83,7 +83,7 @@ namespace voxel
 	EntitiesManager::EntitiesManager(Chunk &chunk)
 	: chunk(chunk)
 	{
-		//
+		//Empty
 	}
 
 	EntitiesManager::~EntitiesManager()
@@ -111,37 +111,37 @@ namespace voxel
 		if (!this->entities.size())
 		{
 			static int a = 0;
-			if (!a)
+			if (!a && this->chunk.getX() == 16 && this->chunk.getZ() == 0)
 			{
 				a = 1;
-				Creeper *creeper = new Creeper(this->chunk.getWorld());
+				Creeper *creeper = new Creeper(this->chunk.getWorld(), &this->chunk);
 				creeper->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + .5));
 				addEntity(creeper);
-				Human *human = new Human(this->chunk.getWorld());
+				Human *human = new Human(this->chunk.getWorld(), &this->chunk);
 				human->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + .5));
 				addEntity(human);
-				Pig *pig = new Pig(this->chunk.getWorld());
+				Pig *pig = new Pig(this->chunk.getWorld(), &this->chunk);
 				pig->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + .5));
 				addEntity(pig);
-				Pigman *pigman = new Pigman(this->chunk.getWorld());
+				Pigman *pigman = new Pigman(this->chunk.getWorld(), &this->chunk);
 				pigman->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + .5));
 				addEntity(pigman);
-				Pigzombie *pigzombie = new Pigzombie(this->chunk.getWorld());
+				Pigzombie *pigzombie = new Pigzombie(this->chunk.getWorld(), &this->chunk);
 				pigzombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 5.5));
 				addEntity(pigzombie);
-				Sheep *sheep = new Sheep(this->chunk.getWorld());
+				Sheep *sheep = new Sheep(this->chunk.getWorld(), &this->chunk);
 				sheep->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(sheep);
-				Skeleton *skeleton = new Skeleton(this->chunk.getWorld());
+				Skeleton *skeleton = new Skeleton(this->chunk.getWorld(), &this->chunk);
 				skeleton->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(skeleton);
-				Slime *slime = new Slime(this->chunk.getWorld());
+				Slime *slime = new Slime(this->chunk.getWorld(), &this->chunk);
 				slime->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(slime);
-				Zombie *zombie = new Zombie(this->chunk.getWorld());
+				Zombie *zombie = new Zombie(this->chunk.getWorld(), &this->chunk);
 				zombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 10.5));
 				addEntity(zombie);
-				Cow *cow = new Cow(this->chunk.getWorld());
+				Cow *cow = new Cow(this->chunk.getWorld(), &this->chunk);
 				cow->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 10.5));
 				addEntity(cow);
 			}
@@ -158,6 +158,17 @@ namespace voxel
 	void EntitiesManager::addEntity(Entity *entity)
 	{
 		this->entities.push_back(entity);
+	}
+
+	void EntitiesManager::removeEntity(Entity *entity)
+	{
+		for (std::vector<Entity*>::iterator iter = this->entities.begin(); iter != this->entities.end(); ++iter)
+		{
+			if (*iter != entity)
+				continue;
+			this->entities.erase(iter);
+			return;
+		}
 	}
 
 }

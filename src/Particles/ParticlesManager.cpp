@@ -84,4 +84,15 @@ namespace voxel
 		this->colors.reserve(this->particles.size() * 4);
 	}
 
+	void ParticlesManager::removeParticle(Particle *particle)
+	{
+		for (std::vector<Particle*>::iterator iter = this->particles.begin(); iter != this->particles.end(); ++iter)
+		{
+			if (*iter != particle)
+				continue;
+			this->particles.erase(iter);
+			return;
+		}
+	}
+
 }

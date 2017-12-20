@@ -18,7 +18,8 @@ namespace voxel
 	{
 		(void)visibleFaces;
 		(void)lights;
-		glm::vec3 color(ChunkBlock::getLightValue(chunk->getLight(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ()))));
+		//pos of 0 make segfault on dropped block
+		glm::vec3 color(ChunkBlock::getLightValue(chunk->getLight(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
 		float diff = (1 - 0.707) / 2 * BLOCK_SIZE;
 		std::vector<glm::vec2> &texCoords = tessellator.texCoords;
 		std::vector<glm::vec3> &vertexes = tessellator.vertexes;

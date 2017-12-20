@@ -18,10 +18,12 @@ namespace voxel
 
 	public:
 		NBTTag(enum NBTTagType type, std::string name);
+		virtual ~NBTTag();
 		virtual void readDataFromFile(NBTFile *file) {(void)file;};
 		virtual void writeDataToFile(NBTFile *file) {(void)file;};
 		void writeIdToFile(NBTFile *file);
 		virtual void writeNameToFile(NBTFile *file);
+		virtual void printDebug();
 		inline enum NBTTagType getType() {return (this->typeId);};
 		inline std::string &getName() {return (this->name);};
 

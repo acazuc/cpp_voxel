@@ -1,8 +1,13 @@
 #include "Blocks.h"
+#include "./BlockDoubleSlab.h"
 #include "./BlockRedstone.h"
 #include "./BlockSapling.h"
+#include "./BlockWater.h"
+#include "./BlockTorch.h"
 #include "./BlockBase.h"
 #include "./BlockRail.h"
+#include "./BlockLava.h"
+#include "./BlockSlab.h"
 #include <cstring>
 
 namespace voxel
@@ -29,14 +34,14 @@ namespace voxel
 		reinterpret_cast<BlockSapling*>(blocks[6])->setTex(15. / 16, 0);
 		blocks[7] = (new BlockBase(7))->setDefaultName("bedrock")->setHardness(6000000);
 		reinterpret_cast<BlockBase*>(blocks[7])->setTex(1. / 16, 1. / 16);
-		blocks[8] = (new BlockBase(8))->setDefaultName("flowing_water")->setHardness(100)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
-		reinterpret_cast<BlockBase*>(blocks[8])->setTex(15. / 16, 13. / 16);
-		blocks[9] = (new BlockBase(9))->setDefaultName("water")->setHardness(100)->setLayer(2)->setTransparent(false)->setFocusable(false)->setSolid(false)->setReplaceable(true);
-		reinterpret_cast<BlockBase*>(blocks[9])->setTex(15. / 16, 13. / 16);
-		blocks[10] = (new BlockBase(10))->setDefaultName("flowing_lava")->setHardness(100)->setLayer(2)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
-		reinterpret_cast<BlockBase*>(blocks[10])->setTex(15. / 16, 15. / 16);
-		blocks[11] = (new BlockBase(11))->setDefaultName("lava")->setHardness(100)->setLayer(2)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
-		reinterpret_cast<BlockBase*>(blocks[11])->setTex(15. / 16, 13. / 16);
+		blocks[8] = (new BlockWater(8))->setDefaultName("flowing_water")->setHardness(100)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
+		reinterpret_cast<BlockWater*>(blocks[8])->setTex(15. / 16, 13. / 16);
+		blocks[9] = (new BlockWater(9))->setDefaultName("water")->setHardness(100)->setLayer(2)->setOpacity(1)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
+		reinterpret_cast<BlockWater*>(blocks[9])->setTex(15. / 16, 13. / 16);
+		blocks[10] = (new BlockLava(10))->setDefaultName("flowing_lava")->setHardness(100)->setLayer(2)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
+		reinterpret_cast<BlockLava*>(blocks[10])->setTex(15. / 16, 15. / 16);
+		blocks[11] = (new BlockLava(11))->setDefaultName("lava")->setHardness(100)->setLayer(2)->setTransparent(true)->setFocusable(false)->setSolid(false)->setReplaceable(true);
+		reinterpret_cast<BlockLava*>(blocks[11])->setTex(15. / 16, 13. / 16);
 		blocks[12] = (new BlockBase(12))->setDefaultName("sand")->setHardness(.5);
 		reinterpret_cast<BlockBase*>(blocks[12])->setTex(2. / 16, 1. / 16);
 		blocks[13] = (new BlockBase(13))->setDefaultName("gravel")->setHardness(.6);
@@ -82,7 +87,10 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[41])->setTex(7. / 16, 1. / 16);
 		blocks[42] = (new BlockBase(42))->setDefaultName("iron_block")->setHardness(3);
 		reinterpret_cast<BlockBase*>(blocks[42])->setTex(6. / 16, 1. / 16);
-		//
+		blocks[43] = (new BlockDoubleSlab(43))->setDefaultName("double_stone_slab")->setHardness(0); //TODO
+		reinterpret_cast<BlockBase*>(blocks[43])->setTex(5. / 16, 0)->setTexTop(6. / 16, 0)->setTexBot(6. / 16, 0);
+		blocks[44] = (new BlockSlab(44))->setDefaultName("stone_slab")->setHardness(0)->setTransparent(true)->setOpacity(0); //TODO
+		reinterpret_cast<BlockBase*>(blocks[44])->setTex(5. / 16, 0)->setTexTop(6. / 16, 0)->setTexBot(6. / 16, 0);
 		blocks[45] = (new BlockBase(45))->setDefaultName("bricks")->setHardness(2);
 		reinterpret_cast<BlockBase*>(blocks[45])->setTex(7. / 16, 0);
 		blocks[46] = (new BlockBase(46))->setDefaultName("tnt")->setHardness(0);
@@ -93,7 +101,8 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[48])->setTex(4. / 16, 2. / 16);
 		blocks[49] = (new BlockBase(49))->setDefaultName("obsidian")->setHardness(50);
 		reinterpret_cast<BlockBase*>(blocks[49])->setTex(5. / 16, 2. / 16);
-		//
+		blocks[50] = (new BlockTorch(50))->setDefaultName("torch")->setHardness(0)->setOpacity(0)->setTransparent(true)->setReplaceable(true);
+		reinterpret_cast<BlockTorch*>(blocks[50])->setTex(0, 5. / 16);
 		blocks[52] = (new BlockBase(52))->setDefaultName("mob_spawner")->setHardness(5)->setTransparent(true)->setOpacity(1);
 		reinterpret_cast<BlockBase*>(blocks[52])->setTex(1. / 16, 4. / 16);
 		//

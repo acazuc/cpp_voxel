@@ -1,4 +1,5 @@
 #include "NBTTagCompound.h"
+#include "NBTException.h"
 #include "Debug.h"
 #include "NBTFile.h"
 
@@ -13,15 +14,17 @@ namespace voxel
 
 	void NBTTagCompound::readDataFromFile(NBTFile *file)
 	{
-		NBTTag *tag = NULL;
+		NBTTag *tag;
 		while ((tag = file->readNextTag()))
 		{
-			tag->readDataFromFile(file);
 			if (tag->getType() == NBT_TAG_END)
+			{
+				delete (tag);
 				return;
+			}
+			tag->readDataFromFile(file);
 			this->tags.push_back(tag);
 		}
-		//LOG("Tag_Compound(\"" << this->name << "\") : " << this->tags.size() << " entries");
 	}
 
 	void NBTTagCompound::writeDataToFile(NBTFile *file)
@@ -33,7 +36,17 @@ namespace voxel
 			tag->writeNameToFile(file);
 			tag->writeDataToFile(file);
 		}
-		file->writeInt8(0);
+		if (!file->writeInt8(0))
+			throw NBTException("NBTTagCompound: invalid write NBTTagEnd");
+	}
+
+	void NBTTagCompound::printDebug()
+	{
+		LOG("NBTTag_Compound(\"" << this->name << "\") : " << this->tags.size() << " entries");
+		LOG("{");
+		for (uint32_t i = 0; i < this->tags.size(); ++i)
+			this->tags[i]->printDebug();
+		LOG("}");
 	}
 
 }

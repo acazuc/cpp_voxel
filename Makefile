@@ -3,7 +3,7 @@ NAME = cpp_voxel
 CC = g++
 #CC = x86_64-w64-mingw32-g++
 
-CFLAGS = -Wall -Wextra -Werror -O3 -ftree-vectorize -g -march=native -flto=8
+CFLAGS = -Wall -Wextra -O3 -g -march=native -flto=8
 #CFLAGS+= -fsanitize=address
 #CFLAGS+= -fsanitize=thread
 #CFLAGS+= -fsanitize=leak
@@ -34,12 +34,20 @@ SRCS_NAME = Main.cpp \
 	    Utils/System.cpp \
 	    Player/Player.cpp \
 	    Player/PlayerRaycast.cpp \
+	    Player/PlayerInventory.cpp \
+	    Player/PlayerInventorySlot.cpp \
 	    Blocks/Blocks.cpp \
 	    Blocks/Block.cpp \
 	    Blocks/BlockBase.cpp \
 	    Blocks/BlockSapling.cpp \
 	    Blocks/BlockRail.cpp \
 	    Blocks/BlockRedstone.cpp \
+	    Blocks/BlockLiquid.cpp \
+	    Blocks/BlockWater.cpp \
+	    Blocks/BlockLava.cpp \
+	    Blocks/BlockSlab.cpp \
+	    Blocks/BlockDoubleSlab.cpp \
+	    Blocks/BlockTorch.cpp \
 	    Shaders/BlocksShader.cpp \
 	    Shaders/CloudsShader.cpp \
 	    Shaders/SkyboxShader.cpp \

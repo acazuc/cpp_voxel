@@ -13,12 +13,11 @@ namespace voxel
 {
 
 	DroppedBlock::DroppedBlock(World &world, Chunk *chunk, uint8_t type, glm::vec3 pos, glm::vec3 vel)
-	: Entity(world, NULL)
+	: Entity(world, chunk)
 	, created(nanotime)
 	, number(1)
 	, type(type)
 	{
-		this->chunk = chunk;
 		Block *block = Blocks::getBlock(type);
 		if (!block)
 		{

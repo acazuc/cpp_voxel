@@ -13,6 +13,7 @@ namespace voxel
 	, posLabel(0, 24, "")
 	, lastChunkUpdates(INT_MAX)
 	, lastFps(INT_MAX)
+	, inventoryEnabled(false)
 	{
 		this->water.setTexture(Gui::getWaterTex());
 		this->water.setProgram(Main::getGuiShader().program);
@@ -28,6 +29,7 @@ namespace voxel
 	{
 		glDisable(GL_MULTISAMPLE);
 		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
 		glDepthFunc(GL_LEQUAL);
 		Gui::updateMat();
 		if (this->worldScreen.getWorld()->getPlayer().isEyeInWater())
@@ -52,15 +54,37 @@ namespace voxel
 		this->posLabel.setText("x: " + std::to_string(pos.x) + "\ny: " + std::to_string(pos.y) + "\nz: " + std::to_string(pos.z));
 		this->posLabel.draw(Gui::getMat());
 		this->focusedLabel.setPos(0, 39 * Main::getGuiScale());
-		ChunkBlock *block = this->worldScreen.getWorld()->getPlayer().getRaycast().isFound() ? this->worldScreen.getWorld()->getBlock(this->worldScreen.getWorld()->getPlayer().getRaycast().getPos()) : NULL;
+		ChunkBlock *block = NULL;
+		if (this->worldScreen.getWorld()->getPlayer().getRaycast().isFound())
+		{
+			glm::vec3 pos = this->worldScreen.getWorld()->getPlayer().getRaycast().getPos();
+			block = this->worldScreen.getWorld()->getBlock(pos.x, pos.y, pos.z);
+		}
 		std::string focusedName = block && Blocks::getBlock(block->getType()) ? Blocks::getBlock(block->getType())->getDefaultName() : "None";
 		this->focusedLabel.setText("focused: " + focusedName);
 		this->focusedLabel.draw(Gui::getMat());
 		this->bar.draw();
 		this->lagometer.draw();
+		if (this->inventoryEnabled)
+			this->inventory.draw();
 		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_MULTISAMPLE);
+	}
+
+	void WorldScreenGui::mouseScroll(ScrollEvent &event)
+	{
+		int8_t &barPos = this->worldScreen.getWorld()->getPlayer().getInventory().getBarPos();
+		barPos = (barPos + event.yScroll) % 9;
+		if (barPos < 0)
+			barPos += 9;
+	}
+
+	void WorldScreenGui::keyDown(KeyEvent &event)
+	{
+		if (event.key == GLFW_KEY_E)
+			this->inventoryEnabled = !this->inventoryEnabled;
 	}
 
 }

@@ -7,12 +7,12 @@ namespace voxel
 {
 
 	GuiSingleplayer::GuiSingleplayer()
-	: recreate(0, 0, "")
-	, cancel(0, 0, "")
-	, remove(0, 0, "")
-	, create(0, 0, "")
-	, edit(0, 0, "")
-	, play(0, 0, "")
+	: recreate(0, 0, "Re-Create")
+	, cancel(0, 0, "Cancel")
+	, remove(0, 0, "Delete")
+	, create(0, 0, "Create New World")
+	, edit(0, 0, "Edit")
+	, play(0, 0, "Play Selected World")
 	, selected(-1)
 	{
 		this->topGradient.setProgram(Main::getGuiShader().program);
@@ -44,6 +44,12 @@ namespace voxel
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 0));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 1));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 2));
+		this->create.setSize(150, 20);
+		this->edit.setSize(72, 20);
+		this->remove.setSize(72, 20);
+		this->play.setSize(150, 20);
+		this->recreate.setSize(72, 20);
+		this->cancel.setSize(72, 20);
 	}
 
 	void GuiSingleplayer::draw()
@@ -62,12 +68,30 @@ namespace voxel
 		this->botGradient.setPos(0, Main::getWindow()->getHeight() - 16 * 2 * Main::getGuiScale() * 2 - Main::getGuiScale() * 4);
 		this->botGradient.setSize(Main::getWindow()->getWidth(), 4 * Main::getGuiScale());
 		this->botGradient.draw(Gui::getMat());
+		this->play.setPos(Main::getWindow()->getWidth() / 2 - (4 + this->play.getWidth()) * Main::getGuiScale(), Main::getWindow()->getHeight() - 26 * 2 * Main::getGuiScale());
+		this->play.draw(Gui::getMat());
+		this->edit.setPos(Main::getWindow()->getWidth() / 2 - (4 + this->play.getWidth()) * Main::getGuiScale(), Main::getWindow()->getHeight() - 14 * 2 * Main::getGuiScale());
+		this->edit.draw(Gui::getMat());
+		this->remove.setPos(Main::getWindow()->getWidth() / 2 - (4 + this->play.getWidth() - this->edit.getWidth() - 6) * Main::getGuiScale(), Main::getWindow()->getHeight() - 14 * 2 * Main::getGuiScale());
+		this->remove.draw(Gui::getMat());
+		this->create.setPos(Main::getWindow()->getWidth() / 2 + 4 * Main::getGuiScale(), Main::getWindow()->getHeight() - 26 * 2 * Main::getGuiScale());
+		this->create.draw(Gui::getMat());
+		this->recreate.setPos(Main::getWindow()->getWidth() / 2 + 4 * Main::getGuiScale(), Main::getWindow()->getHeight() - 14 * 2 * Main::getGuiScale());
+		this->recreate.draw(Gui::getMat());
+		this->cancel.setPos(Main::getWindow()->getWidth() / 2 + (4 + this->recreate.getWidth() + 6) * Main::getGuiScale(), Main::getWindow()->getHeight() - 14 * 2 * Main::getGuiScale());
+		this->cancel.draw(Gui::getMat());
 	}
 
 	void GuiSingleplayer::mouseMove(bool &alreadyHovered)
 	{
 		for (uint32_t i = 0; i < this->entries.size(); ++i)
 			this->entries[i]->mouseMove(alreadyHovered);
+		this->create.mouseMove(alreadyHovered);
+		this->edit.mouseMove(alreadyHovered);
+		this->remove.mouseMove(alreadyHovered);
+		this->play.mouseMove(alreadyHovered);
+		this->recreate.mouseMove(alreadyHovered);
+		this->cancel.mouseMove(alreadyHovered);
 	}
 
 	bool GuiSingleplayer::mouseDown(MouseEvent &event)

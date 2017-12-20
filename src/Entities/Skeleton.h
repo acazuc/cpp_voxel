@@ -21,7 +21,7 @@ namespace voxel
 	public:
 		static void init();
 		static void clear();
-		Skeleton(World &world);
+		Skeleton(World &world, Chunk *chunk);
 		void draw();
 
 	};

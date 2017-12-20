@@ -1,4 +1,5 @@
 #include "NBTTagFloat.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,13 +15,19 @@ namespace voxel
 
 	void NBTTagFloat::readDataFromFile(NBTFile *file)
 	{
-		file->readFloat(&this->value);
-		//LOG("Tag_Float(\"" << this->name << "\") : " << this->value);
+		if (!file->readFloat(&this->value))
+			throw NBTException("NBTTagFloat: invalid read");
 	}
 
 	void NBTTagFloat::writeDataToFile(NBTFile *file)
 	{
-		file->writeFloat(this->value);
+		if (!file->writeFloat(this->value))
+			throw NBTException("NBTTabFloat: invalid write");
+	}
+
+	void NBTTagFloat::printDebug()
+	{
+		LOG("NBTTag_Float(\"" << this->name << "\") : " << this->value);
 	}
 
 }

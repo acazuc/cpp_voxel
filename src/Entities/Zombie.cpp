@@ -18,17 +18,17 @@ namespace voxel
 
 	void Zombie::init()
 	{
-		head = new BodyPart(glm::vec3(-4, 0, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		head->setPos(glm::vec3(0, 9, 0));
-		body = new BodyPart(glm::vec3(-4, -3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
-		armL = new BodyPart(glm::vec3(0, -10, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
-		armL->setPos(glm::vec3(4, 7, 0));
-		armR = new BodyPart(glm::vec3(-4, -10, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
-		armR->setPos(glm::vec3(-4, 7, 0));
-		legL = new BodyPart(glm::vec3(-2, -12, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
-		legL->setPos(glm::vec3(-2, -3, 0));
-		legR = new BodyPart(glm::vec3(-2, -12, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
-		legR->setPos(glm::vec3(2, -3, 0));
+		head = new BodyPart(glm::vec3(-4, 8, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
+		head->setPos(glm::vec3(0, 0, 0));
+		body = new BodyPart(glm::vec3(-4, 3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
+		armL = new BodyPart(glm::vec3(-3, 2, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
+		armL->setPos(glm::vec3(-5, 2, 0));
+		armR = new BodyPart(glm::vec3(-1, 2, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
+		armR->setPos(glm::vec3(5, 2, 0));
+		legL = new BodyPart(glm::vec3(-2, 0, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
+		legL->setPos(glm::vec3(-2, 12, 0));
+		legR = new BodyPart(glm::vec3(-2, 0, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
+		legR->setPos(glm::vec3(2, 12, 0));
 	}
 
 	void Zombie::clear()
@@ -41,8 +41,8 @@ namespace voxel
 		delete (legR);
 	}
 
-	Zombie::Zombie(World &world)
-	: Entity(world, NULL)
+	Zombie::Zombie(World &world, Chunk *chunk)
+	: Entity(world, chunk)
 	{
 		setSize(glm::vec3(.6, 1.8, .6));
 	}
@@ -56,10 +56,10 @@ namespace voxel
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
 		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
 		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		model = glm::scale(model, glm::vec3(.06, .06, .06));
+		model = glm::scale(model, glm::vec3(.06, -.06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
 		glm::vec4 col(1, 1, 1, 1);
-		col *= ChunkBlock::getLightValue(this->world.getLight(this->pos));
+		col *= ChunkBlock::getLightValue(this->world.getLight(this->pos.x, this->pos.y, this->pos.z));
 		col.w = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);
 		float time = nanotime / 1000000000.;

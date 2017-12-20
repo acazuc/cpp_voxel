@@ -9,6 +9,9 @@ namespace voxel
 	class BlockWater : public BlockLiquid
 	{
 
+	public:
+		BlockWater(uint8_t id);
+
 	};
 
 }

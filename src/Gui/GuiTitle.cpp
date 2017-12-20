@@ -34,7 +34,7 @@ namespace voxel
 
 	void GuiTitle::multiplayerCallback()
 	{
-		//
+		TitleScreen::setMode(TITLE_SCREEN_MULTIPLAYER);
 	}
 
 	void GuiTitle::texturePackCallback()

@@ -125,14 +125,7 @@ namespace voxel
 
 	void Gui::draw()
 	{
-		glDisable(GL_CULL_FACE);
-		glDepthFunc(GL_LEQUAL);
-		this->inventory.draw();
-		this->hearts.draw();
-		this->cross.draw();
-		this->bar.draw();
-		glDepthFunc(GL_LESS);
-		glEnable(GL_CULL_FACE);
+		//
 	}
 
 	void Gui::updateMat()

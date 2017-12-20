@@ -6,11 +6,10 @@ namespace voxel
 
 	enum ToolType
 	{
-
-	TOOL_SHOVEL,
-	TOOL_PICKAXE,
-	TOOL_AXE,
-	TOOL_HOE
+		TOOL_SHOVEL,
+		TOOL_PICKAXE,
+		TOOL_AXE,
+		TOOL_HOE
 
 	};
 

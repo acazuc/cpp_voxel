@@ -45,4 +45,9 @@ namespace voxel
 		this->text.setShadowColor(Gui::getTextShadowColor(color));
 	}
 
+	void GuiLabel::setShadow(bool shadow)
+	{
+		this->text.setShadowSize(shadow ? 1 : 0);
+	}
+
 }

@@ -1,11 +1,12 @@
 #include "Particle.h"
 #include "World/ChunkBlock.h"
+#include "World/World.h"
 
 namespace voxel
 {
 
-	Particle::Particle(World &world, glm::vec3 pos, glm::vec2 size, glm::vec3 vel, glm::vec2 uv, glm::vec2 uvSize, uint8_t light)
-	: Entity(world, NULL)
+	Particle::Particle(World &world, Chunk *chunk, glm::vec3 pos, glm::vec2 size, glm::vec3 vel, glm::vec2 uv, glm::vec2 uvSize, uint8_t light)
+	: Entity(world, chunk)
 	, uvSize(uvSize)
 	, size(size)
 	, uv(uv)
@@ -36,6 +37,8 @@ namespace voxel
 
 	void Particle::draw(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<glm::vec2> &texCoords, std::vector<GLuint> &indices, glm::mat4 &playerMat)
 	{
+		if (this->deleted)
+			return;
 		glm::vec3 pos = getRealPos();
 		GLuint currentIndice = vertexes.size();
 		vertexes.push_back(glm::vec4(pos, 1) + playerMat * glm::vec4(-this->size.x / 2, -this->size.y / 2, 0, 1));
@@ -56,6 +59,25 @@ namespace voxel
 		indices.push_back(currentIndice + 2);
 		indices.push_back(currentIndice + 1);
 		indices.push_back(currentIndice + 3);
+	}
+
+	void Particle::updateParentChunk()
+	{
+		int32_t chunkX = World::getChunkCoord(this->pos.x);
+		int32_t chunkZ = World::getChunkCoord(this->pos.z);
+		if (!this->chunk || (this->chunk->getX() != chunkX && this->chunk->getZ() != chunkZ))
+		{
+			Chunk *chunk = NULL;
+			if (!(chunk = this->world.getChunk(chunkX, chunkZ)))
+			{
+				this->deleted = true;
+				return;
+			}
+			if (this->chunk)
+				this->chunk->getParticlesManager().removeParticle(this);
+			this->chunk = chunk;
+			this->chunk->getParticlesManager().addParticle(this);
+		}
 	}
 
 }

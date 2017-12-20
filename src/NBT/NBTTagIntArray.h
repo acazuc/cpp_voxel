@@ -18,6 +18,7 @@ namespace voxel
 		NBTTagIntArray(std::string name);
 		void readDataFromFile(NBTFile *file);
 		void writeDataToFile(NBTFile *file);
+		void printDebug();
 		inline std::vector<int32_t> &getValues() {return (this->values);};
 
 	};

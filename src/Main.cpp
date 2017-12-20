@@ -43,7 +43,7 @@ namespace voxel
 	Screen *Main::screen;
 	Font *Main::font;
 	int64_t Main::chunkUpdates = 0;
-	uint8_t Main::guiScale = 1;
+	uint8_t Main::guiScale = 3;
 	int64_t Main::fps = 0;
 	bool Main::smooth = true;
 	bool Main::ssao = true;
@@ -51,10 +51,11 @@ namespace voxel
 
 	void Main::main()
 	{
-		//glfwWindowHint(GLFW_SAMPLES, 32);
 		//NBTFile file("./level.dat");
 		//file.load();
+		//file.printDebug();
 		//file.save();
+		//glfwWindowHint(GLFW_SAMPLES, 32);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 			ERROR("GLAD failed");
@@ -125,6 +126,7 @@ namespace voxel
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); 
 		if (!libformat::PNG::read("data/textures/unknown_pack.png", datas, width, height))
 			ERROR("Failed to read unknown.png");
 		unknownPack = new Texture();
@@ -146,8 +148,8 @@ namespace voxel
 		Blocks::init();
 		Biomes::init();
 		Gui::init();
-		//screen = new WorldScreen(new World());
-		screen = new TitleScreen();
+		screen = new WorldScreen(new World());
+		//screen = new TitleScreen();
 		nanotime = System::nanotime();
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;
@@ -227,11 +229,13 @@ namespace voxel
 		{
 			Main::ssao = !Main::ssao;
 			//Main::world->update();
+			return;
 		}
 		if (event.key == GLFW_KEY_O)
 		{
 			Main::smooth = !Main::smooth;
 			//Main::world->update();
+			return;
 		}
 		if (event.key == GLFW_KEY_I)
 		{
@@ -241,7 +245,9 @@ namespace voxel
 				Main::disableTex = 1;
 			blocksShader->program->use();
 			blocksShader->disableTexLocation->setVec1i(Main::disableTex);
+			return;
 		}
+		screen->keyDown(event);
 	}
 
 	void Main::glErrors(std::string err)

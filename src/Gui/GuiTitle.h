@@ -2,6 +2,9 @@
 # define GUI_TITLE_H
 
 # include "Gui/GuiButton.h"
+# include <librender/Shader/Sprite/ShaderSprite.h>
+
+using librender::ShaderSprite;
 
 namespace voxel
 {

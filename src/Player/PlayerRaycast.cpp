@@ -189,8 +189,8 @@ namespace voxel
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
 			{
-				int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-				int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+				int32_t chunkX = World::getChunkCoord(pos.x);
+				int32_t chunkZ = World::getChunkCoord(pos.z);
 				if (chunkX != oldChunkX || chunkZ != oldChunkZ)
 				{
 					oldChunkX = chunkX;
@@ -200,7 +200,7 @@ namespace voxel
 				if (!chunk)
 					goto nextStep;
 				glm::vec3 relative(pos.x - chunkX, pos.y, pos.z - chunkZ);
-				ChunkBlock *block = chunk->getBlock(glm::vec3(relative));
+				ChunkBlock *block = chunk->getBlock(relative.x, relative.y, relative.z);
 				if (!block || !block->getType())
 					goto nextStep;
 				Block *blockModel = Blocks::getBlock(block->getType());
@@ -304,13 +304,13 @@ nextStep:
 			return;
 		this->todoTicks = 20 * blockModel->getHardness();
 		buildBreakTexCoords();
-		uint8_t light = chunk->getLight(relative);
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x - 1, pos.y, pos.z)));
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x + 1, pos.y, pos.z)));
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y - 1, pos.z)));
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y + 1, pos.z)));
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y, pos.z - 1)));
-		light = std::max(light, chunk->getWorld().getLight(glm::vec3(pos.x, pos.y, pos.z + 1)));
+		uint8_t light = chunk->getLight(relative.x, relative.y, relative.z);
+		light = std::max(light, chunk->getWorld().getLight(pos.x - 1, pos.y, pos.z));
+		light = std::max(light, chunk->getWorld().getLight(pos.x + 1, pos.y, pos.z));
+		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y - 1, pos.z));
+		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y + 1, pos.z));
+		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y, pos.z - 1));
+		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y, pos.z + 1));
 		if (this->doneTicks > 20 * blockModel->getHardness())
 		{
 			this->found = false;
@@ -343,7 +343,7 @@ nextStep:
 						uv.x += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 						uv.y += std::rand() * 1. / 16 * 14 / 16 / RAND_MAX;
 						glm::vec2 uvSize(1. / 16 / 8, 1. / 16 / 8);
-						Particle *particle = new Particle(this->player.getWorld(), pos2, size, dir, uv, uvSize, light);
+						Particle *particle = new Particle(this->player.getWorld(), chunk, pos2, size, dir, uv, uvSize, light);
 						chunk->getParticlesManager().addParticle(particle);
 					}
 				}
@@ -352,7 +352,7 @@ nextStep:
 			glm::vec3 velocity(std::rand() * .2 / RAND_MAX - .1, .25 + std::rand() * .25 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
 			DroppedBlock *tmp = new DroppedBlock(this->player.getWorld(), chunk, block->getType(), position, velocity);
 			chunk->getEntitiesManager().addEntity(tmp);
-			chunk->destroyBlock(relative);
+			chunk->destroyBlock(relative.x, relative.y, relative.z);
 		}
 	}
 
@@ -400,7 +400,7 @@ nextStep:
 			newChunk = chunk->getChunkZMore();
 			newPos.z = 0;
 		}
-		newChunk->setBlockIfReplaceable(newPos, 2);
+		newChunk->setBlockIfReplaceable(newPos.x, newPos.y, newPos.z, 2);
 	}
 
 	void PlayerRaycast::buildBreakTexCoords()

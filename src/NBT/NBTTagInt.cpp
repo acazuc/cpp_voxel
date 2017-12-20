@@ -1,4 +1,5 @@
 #include "NBTTagInt.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,13 +15,19 @@ namespace voxel
 
 	void NBTTagInt::readDataFromFile(NBTFile *file)
 	{
-		file->readInt32(&this->value);
-		//LOG("Tag_Int(\"" << this->name << "\") : " << this->value);
+		if (!file->readInt32(&this->value))
+			throw NBTException("NBTTagInt: invalid read");
 	}
 
 	void NBTTagInt::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt32(this->value);
+		if (!file->writeInt32(this->value))
+			throw NBTException("NBTTagInt: invalid write");
+	}
+
+	void NBTTagInt::printDebug()
+	{
+		LOG("NBTTag_Int(\"" << this->name << "\") : " << this->value);
 	}
 
 }

@@ -82,10 +82,10 @@ namespace voxel
 		{
 			if (!chunk->getChunkZMore())
 				visibleFaces |= BLOCK_FACE_FRONT;
-			else if (shouldRenderFaceNear(chunk->getChunkZMore()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, 0))))
+			else if (shouldRenderFaceNear(chunk->getChunkZMore()->getBlock(pos.x - chunk->getX(), pos.y, 0)))
 				visibleFaces |= BLOCK_FACE_FRONT;
 		}
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() + 1)))
 		{
 			visibleFaces |= BLOCK_FACE_FRONT;
 		}
@@ -93,10 +93,10 @@ namespace voxel
 		{
 			if (!chunk->getChunkZLess())
 				visibleFaces |= BLOCK_FACE_BACK;
-			else if (shouldRenderFaceNear(chunk->getChunkZLess()->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1))))
+			else if (shouldRenderFaceNear(chunk->getChunkZLess()->getBlock(pos.x - chunk->getX(), pos.y, CHUNK_WIDTH - 1)))
 				visibleFaces |= BLOCK_FACE_BACK;
 		}
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ() - 1)))
 		{
 			visibleFaces |= BLOCK_FACE_BACK;
 		}
@@ -104,10 +104,10 @@ namespace voxel
 		{
 			if (!chunk->getChunkXLess())
 				visibleFaces |= BLOCK_FACE_LEFT;
-			else if (shouldRenderFaceNear(chunk->getChunkXLess()->getBlock(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ()))))
+			else if (shouldRenderFaceNear(chunk->getChunkXLess()->getBlock(CHUNK_WIDTH - 1, pos.y, pos.z - chunk->getZ())))
 				visibleFaces |= BLOCK_FACE_LEFT;
 		}
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ()))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX() - 1, pos.y, pos.z - chunk->getZ())))
 		{
 			visibleFaces |= BLOCK_FACE_LEFT;
 		}
@@ -115,20 +115,20 @@ namespace voxel
 		{
 			if (!chunk->getChunkXMore())
 				visibleFaces |= BLOCK_FACE_RIGHT;
-			else if (shouldRenderFaceNear(chunk->getChunkXMore()->getBlock(glm::vec3(0, pos.y, pos.z - chunk->getZ()))))
+			else if (shouldRenderFaceNear(chunk->getChunkXMore()->getBlock(0, pos.y, pos.z - chunk->getZ())))
 				visibleFaces |= BLOCK_FACE_RIGHT;
 		}
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ()))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX() + 1, pos.y, pos.z - chunk->getZ())))
 		{
 			visibleFaces |= BLOCK_FACE_RIGHT;
 		}
 		if (pos.y == CHUNK_HEIGHT - 1)
 			visibleFaces |= BLOCK_FACE_UP;
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ()))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX(), pos.y + 1, pos.z - chunk->getZ())))
 			visibleFaces |= BLOCK_FACE_UP;
 		if (pos.y == 0)
 			visibleFaces |= BLOCK_FACE_DOWN;
-		else if (shouldRenderFaceNear(chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ()))))
+		else if (shouldRenderFaceNear(chunk->getBlock(pos.x - chunk->getX(), pos.y - 1, pos.z - chunk->getZ())))
 			visibleFaces |= BLOCK_FACE_DOWN;
 	}
 
@@ -136,32 +136,34 @@ namespace voxel
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
 			return (15);
-		glm::vec3 newPos(pos.x - chunk->getX() + addX, pos.y + addY, pos.z - chunk->getZ() + addZ);
-		if (newPos.x < 0)
+		int32_t newX = pos.x - chunk->getX() + addX;
+		int32_t newY = pos.y + addY;
+		int32_t newZ = pos.z - chunk->getZ() + addZ;
+		if (newX < 0)
 		{
-			newPos.x += CHUNK_WIDTH;
+			newX += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXLess()))
 				return (15);
 		}
-		else if (newPos.x >= CHUNK_WIDTH)
+		else if (newX >= CHUNK_WIDTH)
 		{
-			newPos.x -= CHUNK_WIDTH;
+			newX -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXMore()))
 				return (15);
 		}
-		if (newPos.z < 0)
+		if (newZ < 0)
 		{
-			newPos.z += CHUNK_WIDTH;
+			newZ += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZLess()))
 				return (15);
 		}
-		else if (newPos.z >= CHUNK_WIDTH)
+		else if (newZ >= CHUNK_WIDTH)
 		{
-			newPos.z -= CHUNK_WIDTH;
+			newZ -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZMore()))
 				return (15);
 		}
-		return (chunk->getLight(newPos));
+		return (chunk->getLight(newX, newY, newZ));
 	}
 
 	bool ChunkBlock::calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
@@ -195,7 +197,7 @@ namespace voxel
 			if (!(chunk = chunk->getChunkZMore()))
 				return (true);
 		}
-		ChunkBlock *block = chunk->getBlock(glm::vec3(newX, newY, newZ));
+		ChunkBlock *block = chunk->getBlock(newX, newY, newZ);
 		if (!block)
 			return (true);
 		if (!Blocks::getBlock(block->getType()))

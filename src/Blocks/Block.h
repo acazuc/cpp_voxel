@@ -1,7 +1,7 @@
 #ifndef BLOCK_H
 # define BLOCK_H
 
-# include "ToolType.h"
+# include "Items/ToolType.h"
 # include "AABB.h"
 # include <string>
 

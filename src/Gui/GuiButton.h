@@ -2,12 +2,14 @@
 # define GUI_BUTTON_H
 
 # include "./GuiLabel.h"
-# include <librender/Shader/Sprite/ShaderSprite.h>
+# include <librender/Shader/Sprite/ShaderSpriteBatchEntry.h>
+# include <librender/Shader/Sprite/ShaderSpriteBatch.h>
 # include <librender/Shader/Text/ShaderText.h>
 # include <librender/Window/Window.h>
 # include <string>
 
-using librender::ShaderSprite;
+using librender::ShaderSpriteBatchEntry;
+using librender::ShaderSpriteBatch;
 using librender::ShaderText;
 using librender::MouseEvent;
 
@@ -18,7 +20,9 @@ namespace voxel
 	{
 
 	private:
-		ShaderSprite background;
+		ShaderSpriteBatchEntry bgRight;
+		ShaderSpriteBatchEntry bgLeft;
+		ShaderSpriteBatch background;
 		GuiLabel text;
 		void(*callback)(void);
 		int32_t height;

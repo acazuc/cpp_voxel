@@ -1,4 +1,5 @@
 #include "NBTTagList.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,9 +15,10 @@ namespace voxel
 	void NBTTagList::readDataFromFile(NBTFile *file)
 	{
 		int32_t size;
-		file->readInt8(reinterpret_cast<int8_t*>(&this->type));
-		file->readInt32(&size);
-		//LOG("Tag_List(\"" << this->name << "\") : " << size << " entries of type " << this->type);
+		if (!file->readInt8(reinterpret_cast<int8_t*>(&this->type)))
+			throw NBTException("NBTTagList: invalid read type");
+		if (!file->readInt32(&size))
+			throw NBTException("NBTTagList: invalid read size");
 		for (int32_t i = 0; i < size; ++i)
 		{
 			this->values.push_back(file->readTagOfType(static_cast<enum NBTTagType>(this->type), ""));
@@ -26,10 +28,17 @@ namespace voxel
 
 	void NBTTagList::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt8(this->type);
-		file->writeInt32(this->values.size());
+		if (!file->writeInt8(this->type))
+			throw NBTException("NBTTagList: invalid write type");
+		if (!file->writeInt32(this->values.size()))
+			throw NBTException("NBTTagList: invalid write size");
 		for (uint32_t i = 0; i < this->values.size(); ++i)
 			this->values[i]->writeDataToFile(file);
+	}
+
+	void NBTTagList::printDebug()
+	{
+		LOG("NBTTag_List(\"" << this->name << "\") : " << this->values.size() << " entries of type " << this->type);
 	}
 
 }

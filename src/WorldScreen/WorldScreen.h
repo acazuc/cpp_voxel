@@ -21,6 +21,7 @@ namespace voxel
 		void tick();
 		void draw();
 		void mouseScroll(ScrollEvent &event);
+		void keyDown(KeyEvent &event);
 		inline World *getWorld() {return (this->world);};
 
 	};

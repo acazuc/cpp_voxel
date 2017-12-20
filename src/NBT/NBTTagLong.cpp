@@ -1,4 +1,5 @@
 #include "NBTTagLong.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,13 +15,19 @@ namespace voxel
 
 	void NBTTagLong::readDataFromFile(NBTFile *file)
 	{
-		file->readInt64(&this->value);
-		//LOG("Tag_Long(\"" << this->name << "\") : " << this->value);
+		if (!file->readInt64(&this->value))
+			throw NBTException("NBTTagLong: invalid read");
 	}
 
 	void NBTTagLong::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt64(this->value);
+		if (!file->writeInt64(this->value))
+			throw NBTException("NBTTagLong: invalid write");
+	}
+
+	void NBTTagLong::printDebug()
+	{
+		LOG("NBTTag_Long(\"" << this->name << "\") : " << this->value);
 	}
 
 }

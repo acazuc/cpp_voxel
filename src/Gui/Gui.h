@@ -1,11 +1,8 @@
 #ifndef GUI_H
 # define GUI_H
 
-# include "./GuiInventory.h"
-# include "./GuiHearts.h"
-# include "./GuiCross.h"
-# include "./GuiBar.h"
 # include <librender/Texture.h>
+# include <glm/mat4x4.hpp>
 
 using librender::Texture;
 using librender::Color;
@@ -24,10 +21,6 @@ namespace voxel
 		static Texture *logoTex;
 		static Texture *guiTex;
 		static Texture *bgTex;
-		GuiInventory inventory;
-		GuiHearts hearts;
-		GuiCross cross;
-		GuiBar bar;
 
 	public:
 		Gui();

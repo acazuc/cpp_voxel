@@ -30,8 +30,11 @@ namespace voxel
 			int32_t diff = pos - i;
 			if (diff < 0)
 				diff += 512;
-			colors.push_back(glm::vec3(0, (300 - diff) / 300., 0));
-			colors.push_back(glm::vec3(0, (300 - diff) / 300., 0));
+			float mix = std::min(1.f, values[i] / (1000 / 60));
+			glm::vec3 color(mix, 1 - mix, 0);
+			color *= (300 - diff) / 300.;
+			colors.push_back(color);
+			colors.push_back(color);
 			vertexes.push_back(glm::vec2(i, 0));
 			vertexes.push_back(glm::vec2(i, -values[i] * PX_PER_MS));
 			texCoords.push_back(glm::vec2(0));

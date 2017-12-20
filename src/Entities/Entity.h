@@ -29,6 +29,7 @@ namespace voxel
 		bool inWater;
 		bool flying;
 		void updateGravitySliperness();
+		virtual void updateParentChunk();
 
 	public:
 		Entity(World &world, Chunk *chunk);

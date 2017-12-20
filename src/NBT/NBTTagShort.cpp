@@ -1,4 +1,5 @@
 #include "NBTTagShort.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,13 +15,19 @@ namespace voxel
 
 	void NBTTagShort::readDataFromFile(NBTFile *file)
 	{
-		file->readInt16(&this->value);
-		//LOG("Tag_Short(\"" << this->name << "\") : " << this->value);
+		if (!file->readInt16(&this->value))
+			throw NBTException("NBTTagShort: invalid read");
 	}
 
 	void NBTTagShort::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt16(this->value);
+		if (!file->writeInt16(this->value))
+			throw NBTException("NBTTagShort: invalid write");
+	}
+
+	void NBTTagShort::printDebug()
+	{
+		LOG("NBTTag_Short(\"" << this->name << "\") : " << this->value);
 	}
 
 }

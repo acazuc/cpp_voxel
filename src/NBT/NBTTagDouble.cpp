@@ -1,4 +1,5 @@
 #include "NBTTagDouble.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -14,13 +15,19 @@ namespace voxel
 
 	void NBTTagDouble::readDataFromFile(NBTFile *file)
 	{
-		file->readDouble(&this->value);
-		//LOG("Tag_Double(\"" << this->name << "\") : " << this->value);
+		if (!file->readDouble(&this->value))
+			throw NBTException("NBTTagDouble: invalid read");
 	}
 
 	void NBTTagDouble::writeDataToFile(NBTFile *file)
 	{
-		file->writeDouble(this->value);
+		if (!file->writeDouble(this->value))
+			throw NBTException("NBTTagDouble: invalid write");
+	}
+
+	void NBTTagDouble::printDebug()
+	{
+		LOG("NBTTag_Double(\"" << this->name << "\") : " << this->value);
 	}
 
 }

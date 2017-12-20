@@ -135,7 +135,7 @@ namespace voxel
 						else
 							blockType = 3;
 					}
-					setBlockIfReplaceable(glm::vec3(x, y, z), blockType);
+					setBlockIfReplaceable(x, y, z, blockType);
 				}
 			}
 		}
@@ -172,27 +172,18 @@ namespace voxel
 		}
 		if (!this->layers[layer].verticesNb)
 			return;
-		//this->layers[layer].vertexArray->bind();
+		if (layer == 3)
+			updateGLBuffer(3);
 		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
 		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
 		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
 		this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
-		/*glm::mat4 mvp = this->world.getPlayer().getViewProjMat();
-		Main::getBlocksShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
-		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
-		glm::vec4 color(1);
-		Main::getBlocksShader().fogColorLocation->setVec4f(color);
-		Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
-		Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->world.getPlayer().getEyeLight() / 15.));
-		Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());*/
 		glDrawElements(GL_TRIANGLES, this->layers[layer].verticesNb, GL_UNSIGNED_INT, NULL);
-		//this->layers[layer].vertexArray->unbind();
 	}
 
-	void Chunk::setBlockLightRec(glm::vec3 pos, uint8_t light)
+	void Chunk::setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		ChunkBlock *block = getBlock(pos);
+		ChunkBlock *block = getBlock(x, y, z);
 		uint8_t type = !block ? 0 : block->getType();
 		Block *blockModel = Blocks::getBlock(type);
 		if (!blockModel)
@@ -202,19 +193,19 @@ namespace voxel
 		bool isTopBlock = false;
 		if (light == 0xf)
 			goto endNearTop;
-		if (pos.y >= this->topBlocks[getXZId(pos.x, pos.z)])
+		if (y >= this->topBlocks[getXZId(x, z)])
 		{
 			isTopBlock = true;
 			light = 0xf;
 			goto endNearTop;
 		}
-		for (int8_t x = -1; x <= 1; ++x)
+		for (int8_t xx = -1; xx <= 1; ++xx)
 		{
-			for (int8_t y = -1; y <= 1; ++y)
+			for (int8_t yy = -1; yy <= 1; ++yy)
 			{
-				for (int8_t z = -1; z <= 1; ++z)
+				for (int8_t zz = -1; zz <= 1; ++zz)
 				{
-					ChunkBlock *tmp = this->world.getBlock(glm::vec3(this->x + pos.x + x, pos.y + y, this->z + pos.z + z));
+					ChunkBlock *tmp = this->world.getBlock(this->x + xx + x, yy + y, this->z + zz + z);
 					if (tmp && tmp->getType())
 						goto endCheckAround;
 				}
@@ -222,9 +213,9 @@ namespace voxel
 		}
 		return;
 	endCheckAround:
-		if (pos.x > 0)
+		if (x > 0)
 		{
-			if (pos.y > this->topBlocks[getXZId(pos.x - 1, pos.z)])
+			if (y > this->topBlocks[getXZId(x - 1, z)])
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -232,31 +223,15 @@ namespace voxel
 		}
 		else
 		{
-			if (this->chunkXLess && pos.y > this->chunkXLess->getTopBlock(CHUNK_WIDTH - 1, pos.z))
+			if (this->chunkXLess && y > this->chunkXLess->getTopBlock(CHUNK_WIDTH - 1, z))
 			{
 				light = 0xf;
 				goto endNearTop;
 			}
 		}
-		if (pos.x < CHUNK_WIDTH - 1)
+		if (x < CHUNK_WIDTH - 1)
 		{
-			if (pos.y > this->topBlocks[getXZId(pos.x + 1, pos.z)])
-			{
-				light = 0xf;
-				goto endNearTop;
-			}
-		}
-		else
-		{
-			if (this->chunkXMore && pos.y > this->chunkXMore->getTopBlock(0, pos.z))
-			{
-				light = 0xf;
-				goto endNearTop;
-			}
-		}
-		if (pos.z > 0)
-		{
-			if (pos.y > this->topBlocks[getXZId(pos.x, pos.z - 1)])
+			if (y > this->topBlocks[getXZId(x + 1, z)])
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -264,15 +239,15 @@ namespace voxel
 		}
 		else
 		{
-			if (this->chunkZLess && pos.y > this->chunkZLess->getTopBlock(pos.x, CHUNK_WIDTH - 1))
+			if (this->chunkXMore && y > this->chunkXMore->getTopBlock(0, z))
 			{
 				light = 0xf;
 				goto endNearTop;
 			}
 		}
-		if (pos.z < CHUNK_WIDTH - 1)
+		if (z > 0)
 		{
-			if (pos.y > this->topBlocks[getXZId(pos.x, pos.z + 1)])
+			if (y > this->topBlocks[getXZId(x, z - 1)])
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -280,55 +255,71 @@ namespace voxel
 		}
 		else
 		{
-			if (this->chunkZMore && pos.y > this->chunkZMore->getTopBlock(pos.x, 0))
+			if (this->chunkZLess && y > this->chunkZLess->getTopBlock(x, CHUNK_WIDTH - 1))
 			{
 				light = 0xf;
 				goto endNearTop;
 			}
 		}
-		if (pos.x == 0 && this->chunkXLess)
+		if (z < CHUNK_WIDTH - 1)
 		{
-			uint8_t nearLight = this->chunkXLess->getSkyLight(glm::vec3(CHUNK_WIDTH - 1, pos.y, pos.z));
+			if (y > this->topBlocks[getXZId(x, z + 1)])
+			{
+				light = 0xf;
+				goto endNearTop;
+			}
+		}
+		else
+		{
+			if (this->chunkZMore && y > this->chunkZMore->getTopBlock(x, 0))
+			{
+				light = 0xf;
+				goto endNearTop;
+			}
+		}
+		if (x == 0 && this->chunkXLess)
+		{
+			uint8_t nearLight = this->chunkXLess->getSkyLight(CHUNK_WIDTH - 1, y, z);
 			if (nearLight > 0)
 				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		else if (pos.x == CHUNK_WIDTH - 1 && this->chunkXMore)
+		else if (x == CHUNK_WIDTH - 1 && this->chunkXMore)
 		{
-			uint8_t nearLight = this->chunkXMore->getSkyLight(glm::vec3(0, pos.y, pos.z));
+			uint8_t nearLight = this->chunkXMore->getSkyLight(0, y, z);
 			if (nearLight > 0)
 				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		if (pos.z == 0 && this->chunkZLess)
+		if (z == 0 && this->chunkZLess)
 		{
-			uint8_t nearLight = this->chunkZLess->getSkyLight(glm::vec3(pos.x, pos.y, CHUNK_WIDTH - 1));
+			uint8_t nearLight = this->chunkZLess->getSkyLight(x, y, CHUNK_WIDTH - 1);
 			if (nearLight > 0)
 				light = std::max(uint8_t(nearLight - 1u), light);
 		}
-		else if (pos.z == CHUNK_WIDTH - 1 && this->chunkZMore)
+		else if (z == CHUNK_WIDTH - 1 && this->chunkZMore)
 		{
-			uint8_t nearLight = this->chunkZMore->getSkyLight(glm::vec3(pos.x, pos.y, 0));
+			uint8_t nearLight = this->chunkZMore->getSkyLight(x, y, 0);
 			if (nearLight > 0)
 				light = std::max(uint8_t(nearLight - 1u), light);
 		}
 endNearTop:
-		if (getSkyLightVal(pos) >= light)
+		if (getSkyLightVal(x, y, z) >= light)
 			return;
-		setSkyLight(pos, light);
+		setSkyLight(x, y, z, light);
 		if (blockModel->getOpacity() >= light)
 			return;
 		light -= blockModel->getOpacity();
-		if (pos.x > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x - 1, pos.z)])
-			setBlockLightRec(glm::vec3(pos.x - 1, pos.y, pos.z), light);
-		if (pos.x < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x + 1, pos.z)])
-			setBlockLightRec(glm::vec3(pos.x + 1, pos.y, pos.z), light);
-		if (pos.y > 0)
-			setBlockLightRec(glm::vec3(pos.x, pos.y - 1, pos.z), light);
-		if (pos.y < CHUNK_HEIGHT - 1 && !isTopBlock)
-			setBlockLightRec(glm::vec3(pos.x, pos.y + 1, pos.z), light);
-		if (pos.z > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z - 1)])
-			setBlockLightRec(glm::vec3(pos.x, pos.y, pos.z - 1), light);
-		if (pos.z < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z + 1)])
-			setBlockLightRec(glm::vec3(pos.x, pos.y, pos.z + 1), light);
+		if (x > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x - 1, pos.z)])
+			setBlockLightRec(x - 1, y, z, light);
+		if (x < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x + 1, pos.z)])
+			setBlockLightRec(x + 1, y, z, light);
+		if (y > 0)
+			setBlockLightRec(x, y - 1, z, light);
+		if (y < CHUNK_HEIGHT - 1 && !isTopBlock)
+			setBlockLightRec(x, y + 1, z, light);
+		if (z > 0)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z - 1)])
+			setBlockLightRec(x, y, z - 1, light);
+		if (z < CHUNK_WIDTH - 1)// && !isTopBlock && pos.y < this->topBlocks[getXZId(pos.x, pos.z + 1)])
+			setBlockLightRec(x, y, z + 1, light);
 	}
 
 	void Chunk::generateLightMap()
@@ -358,9 +349,9 @@ endNearTop:
 			{
 				uint8_t topBlock = this->topBlocks[getXZId(x, z)];
 				if (topBlock == CHUNK_HEIGHT)
-					setBlockLightRec(glm::vec3(x, topBlock, z), 0xf);
+					setBlockLightRec(x, topBlock, z, 0xf);
 				else
-					setBlockLightRec(glm::vec3(x, topBlock + 1, z), 0xe);
+					setBlockLightRec(x, topBlock + 1, z, 0xe);
 			}
 		}
 	}
@@ -380,161 +371,156 @@ endNearTop:
 		this->mustUpdateBuffers = true;
 	}
 
+	void Chunk::updateGLBuffer(uint8_t layer)
+	{
+		Main::getBlocksShader().program->use();
+		if (!this->layers[layer].texCoordsBuffer)
+			this->layers[layer].texCoordsBuffer = new VertexBuffer();
+		if (!this->layers[layer].vertexesBuffer)
+			this->layers[layer].vertexesBuffer = new VertexBuffer();
+		if (!this->layers[layer].indicesBuffer)
+			this->layers[layer].indicesBuffer = new VertexBuffer();
+		if (!this->layers[layer].colorsBuffer)
+			this->layers[layer].colorsBuffer = new VertexBuffer();
+		this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+		this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, this->layers[layer].tessellator.indices.data(), this->layers[layer].tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
+		this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->layers[layer].verticesNb = this->layers[layer].tessellator.indices.size();
+		std::vector<glm::vec2> emptyTexCoords;
+		std::vector<glm::vec3> emptyVertexes;
+		std::vector<glm::vec3> emptyColors;
+		std::vector<GLuint> emptyIndices;
+		this->layers[layer].tessellator.texCoords.swap(emptyTexCoords);
+		this->layers[layer].tessellator.vertexes.swap(emptyVertexes);
+		this->layers[layer].tessellator.colors.swap(emptyColors);
+		this->layers[layer].tessellator.indices.swap(emptyIndices);
+	}
+
 	void Chunk::updateGLBuffers()
 	{
 		this->mustUpdateBuffers = false;
 		for (uint8_t layer = 0; layer < 3; ++layer)
-		{
-			//if (!this->layers[layer].vertexArray)
-			//	this->layers[layer].vertexArray = new VertexArray();
-			//this->layers[layer].vertexArray->bind();
-			Main::getBlocksShader().program->use();
-			if (!this->layers[layer].texCoordsBuffer)
-				this->layers[layer].texCoordsBuffer = new VertexBuffer();
-			if (!this->layers[layer].vertexesBuffer)
-				this->layers[layer].vertexesBuffer = new VertexBuffer();
-			if (!this->layers[layer].indicesBuffer)
-				this->layers[layer].indicesBuffer = new VertexBuffer();
-			if (!this->layers[layer].colorsBuffer)
-				this->layers[layer].colorsBuffer = new VertexBuffer();
-			this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-			this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-			this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, this->layers[layer].tessellator.indices.data(), this->layers[layer].tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
-			this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-			this->layers[layer].verticesNb = this->layers[layer].tessellator.indices.size();
-			std::vector<glm::vec2> emptyTexCoords;
-			std::vector<glm::vec3> emptyVertexes;
-			std::vector<glm::vec3> emptyColors;
-			std::vector<GLuint> emptyIndices;
-			this->layers[layer].tessellator.texCoords.swap(emptyTexCoords);
-			this->layers[layer].tessellator.vertexes.swap(emptyVertexes);
-			this->layers[layer].tessellator.colors.swap(emptyColors);
-			this->layers[layer].tessellator.indices.swap(emptyIndices);
-			/*Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
-			Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
-			Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
-			this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
-			this->layers[layer].vertexArray->unbind();*/
-		}
+			updateGLBuffer(layer);
 	}
 
-	void Chunk::setBlockIfReplaceable(glm::vec3 pos, uint8_t type)
+	void Chunk::setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type)
 	{
-		ChunkBlock *block = getBlock(pos);
+		ChunkBlock *block = getBlock(x, y, z);
 		if (block)
 		{
 			Block *blockModel = Blocks::getBlock(block->getType());
 			if (blockModel && !blockModel->isReplaceable())
 				return;
 		}
-		setBlock(pos, type);
+		setBlock(x, y, z, type);
 	}
 
-	void Chunk::setBlock(glm::vec3 pos, uint8_t type)
+	void Chunk::setBlock(int32_t x, int32_t y, int32_t z, uint8_t type)
 	{
 		if (type)
 		{
-			uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
-			if (pos.y > *top)
-				*top = pos.y;
+			uint8_t *top = &this->topBlocks[getXZId(x, z)];
+			if (y > *top)
+				*top = y;
 		}
-		int32_t storageY = pos.y / 16;
+		int32_t storageY = y / 16;
 		if (!this->storages[storageY])
 		{
 			if (!type)
 				return;
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
 		}
-		this->storages[storageY]->setBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), type);
+		this->storages[storageY]->setBlock(x, y - storageY * 16, z, type);
 		regenerateLightMap();
-		if (pos.x == 0)
+		if (x == 0)
 		{
 			if (this->chunkXLess)
 				this->chunkXLess->regenerateLightMap();
 		}
-		else if (pos.x == CHUNK_WIDTH - 1)
+		else if (x == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkXMore)
 				this->chunkXMore->regenerateLightMap();
 		}
-		if (pos.z == 0)
+		if (z == 0)
 		{
 			if (this->chunkZLess)
 				this->chunkZLess->regenerateLightMap();
 		}
-		else if (pos.z == CHUNK_WIDTH - 1)
+		else if (z == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();
 		}
 	}
 
-	ChunkBlock *Chunk::getBlock(glm::vec3 pos)
+	ChunkBlock *Chunk::getBlock(int32_t x, int32_t y, int32_t z)
 	{
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return (NULL);
-		return (this->storages[storageY]->getBlock(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		return (this->storages[storageY]->getBlock(x, y - storageY * 16, z));
 	}
 
-	uint8_t Chunk::getLight(glm::vec3 pos)
+	uint8_t Chunk::getLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!this->generated)
 			return (0);
-		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
+		if (y > this->topBlocks[getXZId(x, z)])
 			return (15);
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return (15);
-		return (this->storages[storageY]->getLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		return (this->storages[storageY]->getLight(x, y - storageY * 16, z));
 	}
 
-	void Chunk::setSkyLight(glm::vec3 pos, uint8_t light)
+	void Chunk::setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
-		return (this->storages[storageY]->setSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), light));
+		return (this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light));
 	}
 
-	uint8_t Chunk::getSkyLightVal(glm::vec3 pos)
+	uint8_t Chunk::getSkyLightVal(int32_t x, int32_t y, int32_t z)
 	{
 		if (!this->generated)
 			return (0);
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return (0);
-		return (this->storages[storageY]->getSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		return (this->storages[storageY]->getSkyLight(x, y - storageY * 16, z));
 	}
 
-	uint8_t Chunk::getSkyLight(glm::vec3 pos)
+	uint8_t Chunk::getSkyLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!this->generated)
 			return (0);
-		if (pos.y > this->topBlocks[getXZId(pos.x, pos.z)])
+		if (y > this->topBlocks[getXZId(x, z)])
 			return (15);
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return (15);
-		return (this->storages[storageY]->getSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		return (this->storages[storageY]->getSkyLight(x, y - storageY * 16, z));
 	}
 
-	void Chunk::setBlockLight(glm::vec3 pos, uint8_t light)
+	void Chunk::setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return;
-		return (this->storages[storageY]->setSkyLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z), light));
+		return (this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light));
 	}
 
-	uint8_t Chunk::getBlockLight(glm::vec3 pos)
+	uint8_t Chunk::getBlockLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!this->generated)
 			return (0);
-		uint8_t storageY = pos.y / 16;
+		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return (0);
-		return (this->storages[storageY]->getBlockLight(glm::vec3(pos.x, pos.y - storageY * 16, pos.z)));
+		return (this->storages[storageY]->getBlockLight(x, y - storageY * 16, z));
 	}
 
 	uint8_t Chunk::getTopBlock(int32_t x, int32_t z)
@@ -549,14 +535,14 @@ endNearTop:
 		return (this->biomes[getXZId(x, z)]);
 	}
 
-	void Chunk::destroyBlock(glm::vec3 pos)
+	void Chunk::destroyBlock(int32_t x, int32_t y, int32_t z)
 	{
-		uint8_t *top = &this->topBlocks[getXZId(pos.x, pos.z)];
-		if ((uint8_t)pos.y == *top)
+		uint8_t *top = &this->topBlocks[getXZId(x, z)];
+		if (y == *top)
 		{
 			for (int16_t i = *top - 1; i >= 0; --i)
 			{
-				ChunkBlock *block = getBlock(glm::vec3(pos.x, i, pos.z));
+				ChunkBlock *block = getBlock(x, i, z);
 				if (block && block->getType())
 				{
 					*top = (uint8_t)i;
@@ -564,24 +550,24 @@ endNearTop:
 				}
 			}
 		}
-		setBlock(pos, 0);
+		setBlock(x, y, z, 0);
 		regenerateLightMap();
-		if (pos.x == 0)
+		if (x == 0)
 		{
 			if (this->chunkXLess)
 				this->chunkXLess->regenerateLightMap();
 		}
-		else if (pos.x == CHUNK_WIDTH - 1)
+		else if (x == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkXMore)
 				this->chunkXMore->regenerateLightMap();
 		}
-		if (pos.z == 0)
+		if (z == 0)
 		{
 			if (this->chunkZLess)
 				this->chunkZLess->regenerateLightMap();
 		}
-		else if (pos.z == CHUNK_WIDTH - 1)
+		else if (z == CHUNK_WIDTH - 1)
 		{
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();

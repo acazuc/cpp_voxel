@@ -20,6 +20,7 @@ namespace voxel
 		NBTTagList(std::string name);
 		void readDataFromFile(NBTFile *file);
 		void writeDataToFile(NBTFile *file);
+		void printDebug();
 		inline std::vector<NBTTag*> &getValues() {return (this->values);};
 		inline enum NBTTagType getType() {return (this->type);};
 

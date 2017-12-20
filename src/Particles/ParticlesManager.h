@@ -33,6 +33,7 @@ namespace voxel
 		void tick();
 		void draw();
 		void addParticle(Particle *particle);
+		void removeParticle(Particle *particle);
 
 	};
 

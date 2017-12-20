@@ -1,4 +1,5 @@
 #include "NBTTagString.h"
+#include "NBTException.h"
 #include "NBTFile.h"
 #include "Debug.h"
 
@@ -7,7 +8,6 @@ namespace voxel
 
 	NBTTagString::NBTTagString(std::string name)
 	: NBTTag(NBT_TAG_SHORT, name)
-	, value("")
 	{
 		//Empty
 	}
@@ -15,17 +15,30 @@ namespace voxel
 	void NBTTagString::readDataFromFile(NBTFile *file)
 	{
 		int16_t len = 0;
-		file->readInt16(&len);
+		if (!file->readInt16(&len))
+			throw NBTException("NBTTagString: invalid read length");
 		this->value.resize(len + 1, '\0');
-		file->readData(const_cast<char*>(this->value.data()), len);
-		//LOG("Tag_String(\"" << this->name << "\") : " << this->value);
+		if (len)
+		{
+			if (!file->readData(const_cast<char*>(this->value.data()), len))
+				throw NBTException("NBTTagString: invalid read value");
+		}
 	}
 
 	void NBTTagString::writeDataToFile(NBTFile *file)
 	{
-		file->writeInt16(this->value.size());
+		if (!file->writeInt16(this->value.size()))
+			throw NBTException("NBTTagString: invalid write length");
 		if (this->value.size())
-			file->writeData(const_cast<char*>(this->value.data()), this->value.size());
+		{
+			if (!file->writeData(const_cast<char*>(this->value.data()), this->value.size()))
+				throw NBTException("NBTTagString: invalid write value");
+		}
+	}
+
+	void NBTTagString::printDebug()
+	{
+		LOG("NBTTag_String(\"" << this->name << "\") : " << this->value);
 	}
 
 }

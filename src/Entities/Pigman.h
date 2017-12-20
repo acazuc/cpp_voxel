@@ -21,7 +21,7 @@ namespace voxel
 	public:
 		static void init();
 		static void clear();
-		Pigman(World &world);
+		Pigman(World &world, Chunk *chunk);
 		void draw();
 
 	};

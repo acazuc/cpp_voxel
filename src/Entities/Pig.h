@@ -21,7 +21,7 @@ namespace voxel
 	public:
 		static void init();
 		static void clear();
-		Pig(World &world);
+		Pig(World &world, Chunk *chunk);
 		void draw();
 
 	};

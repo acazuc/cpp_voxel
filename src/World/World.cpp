@@ -156,10 +156,10 @@ nextRegion:
 			return;
 		glm::vec3 p0 = aabb.getP0();
 		glm::vec3 p1 = aabb.getP1();
-		int32_t chunkStartX = std::floor(p0.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkEndX = std::floor(p1.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkStartZ = std::floor(p0.z / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkEndZ = std::floor(p1.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkStartX = getChunkCoord(p0.x);
+		int32_t chunkEndX = getChunkCoord(p1.x);
+		int32_t chunkStartZ = getChunkCoord(p0.z);
+		int32_t chunkEndZ = getChunkCoord(p1.z);
 		for (int32_t chunkX = chunkStartX; chunkX <= chunkEndX; chunkX += CHUNK_WIDTH)
 		{
 			for (int32_t chunkZ = chunkStartZ; chunkZ <= chunkEndZ; chunkZ += CHUNK_WIDTH)
@@ -179,7 +179,7 @@ nextRegion:
 					{
 						for (int32_t z = startZ; z <= endZ; ++z)
 						{
-							ChunkBlock *block = chunk->getBlock(glm::vec3(x, y, z));
+							ChunkBlock *block = chunk->getBlock(x, y, z);
 							if (!block || !block->getType())
 								continue;
 							Block *blockModel = Blocks::getBlock(block->getType());
@@ -205,36 +205,36 @@ nextRegion:
 	{
 		if (y < 0 || y >= CHUNK_HEIGHT)
 			return;
-		int32_t chunkX = std::floor((float)x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkZ = std::floor((float)z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkX = getChunkCoord(x);
+		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 		{
 			chunk = new Chunk(*this, chunkX, chunkZ);
 			addChunk(chunk);
 		}
-		chunk->setBlock(glm::vec3(x - chunkX, y, z - chunkZ), type);
+		chunk->setBlock(x - chunkX, y, z - chunkZ, type);
 	}
 
 	void World::setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type)
 	{
 		if (y < 0 || y >= CHUNK_HEIGHT)
 			return;
-		int32_t chunkX = std::floor((float)x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkZ = std::floor((float)z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkX = getChunkCoord(x);
+		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 		{
 			chunk = new Chunk(*this, chunkX, chunkZ);
 			addChunk(chunk);
 		}
-		chunk->setBlockIfReplaceable(glm::vec3(x - chunkX, y, z - chunkZ), type);
+		chunk->setBlockIfReplaceable(x - chunkX, y, z - chunkZ, type);
 	}
 
 	void World::generateChunk(int32_t x, int32_t z)
 	{
-		int32_t regionX = std::floor((float)x / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
-		int32_t regionZ = std::floor((float)z / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
+		int32_t regionX = getRegionCoord(x);
+		int32_t regionZ = getRegionCoord(z);
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
@@ -253,8 +253,8 @@ nextRegion:
 	{
 		int32_t x = chunk->getX();
 		int32_t z = chunk->getZ();
-		int32_t regionX = std::floor((float)x / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
-		int32_t regionZ = std::floor((float)z / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
+		int32_t regionX = getRegionCoord(x);
+		int32_t regionZ = getRegionCoord(z);
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
@@ -271,8 +271,8 @@ nextRegion:
 
 	Chunk *World::getChunk(int32_t x, int32_t z)
 	{
-		int32_t regionX = std::floor((float)x / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
-		int32_t regionZ = std::floor((float)z / (REGION_WIDTH * CHUNK_WIDTH)) * (REGION_WIDTH * CHUNK_WIDTH);
+		int32_t regionX = getRegionCoord(x);
+		int32_t regionZ = getRegionCoord(z);
 		for (uint32_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
@@ -284,28 +284,38 @@ nextRegion:
 		return (NULL);
 	}
 
-	ChunkBlock *World::getBlock(glm::vec3 pos)
+	ChunkBlock *World::getBlock(int32_t x, int32_t y, int32_t z)
 	{
-		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+		if (y < 0 || y >= CHUNK_HEIGHT)
 			return (NULL);
-		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkX = getChunkCoord(x);
+		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (NULL);
-		return (chunk->getBlock(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
+		return (chunk->getBlock(x - chunkX, y, z - chunkZ));
 	}
 
-	uint8_t World::getLight(glm::vec3 pos)
+	uint8_t World::getLight(int32_t x, int32_t y, int32_t z)
 	{
-		if (pos.y < 0 || pos.y >= CHUNK_HEIGHT)
+		if (y < 0 || y >= CHUNK_HEIGHT)
 			return (0);
-		int32_t chunkX = std::floor(pos.x / CHUNK_WIDTH) * CHUNK_WIDTH;
-		int32_t chunkZ = std::floor(pos.z / CHUNK_WIDTH) * CHUNK_WIDTH;
+		int32_t chunkX = getChunkCoord(x);
+		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
 			return (0);
-		return (chunk->getLight(glm::vec3(pos.x - chunk->getX(), pos.y, pos.z - chunk->getZ())));
+		return (chunk->getLight(x - chunkX, y, z - chunkZ));
+	}
+
+	int32_t World::getChunkCoord(int32_t coord)
+	{
+		return (coord & (~(CHUNK_WIDTH - 1)));
+	}
+
+	int32_t World::getRegionCoord(int32_t coord)
+	{
+		return (coord & (~(REGION_WIDTH * CHUNK_WIDTH - 1)));
 	}
 
 }

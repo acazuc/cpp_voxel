@@ -12,6 +12,9 @@ namespace voxel
 	private:
 		Item **items;
 
+	public:
+		static void init();
+
 	};
 
 }

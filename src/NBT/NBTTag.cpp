@@ -11,6 +11,11 @@ namespace voxel
 		//Empty
 	}
 
+	NBTTag::~NBTTag()
+	{
+		//Empty
+	}
+
 	void NBTTag::writeIdToFile(NBTFile *file)
 	{
 		file->writeInt8(this->typeId);
@@ -21,6 +26,11 @@ namespace voxel
 		file->writeInt16(this->name.length());
 		if (this->name.length())
 			file->writeData(const_cast<char*>(this->name.data()), this->name.length());
+	}
+
+	void NBTTag::printDebug()
+	{
+		//Empty
 	}
 
 }

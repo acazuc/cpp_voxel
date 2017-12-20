@@ -1,4 +1,5 @@
 #include "GuiBar.h"
+#include "WorldScreen/WorldScreen.h"
 #include "Gui/Gui.h"
 #include "Main.h"
 
@@ -28,6 +29,7 @@ namespace voxel
 	{
 		this->spriteBatch.setPos((Main::getWindow()->getWidth() - 182 * Main::getGuiScale()) / 2, Main::getWindow()->getHeight() - 22 * Main::getGuiScale());
 		this->spriteBatch.draw(Gui::getMat());
+		this->selected.setPos((-1 + 20 * reinterpret_cast<WorldScreen*>(Main::getScreen())->getWorld()->getPlayer().getInventory().getBarPos()) * Main::getGuiScale(), -1 * Main::getGuiScale());
 	}
 
 }

@@ -6,7 +6,7 @@ namespace voxel
 
 	void GeneratorTree::generate(Chunk &chunk, uint8_t x, uint8_t y, uint8_t z)
 	{
-		chunk.setBlock(glm::vec3(x, y - 1, z), 3);
+		chunk.setBlock(x, y - 1, z, 3);
 		for (int8_t y2 = 3; y2 <= 6; ++y2)
 		{
 			int8_t x2min = -2 + std::max(0, -(5 - y2));
@@ -24,7 +24,7 @@ namespace voxel
 			}
 		}
 		for (int32_t y2 = y; y2 < y + 6; ++y2)
-			chunk.setBlockIfReplaceable(glm::vec3(x, y2, z), 17);
+			chunk.setBlockIfReplaceable(x, y2, z, 17);
 	}
 
 }

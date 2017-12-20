@@ -16,7 +16,7 @@ namespace voxel
 	{
 		if (!this->istream.open(this->name))
 			throw NBTException("Failed to open file " + this->name);
-		NBTTag *tag = NULL;
+		NBTTag *tag;
 		while ((tag = readNextTag()))
 		{
 			tag->readDataFromFile(this);
@@ -34,6 +34,12 @@ namespace voxel
 			this->tags[i]->writeDataToFile(this);
 		}
 		this->ostream.close();
+	}
+
+	void NBTFile::printDebug()
+	{
+		for (uint32_t i = 0; i < this->tags.size(); ++i)
+			this->tags[i]->printDebug();
 	}
 
 	std::string NBTFile::readTagName()

@@ -42,6 +42,7 @@ namespace voxel
 		void tick();
 		void draw();
 		void addEntity(Entity *entity);
+		void removeEntity(Entity *entity);
 		static inline Texture *getCharacter() {return (character);};
 		static inline Texture *getPigzombie() {return (pigzombie);};
 		static inline Texture *getSkeleton() {return (skeleton);};

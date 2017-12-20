@@ -28,7 +28,7 @@ namespace voxel
 		VertexBuffer *colorsBuffer;
 		VertexArray *vertexArray;
 		uint32_t verticesNb;
-		ChunkLayer() : texCoordsBuffer(NULL), vertexesBuffer(NULL), indicesBuffer(NULL), colorsBuffer(NULL), verticesNb(0) {};
+		ChunkLayer() : texCoordsBuffer(NULL), vertexesBuffer(NULL), indicesBuffer(NULL), colorsBuffer(NULL), vertexArray(NULL), verticesNb(0) {};
 	};
 
 	class Chunk
@@ -57,8 +57,9 @@ namespace voxel
 		bool generated;
 		bool deleted;
 		bool visible;
+		void updateGLBuffer(uint8_t layer);
 		void updateGLBuffers();
-		void setBlockLightRec(glm::vec3 pos, uint8_t light);
+		void setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light);
 
 	public:
 		Chunk(World &world, int32_t x, int32_t z);
@@ -73,18 +74,18 @@ namespace voxel
 		void generateLightMap();
 		void regenerateLightMapRec();
 		void regenerateLightMap();
-		void setBlock(glm::vec3 pos, uint8_t type);
-		void setBlockIfReplaceable(glm::vec3 pos, uint8_t type);
-		ChunkBlock *getBlock(glm::vec3 pos);
-		uint8_t getLight(glm::vec3 pos);
-		void setSkyLight(glm::vec3 pos, uint8_t light);
-		uint8_t getSkyLightVal(glm::vec3 pos);
-		uint8_t getSkyLight(glm::vec3 pos);
-		void setBlockLight(glm::vec3 pos, uint8_t light);
-		uint8_t getBlockLight(glm::vec3 pos);
+		void setBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
+		void setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type);
+		ChunkBlock *getBlock(int32_t x, int32_t y, int32_t z);
+		uint8_t getLight(int32_t x, int32_t y, int32_t z);
+		void setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light);
+		uint8_t getSkyLightVal(int32_t x, int32_t y, int32_t z);
+		uint8_t getSkyLight(int32_t x, int32_t y, int32_t z);
+		void setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light);
+		uint8_t getBlockLight(int32_t x, int32_t y, int32_t z);
 		uint8_t getTopBlock(int32_t x, int32_t z);
 		uint8_t getBiome(int32_t x, int32_t z);
-		void destroyBlock(glm::vec3 pos);
+		void destroyBlock(int32_t x, int32_t y, int32_t z);
 		inline void setChunkXLess(Chunk *chunk);
 		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
 		inline void setChunkXMore(Chunk *chunk);
@@ -99,7 +100,7 @@ namespace voxel
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
 		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
-		inline int32_t getXYZId(glm::vec3 pos) {return (((int32_t)pos.x * CHUNK_HEIGHT + (int32_t)pos.y) * CHUNK_WIDTH + (int32_t)pos.z);};
+		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};
 		inline bool isMustGenerateBuffers() {return (this->mustGenerateBuffers);};

@@ -51,15 +51,15 @@ namespace voxel
 		glm::vec3 pos = getRealPos();
 		EntitiesManager::getPigman()->bind();
 		glm::mat4 model(1);
-		model = glm::translate(model, glm::vec3(pos.x, pos.y, pos.z));
+		model = glm::translate(model, pos);
 		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
 		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
 		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
 		model = glm::scale(model, glm::vec3(.06, .06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
 		glm::vec4 col(1, 1, 1, 1);
-		col *= ChunkBlock::getLightValue(this->world.getLight(this->pos.x, this->pos.y, this->pos.z));
-		col.w = 1;
+		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
+		col.a = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);
 		float time = nanotime / 1000000000.;
 		armL->setRotZ(std::sin(time * 1) * .05 + .05);

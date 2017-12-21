@@ -26,30 +26,35 @@ namespace voxel
 		char *data;
 		uint32_t width;
 		uint32_t height;
+		LOG("loading gui/gui.png");
 		if (!libformat::PNG::read("data/textures/gui/gui.png", data, width, height))
 			ERROR("Failed to read sun.png");
 		guiTex = new Texture(data, width, height);
 		guiTex->bind();
 		guiTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
+		LOG("loading gui/icons.png");
 		if (!libformat::PNG::read("data/textures/gui/icons.png", data, width, height))
 			ERROR("Failed to read icons.png");
 		iconsTex = new Texture(data, width, height);
 		iconsTex->bind();
 		iconsTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
+		LOG("loading gui/inventory.png");
 		if (!libformat::PNG::read("data/textures/gui/inventory.png", data, width, height))
 			ERROR("Failed to read inventory.png");
 		inventoryTex = new Texture(data, width, height);
 		inventoryTex->bind();
 		inventoryTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
-		if (!libformat::PNG::read("data/textures/gui/logo.png", data, width, height))
+		LOG("loading gui/logo.png");
+		if (!libformat::PNG::read("data/textures/title/logo.png", data, width, height))
 			ERROR("Failed to read logo.png");
 		logoTex = new Texture(data, width, height);
 		logoTex->bind();
 		logoTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		delete[] (data);
+		LOG("loading gui/background.png");
 		if (!libformat::PNG::read("data/textures/gui/background.png", data, width, height))
 			ERROR("Failed to read background.png");
 		bgTex = new Texture(data, width, height);
@@ -57,6 +62,7 @@ namespace voxel
 		bgTex->setFilter(TEXTURE_FILTER_NEAREST, TEXTURE_FILTER_NEAREST);
 		bgTex->setWrap(TEXTURE_WRAP_REPEAT, TEXTURE_WRAP_REPEAT);
 		delete[] (data);
+		LOG("loading misc/water.png");
 		if (!libformat::PNG::read("data/textures/misc/water.png", data, width, height))
 			ERROR("Failed to read water.png");
 		waterTex = new Texture(data, width, height);

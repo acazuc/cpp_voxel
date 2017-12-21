@@ -22,24 +22,26 @@ namespace voxel
 		this->logo.setSize(256 * Main::getGuiScale(), 48 * Main::getGuiScale());
 		this->logo.setTexSize(1, .1875);
 		this->logo.setTexPos(0, 0);
-		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback);
-		this->multiplayer.setCallback(&GuiTitle::multiplayerCallback);
-		this->texturePack.setCallback(&GuiTitle::texturePackCallback);
+		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback, NULL);
+		this->multiplayer.setCallback(&GuiTitle::multiplayerCallback, NULL);
+		this->texturePack.setCallback(&GuiTitle::texturePackCallback, NULL);
 	}
 
-	void GuiTitle::singleplayerCallback()
+	void GuiTitle::singleplayerCallback(void *data)
 	{
+		(void)data;
 		TitleScreen::setMode(TITLE_SCREEN_SINGLEPLAYER);
 	}
 
-	void GuiTitle::multiplayerCallback()
+	void GuiTitle::multiplayerCallback(void *data)
 	{
+		(void)data;
 		TitleScreen::setMode(TITLE_SCREEN_MULTIPLAYER);
 	}
 
-	void GuiTitle::texturePackCallback()
+	void GuiTitle::texturePackCallback(void *data)
 	{
-		//
+		(void)data;
 	}
 
 	void GuiTitle::draw()

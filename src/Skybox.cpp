@@ -20,7 +20,8 @@ namespace voxel
 		char *fakeData;
 		uint32_t width;
 		uint32_t height;
-		if (!libformat::PNG::read("data/textures/sun.png", fakeData, width, height))
+		LOG("loading terrain/sun.png");
+		if (!libformat::PNG::read("data/textures/terrain/sun.png", fakeData, width, height))
 			ERROR("Failed to read sun.png");
 		data = reinterpret_cast<uint8_t*>(fakeData);
 		for (uint32_t i = 0; i < width * height; ++i)
@@ -40,7 +41,8 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		delete[] (data);
-		if (!libformat::PNG::read("data/textures/moon.png", fakeData, width, height))
+		LOG("loading terrain/moon.png");
+		if (!libformat::PNG::read("data/textures/terrain/moon.png", fakeData, width, height))
 			ERROR("Failed to read moon_phases.png");
 		data = reinterpret_cast<uint8_t*>(fakeData);
 		for (uint32_t i = 0; i < width * height; ++i)

@@ -117,6 +117,7 @@ namespace voxel
 		char *datas;
 		uint32_t width;
 		uint32_t height;
+		LOG("loading terrain.png");
 		if (!libformat::PNG::read("data/textures/terrain.png", datas, width, height))
 			ERROR("Failed to read terrain.png");
 		terrain = new Texture();
@@ -127,7 +128,8 @@ namespace voxel
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); 
-		if (!libformat::PNG::read("data/textures/unknown_pack.png", datas, width, height))
+		LOG("loading pack.png");
+		if (!libformat::PNG::read("data/textures/pack.png", datas, width, height))
 			ERROR("Failed to read unknown.png");
 		unknownPack = new Texture();
 		unknownPack->setData(datas, width, height);

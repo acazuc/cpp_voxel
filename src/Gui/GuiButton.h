@@ -24,11 +24,12 @@ namespace voxel
 		ShaderSpriteBatchEntry bgLeft;
 		ShaderSpriteBatch background;
 		GuiLabel text;
-		void(*callback)(void);
+		void(*callback)(void* data);
 		int32_t height;
 		int32_t width;
 		int32_t x;
 		int32_t y;
+		void *callbackData;
 		bool disabled;
 		bool hover;
 
@@ -40,7 +41,7 @@ namespace voxel
 		void setPos(int32_t x, int32_t y);
 		void setSize(int32_t width, int32_t height);
 		void setDisabled(bool disabled);
-		inline void setCallback(void(*callback)(void)) {this->callback = callback;};
+		inline void setCallback(void(*callback)(void *data), void *data) {this->callback = callback;this->callbackData = data;};
 		inline int32_t getHeight() {return (this->height);};
 		inline int32_t getWidth() {return (this->width);};
 		inline int32_t getX() {return (this->x);};

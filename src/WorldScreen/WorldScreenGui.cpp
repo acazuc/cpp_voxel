@@ -76,7 +76,7 @@ namespace voxel
 	void WorldScreenGui::mouseScroll(ScrollEvent &event)
 	{
 		int8_t &barPos = this->worldScreen.getWorld()->getPlayer().getInventory().getBarPos();
-		barPos = (barPos + event.yScroll) % 9;
+		barPos = (barPos - event.yScroll) % 9;
 		if (barPos < 0)
 			barPos += 9;
 	}

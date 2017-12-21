@@ -19,9 +19,9 @@ namespace voxel
 		GuiButton texturePack;
 		GuiButton options;
 		GuiButton quit;
-		static void singleplayerCallback();
-		static void multiplayerCallback();
-		static void texturePackCallback();
+		static void singleplayerCallback(void *data);
+		static void multiplayerCallback(void *data);
+		static void texturePackCallback(void *data);
 
 	public:
 		GuiTitle();

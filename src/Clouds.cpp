@@ -27,6 +27,7 @@ namespace voxel
 		char *data;
 		uint32_t width;
 		uint32_t height;
+		LOG("loading clouds.png");
 		if (!libformat::PNG::read("data/textures/clouds.png", data, width, height))
 			ERROR("Failed to read clouds.png");
 		for (uint32_t i = 0; i < width * height; ++i)
@@ -65,11 +66,11 @@ namespace voxel
 		Main::getCloudsShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
 		Main::getCloudsShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
 		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
-		glColorMask(false, false, false, false);
 		glDisable(GL_CULL_FACE);
+		glDepthFunc(GL_LEQUAL);
+		glColorMask(false, false, false, false);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 		glColorMask(true, true, true, true);
-		glDepthFunc(GL_LEQUAL);
 		glDrawElements(GL_TRIANGLES, this->verticesNb, GL_UNSIGNED_INT, (void*)0);
 		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);

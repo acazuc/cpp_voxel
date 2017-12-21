@@ -42,6 +42,9 @@ namespace voxel
 		this->image.setTexture(Main::getUnknownPack());
 		this->dirDate.setColor('7');
 		this->other.setColor('7');
+		this->dirDate.setShadow(false);
+		this->other.setShadow(false);
+		this->name.setShadow(false);
 	}
 
 	void GuiSingleplayerEntry::draw(glm::mat4 &mat)

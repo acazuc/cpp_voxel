@@ -24,7 +24,7 @@ namespace voxel
 			this->deleted = true;
 			return;
 		}
-		this->gravity = .04;
+		//this->gravity = .04;
 		setSize(glm::vec3(.3, .5, .3));
 		setPos(pos);
 		this->posDst = vel;
@@ -46,7 +46,8 @@ namespace voxel
 		Main::getDroppedShader().program->use();
 		Main::getTerrain()->bind();
 		glm::mat4 model(1);
-		model = glm::translate(model, this->pos);
+		glm::vec3 pos = getRealPos();
+		model = glm::translate(model, pos);
 		model = glm::translate(model, glm::vec3(0, std::sin((nanotime + this->created) / 500000000.) * .1, 0));
 		model = glm::scale(model, glm::vec3(.2, .2, .2));
 		model = glm::rotate(model, glm::vec2((nanotime + this->created) / 1000000000., 0).x, glm::vec3(0, 1, 0));

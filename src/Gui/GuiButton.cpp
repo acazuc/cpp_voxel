@@ -12,6 +12,7 @@ namespace voxel
 	, width(width)
 	, x(x)
 	, y(y)
+	, callbackData(NULL)
 	, disabled(false)
 	, hover(false)
 	{
@@ -81,8 +82,8 @@ namespace voxel
 	{
 		if (!this->hover || event.button != GLFW_MOUSE_BUTTON_LEFT)
 			return (false);
-		if (callback)
-			callback();
+		if (this->callback)
+			this->callback(this->callbackData);
 		return (true);
 	}
 

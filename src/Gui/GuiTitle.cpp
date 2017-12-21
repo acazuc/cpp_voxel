@@ -58,6 +58,7 @@ namespace voxel
 	void GuiTitle::quitCallback(void *data)
 	{
 		(void)data;
+		exit(EXIT_SUCCESS);
 	}
 
 	void GuiTitle::draw()

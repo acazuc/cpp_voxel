@@ -95,8 +95,9 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiLagometer.cpp \
 	    Gui/GuiTitle.cpp \
 	    Gui/GuiSingleplayer.cpp \
-	    Gui/GuiMultiplayer.cpp \
 	    Gui/GuiSingleplayerEntry.cpp \
+	    Gui/GuiMultiplayer.cpp \
+	    Gui/GuiMultiplayerEntry.cpp \
 	    Gui/GuiSlider.cpp \
 	    Gui/Options/GuiOptions.cpp \
 	    Gui/Options/GuiOptionsChat.cpp \

@@ -4,6 +4,7 @@
 # include "GuiSingleplayerEntry.h"
 # include "GuiButton.h"
 # include <librender/Shader/Sprite/ShaderSprite.h>
+# include <librender/Window/Events.h>
 # include <vector>
 
 using librender::ShaderSprite;

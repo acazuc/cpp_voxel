@@ -1,4 +1,5 @@
 #include "GuiSingleplayer.h"
+#include "TitleScreen/TitleScreen.h"
 #include "Gui/Gui.h"
 #include "Main.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -44,12 +45,49 @@ namespace voxel
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 0));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 1));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 2));
-		this->create.setSize(150, 20);
-		this->edit.setSize(72, 20);
-		this->remove.setSize(72, 20);
-		this->play.setSize(150, 20);
 		this->recreate.setSize(72, 20);
+		this->recreate.setCallback(&GuiSingleplayer::recreateCallback, NULL);
 		this->cancel.setSize(72, 20);
+		this->cancel.setCallback(&GuiSingleplayer::cancelCallback, NULL);
+		this->remove.setSize(72, 20);
+		this->remove.setCallback(&GuiSingleplayer::removeCallback, NULL);
+		this->create.setSize(150, 20);
+		this->create.setCallback(&GuiSingleplayer::createCallback, NULL);
+		this->edit.setSize(72, 20);
+		this->edit.setCallback(&GuiSingleplayer::editCallback, NULL);
+		this->play.setSize(150, 20);
+		this->play.setCallback(&GuiSingleplayer::playCallback, NULL);
+	}
+
+	void GuiSingleplayer::recreateCallback(void *data)
+	{
+		(void)data;
+	}
+
+	void GuiSingleplayer::cancelCallback(void *data)
+	{
+		(void)data;
+		TitleScreen::setMode(TITLE_SCREEN_TITLE);
+	}
+
+	void GuiSingleplayer::removeCallback(void *data)
+	{
+		(void)data;
+	}
+
+	void GuiSingleplayer::createCallback(void *data)
+	{
+		(void)data;
+	}
+
+	void GuiSingleplayer::editCallback(void *data)
+	{
+		(void)data;
+	}
+
+	void GuiSingleplayer::playCallback(void *data)
+	{
+		(void)data;
 	}
 
 	void GuiSingleplayer::draw()
@@ -100,6 +138,34 @@ namespace voxel
 		{
 			if (this->entries[i]->mouseDown(event))
 				return (true);
+		}
+		if (this->create.mouseDown(event))
+			return (true);
+		if (this->edit.mouseDown(event))
+			return (true);
+		if (this->remove.mouseDown(event))
+			return (true);
+		if (this->play.mouseDown(event))
+			return (true);
+		if (this->recreate.mouseDown(event))
+			return (true);
+		if (this->cancel.mouseDown(event))
+			return (true);
+		return (false);
+	}
+
+	bool GuiSingleplayer::mouseUp(MouseEvent &event)
+	{
+		(void)event;
+		return (false);
+	}
+
+	bool GuiSingleplayer::keyDown(KeyEvent &event)
+	{
+		if (event.key == GLFW_KEY_ESCAPE)
+		{
+			TitleScreen::setMode(TITLE_SCREEN_TITLE);
+			return (true);
 		}
 		return (false);
 	}

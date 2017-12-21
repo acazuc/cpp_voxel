@@ -87,6 +87,12 @@ namespace voxel
 		return (true);
 	}
 
+	void GuiButton::setText(std::string text)
+	{
+		this->text.setText(text);
+		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
+	}
+
 	void GuiButton::setPos(int32_t x, int32_t y)
 	{
 		this->x = x;

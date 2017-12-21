@@ -97,6 +97,13 @@ SRCS_NAME = Main.cpp \
 	    Gui/GuiSingleplayer.cpp \
 	    Gui/GuiMultiplayer.cpp \
 	    Gui/GuiSingleplayerEntry.cpp \
+	    Gui/GuiSlider.cpp \
+	    Gui/Options/GuiOptions.cpp \
+	    Gui/Options/GuiOptionsChat.cpp \
+	    Gui/Options/GuiOptionsControls.cpp \
+	    Gui/Options/GuiOptionsSkin.cpp \
+	    Gui/Options/GuiOptionsSound.cpp \
+	    Gui/Options/GuiOptionsVideo.cpp \
 	    WorldScreen/WorldScreen.cpp \
 	    WorldScreen/WorldScreenGui.cpp \
 	    TitleScreen/TitleScreen.cpp \
@@ -163,6 +170,7 @@ odir:
 	@mkdir -p $(OBJS_PATH)/World/Generators
 	@mkdir -p $(OBJS_PATH)/Particles
 	@mkdir -p $(OBJS_PATH)/Gui
+	@mkdir -p $(OBJS_PATH)/Gui/Options
 	@mkdir -p $(OBJS_PATH)/WorldScreen
 	@mkdir -p $(OBJS_PATH)/TitleScreen
 	@mkdir -p $(OBJS_PATH)/NBT

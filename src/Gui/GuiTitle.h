@@ -22,12 +22,15 @@ namespace voxel
 		static void singleplayerCallback(void *data);
 		static void multiplayerCallback(void *data);
 		static void texturePackCallback(void *data);
+		static void optionsCallback(void *data);
+		static void quitCallback(void *data);
 
 	public:
 		GuiTitle();
 		void draw();
 		void mouseMove(bool &alreadyHovered);
 		bool mouseDown(MouseEvent &event);
+		bool mouseUp(MouseEvent &event);
 
 	};
 

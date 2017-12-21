@@ -24,7 +24,6 @@ namespace voxel
 			this->deleted = true;
 			return;
 		}
-		//this->gravity = .04;
 		setSize(glm::vec3(.3, .5, .3));
 		setPos(pos);
 		this->posDst = vel;

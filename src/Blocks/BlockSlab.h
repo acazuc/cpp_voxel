@@ -11,7 +11,7 @@ namespace voxel
 
 	public:
 		BlockSlab(uint8_t id);
-		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights);
+		virtual void draw(Chunk *chunk, Vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights);
 
 	};
 

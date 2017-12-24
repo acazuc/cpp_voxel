@@ -33,7 +33,7 @@ namespace voxel
 		this->text.setPos(this->x + (this->width * Main::getGuiScale() - this->text.getWidth()) / 2, this->y + (this->height * Main::getGuiScale() - this->text.getLineHeight()) / 2);
 	}
 
-	void GuiButton::draw(glm::mat4 &viewProj)
+	void GuiButton::draw(Mat4 &viewProj)
 	{
 		if (this->disabled)
 		{

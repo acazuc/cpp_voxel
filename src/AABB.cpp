@@ -5,40 +5,40 @@ namespace voxel
 {
 
 	AABB::AABB()
-	: p0(0, 0, 0)
-	, p1(0, 0, 0)
+	: p0(0)
+	, p1(0)
 	{
 		//Empty
 	}
 
-	AABB::AABB(glm::vec3 p0, glm::vec3 p1)
+	AABB::AABB(Vec3 p0, Vec3 p1)
 	: p0(p0)
 	, p1(p1)
 	{
 		//Empty
 	}
 
-	void AABB::set(glm::vec3 p0, glm::vec3 p1)
+	void AABB::set(Vec3 p0, Vec3 p1)
 	{
 		this->p0 = p0;
 		this->p1 = p1;
 	}
 
-	void AABB::move(glm::vec3 dst)
+	void AABB::move(Vec3 dst)
 	{
 		this->p0 += dst;
 		this->p1 += dst;
 	}
 
-	AABB AABB::grow(glm::vec3 size)
+	AABB AABB::grow(Vec3 size)
 	{
 		return (AABB(this->p0 - size, this->p1 + size));
 	}
 
-	AABB AABB::expand(glm::vec3 size)
+	AABB AABB::expand(Vec3 size)
 	{
-		glm::vec3 p0 = this->p0;
-		glm::vec3 p1 = this->p1;
+		Vec3 p0 = this->p0;
+		Vec3 p1 = this->p1;
 		if (size.x < 0)
 			p0.x += size.x;
 		else if (size.x > 0)
@@ -128,7 +128,7 @@ namespace voxel
 		return (true);
 	}
 
-	bool AABB::intersect(glm::vec3 pos, glm::vec3 dir, float &t)
+	bool AABB::intersect(Vec3 pos, Vec3 dir, float &t)
 	{
 		float t1 = (this->p0.x - pos.x) / dir.x;
 		float t2 = (this->p1.x - pos.x) / dir.x;

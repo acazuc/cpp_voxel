@@ -1,6 +1,7 @@
 #ifndef GUI_OPTIONS_H
 # define GUI_OPTIONS_H
 
+# include "GuiOptionsChat.h"
 # include "Gui/GuiButton.h"
 # include "Gui/GuiSlider.h"
 # include <librender/Window/Events.h>
@@ -15,6 +16,7 @@ namespace voxel
 	{
 
 	private:
+		GuiOptionsChat chatOptions;
 		GuiButton resources;
 		GuiButton controls;
 		GuiButton language;

@@ -2,11 +2,12 @@
 # define BODY_PART_H
 
 # include <librender/Shader/VertexBuffer.h>
-# include <glm/mat4x4.hpp>
-# include <glm/vec3.hpp>
-# include <glm/vec2.hpp>
+# include <librender/Mat/Mat4.h>
 
 using librender::VertexBuffer;
+using librender::Mat4;
+using librender::Vec3;
+using librender::Vec2;
 
 namespace voxel
 {
@@ -20,14 +21,14 @@ namespace voxel
 		VertexBuffer texCoordsBuffer;
 		VertexBuffer vertexesBuffer;
 		VertexBuffer indicesBuffer;
-		glm::vec3 pos;
-		glm::vec3 rot;
+		Vec3 pos;
+		Vec3 rot;
 
 	public:
-		BodyPart(glm::vec3 pos, glm::vec3 size, glm::vec2 uv);
-		void draw(World *world, glm::mat4 model);
-		void setPos(glm::vec3 pos) {this->pos = pos;};
-		void setRot(glm::vec3 rot) {this->rot = rot;};
+		BodyPart(Vec3 pos, Vec3 size, Vec2 uv);
+		void draw(World *world, Mat4 model);
+		void setPos(Vec3 pos) {this->pos = pos;};
+		void setRot(Vec3 rot) {this->rot = rot;};
 		void setRotX(float rotX) {this->rot.x = rotX;};
 		void setRotY(float rotY) {this->rot.y = rotY;};
 		void setRotZ(float rotZ) {this->rot.z = rotZ;};

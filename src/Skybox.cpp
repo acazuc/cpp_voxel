@@ -2,7 +2,6 @@
 #include "World/World.h"
 #include "Debug.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <libformat/PNG.h>
 
 #define SKYBOX_PARTS 10
@@ -77,20 +76,18 @@ namespace voxel
 	{
 		updateSkyboxColors();
 		Main::getSkyboxShader().program->use();
-		glm::mat4 model(1);
-		model = glm::translate(model, glm::vec3(0, 0, 0));
-		model = glm::translate(model, this->world.getPlayer().getPos());
-		glm::mat4 mvp = this->world.getPlayer().getViewProjMat() * model;
+		Mat4 model(Mat4::translate(Mat4(1), Vec3(0, 0, 0)));
+		model = Mat4::translate(model, this->world.getPlayer().getPos());
+		Mat4 mvp(this->world.getPlayer().getViewProjMat() * model);
 		Main::getSkyboxShader().mvpLocation->setMat4f(mvp);
 		Main::getSkyboxShader().vertexesLocation->setVertexBuffer(this->skyboxVertexesBuffer);
 		Main::getSkyboxShader().colorsLocation->setVertexBuffer(this->skyboxColorsBuffer);
 		this->skyboxIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 		glDrawElements(GL_TRIANGLES, 6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1)), GL_UNSIGNED_INT, (void*)0);
 		Main::getSunMoonShader().program->use();
-		model = glm::mat4(1);
-		model = glm::translate(model, this->world.getPlayer().getPos());
-		model = glm::rotate(model, glm::vec2(glm::radians(-nanotime / 1000000000. / 60 / 20 * 360), 0).x, glm::vec3(1, 0, 0));
-		model = glm::scale(model, glm::vec3(1.5, 1.5, 1));
+		model = Mat4::translate(Mat4(1), this->world.getPlayer().getPos());
+		model = Mat4::rotateX(model, -nanotime / 1000000000. / 60 / 20 * M_PI * 2);
+		model = Mat4::scale(model, Vec3(1.5, 1.5, 1));
 		mvp = this->world.getPlayer().getViewProjMat() * model;
 		sun->bind();
 		Main::getSunMoonShader().mvpLocation->setMat4f(mvp);
@@ -119,7 +116,7 @@ namespace voxel
 		this->sunVertexesBuffer.setData(GL_ARRAY_BUFFER, sunVertexes, sizeof(sunVertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->moonColorsBuffer.setData(GL_ARRAY_BUFFER, moonColors, sizeof(moonColors), GL_FLOAT, 3, GL_STATIC_DRAW);
 		this->sunColorsBuffer.setData(GL_ARRAY_BUFFER, sunColors, sizeof(sunColors), GL_FLOAT, 3, GL_STATIC_DRAW);
-		glm::vec3 *skyboxVertexes = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
+		Vec3 *skyboxVertexes = new Vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
 		GLuint *skyboxIndices = new GLuint[6 * ((SKYBOX_PARTS * SKYBOX_PARTS - 1) - (SKYBOX_PARTS - 1))];
 		GLuint pos = 0;
 		for (uint32_t y = 0; y < SKYBOX_PARTS; ++y)
@@ -166,14 +163,14 @@ namespace voxel
 
 	void Skybox::updateSkyboxColors()
 	{
-		glm::vec3 *skyboxColors = new glm::vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
-		glm::vec3 col;
+		Vec3 *skyboxColors = new Vec3[SKYBOX_PARTS * SKYBOX_PARTS - (SKYBOX_PARTS - 1) * 2];
+		Vec3 col;
 		for (uint32_t y = 0; y < SKYBOX_PARTS; ++y)
 		{
 			if (y <= SKYBOX_PARTS / 2)
-				col = glm::vec3(.71, .82, 1);
+				col = Vec3(.71, .82, 1);
 			else
-				col = glm::vec3(.51, .68, 1);
+				col = Vec3(.51, .68, 1);
 			for (uint32_t x = 0; x < SKYBOX_PARTS; ++x)
 			{
 				if ((y == 0 && x == 1) || (y > 0 && y < SKYBOX_PARTS - 1) || (y == SKYBOX_PARTS - 1 && x == 0))

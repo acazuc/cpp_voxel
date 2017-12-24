@@ -1,7 +1,6 @@
 #include "Gui.h"
 #include "Debug.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <libformat/PNG.h>
 
 using librender::TEXTURE_FILTER_NEAREST;
@@ -10,7 +9,7 @@ using librender::TEXTURE_WRAP_REPEAT;
 namespace voxel
 {
 
-	glm::mat4 Gui::mat;
+	Mat4 Gui::mat;
 	Texture *Gui::inventoryTex;
 	Texture *Gui::iconsTex;
 	Texture *Gui::waterTex;
@@ -136,7 +135,7 @@ namespace voxel
 
 	void Gui::updateMat()
 	{
-		mat = glm::ortho(0.f, (float)Main::getWindow()->getWidth(), (float)Main::getWindow()->getHeight(), 0.f, -2.f, 2.f);
+		mat = Mat4::ortho(0.f, (float)Main::getWindow()->getWidth(), (float)Main::getWindow()->getHeight(), 0.f, -2.f, 2.f);
 	}
 
 	Color &Gui::getTextColor(char i)

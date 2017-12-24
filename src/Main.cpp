@@ -13,12 +13,12 @@
 #include "Gui/Gui.h"
 #include "Debug.h"
 #include <cstring>
-#include <glm/gtc/matrix_transform.hpp>
 #include <librender/Font/FontModel.h>
 #include <libformat/PNG.h>
 #include <GL/glu.h>
 
 using librender::FontModel;
+using librender::Mat4;
 
 int64_t nanotime;
 
@@ -35,13 +35,13 @@ namespace voxel
 	EntityShader *Main::entityShader;
 	BreakShader *Main::breakShader;
 	GuiShader *Main::guiShader;
-	glm::vec4 Main::skyColor;
 	Texture *Main::unknownPack;
 	Texture *Main::terrain;
 	Texture *Main::empty;
 	Window *Main::window;
 	Screen *Main::screen;
 	Font *Main::font;
+	Vec4 Main::skyColor;
 	int64_t Main::chunkUpdates = 0;
 	uint8_t Main::guiScale = 3;
 	int64_t Main::fps = 0;
@@ -92,7 +92,7 @@ namespace voxel
 		guiShader->load();
 		glErrors("shader");
 		{
-			glm::mat4 osef(1);
+			Mat4 osef(1);
 			blocksShader->program->use();
 			blocksShader->mLocation->setMat4f(osef);
 			blocksShader->texLocation->setVec1i(0);
@@ -150,8 +150,8 @@ namespace voxel
 		Blocks::init();
 		Biomes::init();
 		Gui::init();
-		//screen = new WorldScreen(new World());
-		screen = new TitleScreen();
+		screen = new WorldScreen(new World());
+		//screen = new TitleScreen();
 		nanotime = System::nanotime();
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;
@@ -172,7 +172,7 @@ namespace voxel
 				LOG("FPS: " << fpsCount);
 				fpsCount = 0;
 			}
-			skyColor = glm::vec4(.71, .82, 1, 1);
+			skyColor = Vec4(.71, .82, 1, 1);
 			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);
 			window->clearScreen();
 			TickManager::update();

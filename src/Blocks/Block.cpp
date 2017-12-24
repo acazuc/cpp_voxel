@@ -4,7 +4,7 @@ namespace voxel
 {
 
 	Block::Block(uint8_t id)
-	: aabb(glm::vec3(0), glm::vec3(1))
+	: aabb(Vec3(0), Vec3(1))
 	, opacity(15)
 	, light(0)
 	, layer(0)

@@ -2,7 +2,6 @@
 #include "TickManager.h"
 #include "World/World.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 #define WALK_SPEED 1
 #define RUN_SPEED 1.3
@@ -22,13 +21,13 @@ namespace voxel
 	, eyeInWater(false)
 	{
 		this->flying = true;
-		setSize(glm::vec3(.6, 1.8, .6));
-		setPos(glm::vec3(0, 150, 0));
+		setSize(Vec3(.6, 1.8, .6));
+		setPos(Vec3(0, 150, 0));
 	}
 
 	void Player::handleMovement()
 	{
-		glm::vec3 add;
+		Vec3 add(0);
 		bool keyW = Main::getWindow()->isKeyDown(GLFW_KEY_W);
 		bool keyA = Main::getWindow()->isKeyDown(GLFW_KEY_A);
 		bool keyS = Main::getWindow()->isKeyDown(GLFW_KEY_S);
@@ -154,7 +153,7 @@ namespace voxel
 
 	void Player::update()
 	{
-		glm::vec3 pos(this->world.getPlayer().getPos());
+		Vec3 pos(this->world.getPlayer().getPos());
 		pos.y += .72 + 2. / 16;
 		ChunkBlock *block = this->world.getBlock(pos.x, pos.y, pos.z);
 		this->eyeInWater = block && (block->getType() == 8 || block->getType() == 9);
@@ -165,15 +164,15 @@ namespace voxel
 			fov -= 10;
 		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			fov += 10;
-		this->projMat = glm::perspective(glm::radians(fov), Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .019f, 1500.f);
-		this->viewMat = glm::mat4(1.);
-		//this->viewMat = glm::translate(this->viewMat, glm::vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.02, 0, 0));
-		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010, 0).x, glm::vec3(0, 0, 1));
-		//this->viewMat = glm::rotate(this->viewMat, glm::vec2(std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
-		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.x / 180. * M_PI, 0).x, glm::vec3(1, 0, 0));
-		this->viewMat = glm::rotate(this->viewMat, glm::vec2(this->rot.y / 180. * M_PI, 0).x, glm::vec3(0, 1, 0));
-		glm::vec3 realPos = getRealPos();
-		this->viewMat = glm::translate(this->viewMat, glm::vec3(-realPos.x, -realPos.y - 0.72, -realPos.z));
+		this->projMat = Mat4::perspective(fov / 180. * M_PI, Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .019f, 1500.f);
+		this->viewMat = Mat4(1.);
+		//this->viewMat = Mat4::translate(this->viewMat, Vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.02, 0, 0));
+		//this->viewMat = Mat4::rotateZ(this->viewMat, std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010);
+		//this->viewMat = Mat4::rotateX(this->viewMat, std::pow(std::cos(nanotime /  800000000. * M_PI * 2) * 2, 2) / 4 * 0.005 + this->rot.x / 180. * M_PI);
+		this->viewMat = Mat4::rotateX(this->viewMat, this->rot.x / 180. * M_PI);
+		this->viewMat = Mat4::rotateY(this->viewMat, this->rot.y / 180. * M_PI);
+		Vec3 realPos = getRealPos();
+		this->viewMat = Mat4::translate(this->viewMat, Vec3(-realPos.x, -realPos.y - 0.72, -realPos.z));
 		this->viewProjMat = this->projMat * this->viewMat;
 		this->world.getFrustum().update(this->viewProjMat);
 		this->raycast.raycast();

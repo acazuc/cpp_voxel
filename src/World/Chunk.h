@@ -39,7 +39,6 @@ namespace voxel
 		EntitiesManager entitiesManager;
 		ChunkStorage *storages[16];
 		ChunkLayer layers[3];
-		glm::mat4 modelMat;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;

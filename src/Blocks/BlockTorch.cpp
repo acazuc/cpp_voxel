@@ -9,7 +9,7 @@ namespace voxel
 		//Empty
 	}
 
-	void BlockTorch::draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
+	void BlockTorch::draw(Chunk *chunk, Vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
 	{
 		(void)chunk;
 		(void)pos;

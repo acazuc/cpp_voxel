@@ -115,34 +115,34 @@ namespace voxel
 			{
 				a = 1;
 				Creeper *creeper = new Creeper(this->chunk.getWorld(), &this->chunk);
-				creeper->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + .5));
+				creeper->setPos(Vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + .5));
 				addEntity(creeper);
 				Human *human = new Human(this->chunk.getWorld(), &this->chunk);
-				human->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + .5));
+				human->setPos(Vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + .5));
 				addEntity(human);
 				Pig *pig = new Pig(this->chunk.getWorld(), &this->chunk);
-				pig->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + .5));
+				pig->setPos(Vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + .5));
 				addEntity(pig);
 				Pigman *pigman = new Pigman(this->chunk.getWorld(), &this->chunk);
-				pigman->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + .5));
+				pigman->setPos(Vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + .5));
 				addEntity(pigman);
 				Pigzombie *pigzombie = new Pigzombie(this->chunk.getWorld(), &this->chunk);
-				pigzombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 5.5));
+				pigzombie->setPos(Vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 5.5));
 				addEntity(pigzombie);
 				Sheep *sheep = new Sheep(this->chunk.getWorld(), &this->chunk);
-				sheep->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 5.5));
+				sheep->setPos(Vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(sheep);
 				Skeleton *skeleton = new Skeleton(this->chunk.getWorld(), &this->chunk);
-				skeleton->setPos(glm::vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + 5.5));
+				skeleton->setPos(Vec3(this->chunk.getX() + 10.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(skeleton);
 				Slime *slime = new Slime(this->chunk.getWorld(), &this->chunk);
-				slime->setPos(glm::vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + 5.5));
+				slime->setPos(Vec3(this->chunk.getX() + 15.5, 128, this->chunk.getZ() + 5.5));
 				addEntity(slime);
 				Zombie *zombie = new Zombie(this->chunk.getWorld(), &this->chunk);
-				zombie->setPos(glm::vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 10.5));
+				zombie->setPos(Vec3(this->chunk.getX() + .5, 128, this->chunk.getZ() + 10.5));
 				addEntity(zombie);
 				Cow *cow = new Cow(this->chunk.getWorld(), &this->chunk);
-				cow->setPos(glm::vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 10.5));
+				cow->setPos(Vec3(this->chunk.getX() + 5.5, 128, this->chunk.getZ() + 10.5));
 				addEntity(cow);
 			}
 			else

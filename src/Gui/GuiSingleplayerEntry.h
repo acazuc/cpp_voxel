@@ -29,7 +29,7 @@ namespace voxel
 
 	public:
 		GuiSingleplayerEntry(GuiSingleplayer &parent, int32_t pos);
-		void draw(glm::mat4 &mat);
+		void draw(Mat4 &mat);
 		void mouseMove(bool &alreadyHovered);
 		bool mouseDown(MouseEvent &event);
 

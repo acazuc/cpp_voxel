@@ -15,7 +15,7 @@ namespace voxel
 
 	public:
 		BlockTorch(uint8_t id);
-		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights);
+		virtual void draw(Chunk *chunk, Vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights);
 		BlockTorch *setTex(float texX, float texY);
 		BlockTorch *setTexX(float texX);
 		BlockTorch *setTexY(float texY);

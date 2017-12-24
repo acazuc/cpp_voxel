@@ -1,7 +1,6 @@
 #include "Slime.h"
 #include "World/World.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 extern int64_t nanotime;
 
@@ -12,8 +11,8 @@ namespace voxel
 
 	void Slime::init()
 	{
-		body = new BodyPart(glm::vec3(-4, -4, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		body->setPos(glm::vec3(0, -4.4, 0));
+		body = new BodyPart(Vec3(-4, -4, -4), Vec3(8, 8, 8), Vec2(0, 0));
+		body->setPos(Vec3(0, -4.4, 0));
 	}
 
 	void Slime::clear()
@@ -24,21 +23,20 @@ namespace voxel
 	Slime::Slime(World &world, Chunk *chunk)
 	: Entity(world, chunk)
 	{
-		setSize(glm::vec3(1.01, 1.01, 1.01));
+		setSize(Vec3(1.01, 1.01, 1.01));
 	}
 
 	void Slime::draw()
 	{
-		glm::vec3 pos = getRealPos();
 		EntitiesManager::getSlime()->bind();
-		glm::mat4 model(1);
-		model = glm::translate(model, pos);
-		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
-		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
-		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		model = glm::scale(model, glm::vec3(.06, .06, .06));
+		Vec3 pos = getRealPos();
+		Mat4 model = Mat4::translate(model, pos);
+		model = Mat4::rotateZ(model, this->rot.z);
+		model = Mat4::rotateY(model, this->rot.y);
+		model = Mat4::rotateX(model, this->rot.x);
+		model = Mat4::scale(model, Vec3(.06, .06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		glm::vec4 col(1, 1, 1, 1);
+		Vec4 col(1, 1, 1, 1);
 		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
 		col.a = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);

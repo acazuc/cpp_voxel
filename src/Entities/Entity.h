@@ -2,7 +2,9 @@
 # define ENTITY_H
 
 # include "./AABB.h"
-# include <glm/vec3.hpp>
+# include <librender/Vec/Vec3.h>
+
+using librender::Vec3;
 
 namespace voxel
 {
@@ -14,14 +16,14 @@ namespace voxel
 	{
 
 	protected:
-		glm::vec3 sliperness;
-		glm::vec3 posOrg;
-		glm::vec3 posDst;
-		glm::vec3 size;
-		glm::vec3 pos;
-		glm::vec3 rot;
 		World &world;
 		Chunk *chunk;
+		Vec3 sliperness;
+		Vec3 posOrg;
+		Vec3 posDst;
+		Vec3 size;
+		Vec3 pos;
+		Vec3 rot;
 		AABB aabb;
 		float gravity;
 		bool isOnFloor;
@@ -36,14 +38,14 @@ namespace voxel
 		virtual ~Entity();
 		virtual void tick();
 		virtual void draw();
-		void setPos(glm::vec3 pos);
-		void move(glm::vec3 dst);
+		void setPos(Vec3 pos);
+		void move(Vec3 dst);
 		void jump();
-		void setSize(glm::vec3 size);
-		glm::vec3 getRealPos();
-		inline void setPosDst(glm::vec3 posDst) {this->posDst = posDst;};
-		inline glm::vec3 &getPos() {return (this->pos);};
-		inline glm::vec3 &getRot() {return (this->rot);};
+		void setSize(Vec3 size);
+		Vec3 getRealPos();
+		inline void setPosDst(Vec3 posDst) {this->posDst = posDst;};
+		inline Vec3 &getPos() {return (this->pos);};
+		inline Vec3 &getRot() {return (this->rot);};
 		inline World &getWorld() {return (this->world);};
 		inline AABB &getAABB() {return (this->aabb);};
 		inline bool isDeleted() {return (this->deleted);};

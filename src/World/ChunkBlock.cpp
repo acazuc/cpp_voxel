@@ -16,7 +16,7 @@ namespace voxel
 	//static float lightsLevelsValues[] = {.0625, .125, .1875, .25, .3125, .375, .4375, .5, .5625, .625, .6875, .75, .8125, .875, .9375, 1};
 	static const float texSize = 1. / 16;
 
-	void ChunkBlock::fillBuffers(Chunk *chunk, glm::vec3 &pos, ChunkTessellator &tessellator, uint8_t layer)
+	void ChunkBlock::fillBuffers(Chunk *chunk, Vec3 &pos, ChunkTessellator &tessellator, uint8_t layer)
 	{
 		if (this->type == 0)
 			return;
@@ -50,7 +50,7 @@ namespace voxel
 		initLightsLevels(lightsLevels, visibleFaces, blocksLights);
 		if (Main::getSsao() && blockModel->isSolid())
 			calcAmbientOcclusion(pos, lightsLevels, visibleFaces, blocksTransparent);
-		glm::vec3 color(1, 1, 1);
+		Vec3 color(1, 1, 1);
 		/*uint8_t biome = chunk->getBiome(pos.x - chunk->getX(), pos.z - chunk->getZ());
 		color.x = (biome & 0x3) / 3.;
 		color.y = ((biome & 0xf) >> 2) / 3.;
@@ -75,7 +75,7 @@ namespace voxel
 		return (true);
 	}
 
-	void ChunkBlock::calcVisibleFaces(Chunk *chunk, glm::vec3 &pos, uint8_t &visibleFaces)
+	void ChunkBlock::calcVisibleFaces(Chunk *chunk, Vec3 &pos, uint8_t &visibleFaces)
 	{
 		visibleFaces = 0;
 		if (pos.z - chunk->getZ() == CHUNK_WIDTH - 1)
@@ -132,7 +132,7 @@ namespace voxel
 			visibleFaces |= BLOCK_FACE_DOWN;
 	}
 
-	uint8_t ChunkBlock::calcLightLevel(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
+	uint8_t ChunkBlock::calcLightLevel(Chunk *chunk, Vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
 			return (15);
@@ -166,7 +166,7 @@ namespace voxel
 		return (chunk->getLight(newX, newY, newZ));
 	}
 
-	bool ChunkBlock::calcTransparent(Chunk *chunk, glm::vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
+	bool ChunkBlock::calcTransparent(Chunk *chunk, Vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
 			return (true);
@@ -257,7 +257,7 @@ namespace voxel
 		}
 	}
 
-	void ChunkBlock::calcAmbientOcclusion(glm::vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent)
+	void ChunkBlock::calcAmbientOcclusion(Vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent)
 	{
 		BlockLightsLevels ssao;
 		std::memset(&ssao, 0x00, sizeof(ssao));

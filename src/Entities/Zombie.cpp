@@ -1,8 +1,6 @@
 #include "Zombie.h"
 #include "World/World.h"
-#include "Debug.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 extern int64_t nanotime;
 
@@ -18,17 +16,17 @@ namespace voxel
 
 	void Zombie::init()
 	{
-		head = new BodyPart(glm::vec3(-4, 8, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		head->setPos(glm::vec3(0, 0, 0));
-		body = new BodyPart(glm::vec3(-4, 3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
-		armL = new BodyPart(glm::vec3(-3, 2, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
-		armL->setPos(glm::vec3(-5, 2, 0));
-		armR = new BodyPart(glm::vec3(-1, 2, -2), glm::vec3(4, 12, 4), glm::vec2(40, 16));
-		armR->setPos(glm::vec3(5, 2, 0));
-		legL = new BodyPart(glm::vec3(-2, 0, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
-		legL->setPos(glm::vec3(-2, 12, 0));
-		legR = new BodyPart(glm::vec3(-2, 0, -2), glm::vec3(4, 12, 4), glm::vec2(0, 16));
-		legR->setPos(glm::vec3(2, 12, 0));
+		head = new BodyPart(Vec3(-4, 8, -4), Vec3(8, 8, 8), Vec2(0, 0));
+		head->setPos(Vec3(0, 0, 0));
+		body = new BodyPart(Vec3(-4, 3, -2), Vec3(8, 12, 4), Vec2(16, 16));
+		armL = new BodyPart(Vec3(-3, 2, -2), Vec3(4, 12, 4), Vec2(40, 16));
+		armL->setPos(Vec3(-5, 2, 0));
+		armR = new BodyPart(Vec3(-1, 2, -2), Vec3(4, 12, 4), Vec2(40, 16));
+		armR->setPos(Vec3(5, 2, 0));
+		legL = new BodyPart(Vec3(-2, 0, -2), Vec3(4, 12, 4), Vec2(0, 16));
+		legL->setPos(Vec3(-2, 12, 0));
+		legR = new BodyPart(Vec3(-2, 0, -2), Vec3(4, 12, 4), Vec2(0, 16));
+		legR->setPos(Vec3(2, 12, 0));
 	}
 
 	void Zombie::clear()
@@ -44,21 +42,20 @@ namespace voxel
 	Zombie::Zombie(World &world, Chunk *chunk)
 	: Entity(world, chunk)
 	{
-		setSize(glm::vec3(.6, 1.8, .6));
+		setSize(Vec3(.6, 1.8, .6));
 	}
 
 	void Zombie::draw()
 	{
-		glm::vec3 pos = getRealPos();
 		EntitiesManager::getZombie()->bind();
-		glm::mat4 model(1);
-		model = glm::translate(model, pos);
-		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
-		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
-		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		model = glm::scale(model, glm::vec3(.06, -.06, .06));
+		Vec3 pos = getRealPos();
+		Mat4 model = Mat4::translate(model, pos);
+		model = Mat4::rotateZ(model, this->rot.z);
+		model = Mat4::rotateY(model, this->rot.y);
+		model = Mat4::rotateX(model, this->rot.x);
+		model = Mat4::scale(model, Vec3(.06, -.06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		glm::vec4 col(1, 1, 1, 1);
+		Vec4 col(1, 1, 1, 1);
 		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
 		col.a = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);

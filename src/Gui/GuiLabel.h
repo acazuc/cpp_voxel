@@ -4,6 +4,7 @@
 # include <librender/Shader/Text/ShaderText.h>
 
 using librender::ShaderText;
+using librender::Mat4;
 
 namespace voxel
 {
@@ -18,7 +19,7 @@ namespace voxel
 
 	public:
 		GuiLabel(int32_t x, int32_t y, std::string text);
-		void draw(glm::mat4 &viewProj);
+		void draw(Mat4 &viewProj);
 		void setText(std::string text);
 		void setPos(int32_t x, int32_t y);
 		void setColor(char color);

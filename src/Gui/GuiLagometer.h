@@ -12,7 +12,7 @@ namespace voxel
 	class GuiLagometer
 	{
 
-	private://5px per ms
+	private:
 		static float values[512];
 		static uint32_t pos;
 		VertexBuffer texCoordsBuffer;

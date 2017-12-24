@@ -3,7 +3,6 @@
 
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
-# include <glm/vec3.hpp>
 
 using librender::VertexBuffer;
 
@@ -23,13 +22,13 @@ namespace voxel
 		VertexBuffer hoverVertexesBuffer;
 		VertexBuffer breakVertexesBuffer;
 		VertexBuffer breakIndicesBuffer;
-		glm::vec3 pos;
+		Vec3 pos;
 		uint32_t todoTicks;
 		uint32_t doneTicks;
 		uint8_t face;
 		bool found;
-		void onRightClick(Chunk *chunk, glm::vec3 &pos);
-		void onLeftClick(Chunk *chunk, ChunkBlock *block, glm::vec3 &relative, glm::vec3 &pos);
+		void onRightClick(Chunk *chunk, Vec3 &pos);
+		void onLeftClick(Chunk *chunk, ChunkBlock *block, Vec3 &relative, Vec3 &pos);
 		void buildBreakTexCoords();
 		void buildHoverVertexes(AABB aabb);
 
@@ -40,7 +39,7 @@ namespace voxel
 		void raycast();
 		void draw();
 		inline bool isFound() {return (this->found);};
-		inline glm::vec3 &getPos() {return (this->pos);};
+		inline Vec3 &getPos() {return (this->pos);};
 
 	};
 

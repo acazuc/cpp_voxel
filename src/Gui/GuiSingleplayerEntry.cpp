@@ -1,9 +1,9 @@
 #include "GuiSingleplayerEntry.h"
 #include "GuiSingleplayer.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 using librender::Color;
+using librender::Vec3;
 
 namespace voxel
 {
@@ -47,10 +47,10 @@ namespace voxel
 		this->name.setShadow(false);
 	}
 
-	void GuiSingleplayerEntry::draw(glm::mat4 &mat)
+	void GuiSingleplayerEntry::draw(Mat4 &mat)
 	{
-		glm::mat4 m2(mat);
-		m2 = glm::translate(m2, glm::vec3(0, this->pos * 36 * Main::getGuiScale(), 0));
+		Mat4 m2(mat);
+		m2 = Mat4::translate(m2, Vec3(0, this->pos * 36 * Main::getGuiScale(), 0));
 		if (this->parent.getSelected() == this->pos)
 		{
 			this->border.draw(m2);

@@ -22,7 +22,7 @@ namespace voxel
 		this->text.setShadowColor(Gui::getTextShadowColor('f'));
 	}
 
-	void GuiLabel::draw(glm::mat4 &viewProj)
+	void GuiLabel::draw(Mat4 &viewProj)
 	{
 		this->text.draw(viewProj);
 	}

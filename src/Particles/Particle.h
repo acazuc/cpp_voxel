@@ -2,10 +2,15 @@
 # define PARTICLE_H
 
 # include "Entities/Entity.h"
-# include <glm/mat4x4.hpp>
+# include <librender/Mat/Mat4.h>
+# include <librender/Vec/Vec3.h>
+# include <librender/Vec/Vec2.h>
 # include <librender/GL.h>
-# include <glm/vec2.hpp>
 # include <vector>
+
+using librender::Mat4;
+using librender::Vec3;
+using librender::Vec2;
 
 namespace voxel
 {
@@ -14,18 +19,18 @@ namespace voxel
 	{
 
 	private:
-		glm::vec2 uvSize;
-		glm::vec3 light;
-		glm::vec2 size;
-		glm::vec2 uv;
+		Vec2 uvSize;
+		Vec3 light;
+		Vec2 size;
+		Vec2 uv;
 		int64_t duration;
 		int64_t age;
 		virtual void updateParentChunk();
 
 	public:
-		Particle(World &world, Chunk *chunk, glm::vec3 pos, glm::vec2 size, glm::vec3 vel, glm::vec2 uv, glm::vec2 uvSize, uint8_t light);
+		Particle(World &world, Chunk *chunk, Vec3 pos, Vec2 size, Vec3 vel, Vec2 uv, Vec2 uvSize, uint8_t light);
 		void tick();
-		void draw(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<glm::vec2> &texCoords, std::vector<GLuint> &indices, glm::mat4 &playerMat);
+		void draw(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<Vec2> &texCoords, std::vector<GLuint> &indices, Mat4 &playerMat);
 
 	};
 

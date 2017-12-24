@@ -21,6 +21,7 @@ using librender::KeyEvent;
 using librender::Texture;
 using librender::Window;
 using librender::Font;
+using librender::Vec4;
 
 namespace voxel
 {
@@ -39,13 +40,13 @@ namespace voxel
 		static EntityShader *entityShader;
 		static BreakShader *breakShader;
 		static GuiShader *guiShader;
-		static glm::vec4 skyColor;
 		static Texture *unknownPack;
 		static Texture *terrain;
 		static Texture *empty;
 		static Window *window;
 		static Screen *screen;
 		static Font *font;
+		static Vec4 skyColor;
 		static int64_t chunkUpdates;
 		static uint8_t guiScale;
 		static int64_t fps;
@@ -71,13 +72,13 @@ namespace voxel
 		static EntityShader &getEntityShader() {return (*entityShader);};
 		static BreakShader &getBreakShader() {return (*breakShader);};
 		static GuiShader &getGuiShader() {return (*guiShader);};
-		static glm::vec4 &getSkyColor() {return (skyColor);};
 		static Texture *getUnknownPack() {return (unknownPack);};
 		static Texture *getTerrain() {return (terrain);};
 		static Texture *getEmpty() {return (empty);};
 		static Window *getWindow() {return (window);};
 		static Screen *getScreen() {return (screen);};
 		static Font *getFont() {return (font);};
+		static Vec4 &getSkyColor() {return (skyColor);};
 		static void setChunkUpdates(int64_t chunkUpdates) {Main::chunkUpdates = chunkUpdates;};
 		static int64_t getChunkUpdates() {return (chunkUpdates);};
 		static uint8_t getGuiScale() {return (guiScale);};

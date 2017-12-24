@@ -27,7 +27,7 @@ namespace voxel
 			{
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					glm::vec3 pos(chunk->getX() + x, this->y + y, chunk->getZ() + z);
+					Vec3 pos(chunk->getX() + x, this->y + y, chunk->getZ() + z);
 					ChunkBlock block;
 					block.setType(this->blocks[getXYZId(x, y, z)]);
 					block.fillBuffers(chunk, pos, tessellator, layer);

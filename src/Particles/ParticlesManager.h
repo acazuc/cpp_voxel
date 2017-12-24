@@ -16,10 +16,10 @@ namespace voxel
 
 	private:
 		std::vector<Particle*> particles;
-		std::vector<glm::vec2> texCoords;
-		std::vector<glm::vec3> vertexes;
-		std::vector<glm::vec3> colors;
 		std::vector<GLuint> indices;
+		std::vector<Vec2> texCoords;
+		std::vector<Vec3> vertexes;
+		std::vector<Vec3> colors;
 		VertexBuffer *texCoordsBuffer;
 		VertexBuffer *vertexesBuffer;
 		VertexBuffer *indicesBuffer;

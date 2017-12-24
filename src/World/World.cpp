@@ -95,14 +95,13 @@ nextRegion:
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		this->player.update();
-		glm::mat4 mvp = this->player.getViewProjMat();
 		Main::getBlocksShader().program->use();
 		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
-		Main::getBlocksShader().mvpLocation->setMat4f(mvp);
+		Main::getBlocksShader().mvpLocation->setMat4f(this->player.getViewProjMat());
 		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
 		if (this->player.isEyeInWater())
 		{
-			glm::vec4 color(0, 0, .05, 1);
+			Vec4 color(0, 0, .05, 1);
 			Main::getBlocksShader().program->use();
 			Main::getBlocksShader().fogColorLocation->setVec4f(color);
 			Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
@@ -154,8 +153,8 @@ nextRegion:
 	{
 		if (aabb.getP1().y < 0 || aabb.getP0().y >= CHUNK_HEIGHT)
 			return;
-		glm::vec3 p0 = aabb.getP0();
-		glm::vec3 p1 = aabb.getP1();
+		Vec3 p0 = aabb.getP0();
+		Vec3 p1 = aabb.getP1();
 		int32_t chunkStartX = getChunkCoord(p0.x);
 		int32_t chunkEndX = getChunkCoord(p1.x);
 		int32_t chunkStartZ = getChunkCoord(p0.z);
@@ -185,11 +184,11 @@ nextRegion:
 							Block *blockModel = Blocks::getBlock(block->getType());
 							if (!blockModel || !blockModel->isSolid())
 								continue;
-							glm::vec3 p0(blockModel->getAABB().getP0());
+							Vec3 p0(blockModel->getAABB().getP0());
 							p0.x += chunkX + x;
 							p0.y += y;
 							p0.z += chunkZ + z;
-							glm::vec3 p1(blockModel->getAABB().getP1());
+							Vec3 p1(blockModel->getAABB().getP1());
 							p1.x += chunkX + x;
 							p1.y += y;
 							p1.z += chunkZ + z;

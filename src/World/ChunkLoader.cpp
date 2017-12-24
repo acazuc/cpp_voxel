@@ -52,7 +52,7 @@ namespace voxel
 			return (false);
 		if (distance > 2 * 16)
 		{
-			AABB aabb(glm::vec3(chunkX, 0, chunkZ), glm::vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
+			AABB aabb(Vec3(chunkX, 0, chunkZ), Vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
 			if (!frustum.check(aabb))
 				return (false);
 		}

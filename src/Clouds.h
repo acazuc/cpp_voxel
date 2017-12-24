@@ -2,10 +2,11 @@
 # define CLOUDS_H
 
 # include <librender/Shader/VertexBuffer.h>
-# include <glm/vec3.hpp>
+# include <librender/Vec/Vec3.h>
 # include <vector>
 
 using librender::VertexBuffer;
+using librender::Vec3;
 
 namespace voxel
 {
@@ -28,12 +29,12 @@ namespace voxel
 		float lastPlayerX;
 		float lastPlayerZ;
 		bool isPartFilled(int32_t x, int32_t y);
-		void drawFaceUp(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
-		void drawFaceDown(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
-		void drawFaceLeft(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
-		void drawFaceRight(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
-		void drawFaceFront(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
-		void drawFaceBack(std::vector<glm::vec3> &vertexes, std::vector<glm::vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceUp(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceDown(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceLeft(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceRight(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceFront(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
+		void drawFaceBack(std::vector<Vec3> &vertexes, std::vector<Vec3> &colors, std::vector<GLuint> &indices, int32_t x, int32_t y);
 
 	public:
 		Clouds(World &world);

@@ -34,7 +34,7 @@ namespace voxel
 	public:
 		Block(uint8_t id);
 		virtual ~Block() {};
-		virtual void draw(Chunk *chunk, glm::vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights) {(void)chunk;(void)pos;(void)tessellator;(void)visibleFaces;(void)lights;};
+		virtual void draw(Chunk *chunk, Vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights) {(void)chunk;(void)pos;(void)tessellator;(void)visibleFaces;(void)lights;};
 		Block *setDefaultName(std::string defaultName);
 		inline std::string &getDefaultName() {return (this->defaultName);};
 		Block *setTool(enum ToolType tool);

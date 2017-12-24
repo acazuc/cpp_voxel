@@ -2,8 +2,11 @@
 # define FRUSTUM_H
 
 # include "AABB.h"
-# include <glm/mat4x4.hpp>
-# include <glm/vec4.hpp>
+# include <librender/Mat/Mat4.h>
+# include <librender/Vec/Vec4.h>
+
+using librender::Mat4;
+using librender::Vec4;
 
 namespace voxel
 {
@@ -14,10 +17,10 @@ namespace voxel
 	{
 
 	private:
-		glm::vec4 data[6];
+		Vec4 data[6];
 
 	public:
-		void update(glm::mat4 &vp);
+		void update(Mat4 &vp);
 		bool check(AABB &aabb);
 
 	};

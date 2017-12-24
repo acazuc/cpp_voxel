@@ -1,7 +1,6 @@
 #include "Creeper.h"
 #include "World/World.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 extern int64_t nanotime;
 
@@ -17,18 +16,18 @@ namespace voxel
 
 	void Creeper::init()
 	{
-		head = new BodyPart(glm::vec3(-4, 0, -4), glm::vec3(8, 8, 8), glm::vec2(0, 0));
-		head->setPos(glm::vec3(0, 4, 0));
-		body = new BodyPart(glm::vec3(-4, -3, -2), glm::vec3(8, 12, 4), glm::vec2(16, 16));
-		body->setPos(glm::vec3(0, -5, 0));
-		legFL = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legFL->setPos(glm::vec3(-2, -8, 4));
-		legFR = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legFR->setPos(glm::vec3(2, -8, 4));
-		legBL = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legBL->setPos(glm::vec3(-2, -8, -4));
-		legBR = new BodyPart(glm::vec3(-2, -6, -2), glm::vec3(4, 6, 4), glm::vec2(0, 16));
-		legBR->setPos(glm::vec3(2, -8, -4));
+		head = new BodyPart(Vec3(-4, 0, -4), Vec3(8, 8, 8), Vec2(0, 0));
+		head->setPos(Vec3(0, 4, 0));
+		body = new BodyPart(Vec3(-4, -3, -2), Vec3(8, 12, 4), Vec2(16, 16));
+		body->setPos(Vec3(0, -5, 0));
+		legFL = new BodyPart(Vec3(-2, -6, -2), Vec3(4, 6, 4), Vec2(0, 16));
+		legFL->setPos(Vec3(-2, -8, 4));
+		legFR = new BodyPart(Vec3(-2, -6, -2), Vec3(4, 6, 4), Vec2(0, 16));
+		legFR->setPos(Vec3(2, -8, 4));
+		legBL = new BodyPart(Vec3(-2, -6, -2), Vec3(4, 6, 4), Vec2(0, 16));
+		legBL->setPos(Vec3(-2, -8, -4));
+		legBR = new BodyPart(Vec3(-2, -6, -2), Vec3(4, 6, 4), Vec2(0, 16));
+		legBR->setPos(Vec3(2, -8, -4));
 	}
 
 	void Creeper::clear()
@@ -44,21 +43,20 @@ namespace voxel
 	Creeper::Creeper(World &world, Chunk *chunk)
 	: Entity(world, chunk)
 	{
-		setSize(glm::vec3(.6, 1.7, .6));
+		setSize(Vec3(.6, 1.7, .6));
 	}
 
 	void Creeper::draw()
 	{
-		glm::vec3 pos = getRealPos();
 		EntitiesManager::getCreeper()->bind();
-		glm::mat4 model(1);
-		model = glm::translate(model, pos);
-		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
-		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
-		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		model = glm::scale(model, glm::vec3(.06, .06, .06));
+		Vec3 pos = getRealPos();
+		Mat4 model = Mat4::translate(Mat4(1), pos);
+		model = Mat4::rotateZ(model, this->rot.z);
+		model = Mat4::rotateY(model, this->rot.y);
+		model = Mat4::rotateX(model, this->rot.x);
+		model = Mat4::scale(model, Vec3(.06, .06, .06));
 		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		glm::vec4 col(1, 1, 1, 1);
+		Vec4 col(1, 1, 1, 1);
 		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
 		col.a = 1;
 		Main::getEntityShader().colorLocation->setVec4f(col);

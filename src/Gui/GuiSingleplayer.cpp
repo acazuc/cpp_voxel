@@ -2,7 +2,8 @@
 #include "TitleScreen/TitleScreen.h"
 #include "Gui/Gui.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
+
+using librender::Vec3;
 
 namespace voxel
 {
@@ -96,8 +97,8 @@ namespace voxel
 		this->bgDarker.setSize(Main::getWindow()->getWidth(), Main::getWindow()->getHeight() - Main::getGuiScale() * 4 * 24);
 		this->bgDarker.setTexSize(Main::getWindow()->getWidth() / (16 * 2. * Main::getGuiScale()), (Main::getWindow()->getHeight() - Main::getGuiScale() * 4 * 24) / (16 * 2.f * Main::getGuiScale()));
 		this->bgDarker.draw(Gui::getMat());
-		glm::mat4 mat = Gui::getMat();
-		mat = glm::translate(mat, glm::vec3((Main::getWindow()->getWidth() - 270 * Main::getGuiScale()) / 2, 17 * Main::getGuiScale() * 2, 0));
+		Mat4 mat = Gui::getMat();
+		mat = Mat4::translate(mat, Vec3((Main::getWindow()->getWidth() - 270 * Main::getGuiScale()) / 2, 17 * Main::getGuiScale() * 2, 0));
 		for (uint32_t i = 0; i < this->entries.size(); ++i)
 			this->entries[i]->draw(mat);
 		this->topGradient.setPos(0, 16 * Main::getGuiScale() * 2);

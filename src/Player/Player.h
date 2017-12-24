@@ -4,7 +4,9 @@
 # include "Entities/Entity.h"
 # include "PlayerInventory.h"
 # include "PlayerRaycast.h"
-# include <glm/mat4x4.hpp>
+# include <librender/Mat/Mat4.h>
+
+using librender::Mat4;
 
 namespace voxel
 {
@@ -17,9 +19,9 @@ namespace voxel
 	private:
 		PlayerInventory inventory;
 		PlayerRaycast raycast;
-		glm::mat4 viewProjMat;
-		glm::mat4 projMat;
-		glm::mat4 viewMat;
+		Mat4 viewProjMat;
+		Mat4 projMat;
+		Mat4 viewMat;
 		int32_t oldMouseX;
 		int32_t oldMouseY;
 		uint8_t eyeInWater;
@@ -34,9 +36,9 @@ namespace voxel
 		void draw();
 		inline PlayerInventory &getInventory() {return (this->inventory);};
 		inline PlayerRaycast &getRaycast() {return (this->raycast);};
-		inline glm::mat4 &getViewProjMat() {return (this->viewProjMat);};
-		inline glm::mat4 &getProjMat() {return (this->projMat);};
-		inline glm::mat4 &getViewMat() {return (this->viewMat);};
+		inline Mat4 &getViewProjMat() {return (this->viewProjMat);};
+		inline Mat4 &getProjMat() {return (this->projMat);};
+		inline Mat4 &getViewMat() {return (this->viewMat);};
 		inline uint8_t getEyeLight() {return (this->eyeLight);};
 		inline bool isEyeInWater() {return (this->eyeInWater);};
 

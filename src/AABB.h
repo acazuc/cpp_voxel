@@ -1,7 +1,9 @@
 #ifndef AABB_H
 # define AABB_H
 
-# include <glm/vec3.hpp>
+# include <librender/Vec/Vec3.h>
+
+using librender::Vec3;
 
 namespace voxel
 {
@@ -10,23 +12,23 @@ namespace voxel
 	{
 
 	private:
-		glm::vec3 p0;
-		glm::vec3 p1;
+		Vec3 p0;
+		Vec3 p1;
 
 	public:
 		AABB();
-		AABB(glm::vec3 p0, glm::vec3 p1);
-		void set(glm::vec3 p0, glm::vec3 p1);
-		void move(glm::vec3 dst);
-		AABB grow(glm::vec3 size);
-		AABB expand(glm::vec3 size);
+		AABB(Vec3 p0, Vec3 p1);
+		void set(Vec3 p0, Vec3 p1);
+		void move(Vec3 dst);
+		AABB grow(Vec3 size);
+		AABB expand(Vec3 size);
 		float collideX(AABB &other, float x);
 		float collideY(AABB &other, float y);
 		float collideZ(AABB &other, float z);
 		bool intersect(AABB &other);
-		bool intersect(glm::vec3 pos, glm::vec3 dir, float &t);
-		inline glm::vec3 &getP0() {return (this->p0);};
-		inline glm::vec3 &getP1() {return (this->p1);};
+		bool intersect(Vec3 pos, Vec3 dir, float &t);
+		inline Vec3 &getP0() {return (this->p0);};
+		inline Vec3 &getP1() {return (this->p1);};
 
 	};
 

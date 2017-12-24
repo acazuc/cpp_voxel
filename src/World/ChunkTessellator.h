@@ -1,20 +1,23 @@
 #ifndef CHUNK_TESSELLATOR_H
 # define CHUNK_TESSELLATOR_H
 
+# include <librender/Vec/Vec3.h>
+# include <librender/Vec/Vec2.h>
 # include <librender/GL.h>
-# include <glm/vec3.hpp>
-# include <glm/vec2.hpp>
 # include <vector>
+
+using librender::Vec3;
+using librender::Vec2;
 
 namespace voxel
 {
 
 	struct ChunkTessellator
 	{
-		std::vector<glm::vec2> texCoords;
-		std::vector<glm::vec3> vertexes;
-		std::vector<glm::vec3> colors;
 		std::vector<GLuint> indices;
+		std::vector<Vec2> texCoords;
+		std::vector<Vec3> vertexes;
+		std::vector<Vec3> colors;
 	};
 
 }

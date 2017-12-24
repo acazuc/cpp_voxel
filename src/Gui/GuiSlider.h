@@ -39,7 +39,7 @@ namespace voxel
 
 	public:
 		GuiSlider(int32_t x, int32_t y, std::string text, int32_t width = 200, int32_t height = 20);
-		void draw(glm::mat4 &viewProj);
+		void draw(Mat4 &viewProj);
 		void mouseMove(bool &alreadyHovered);
 		bool mouseDown(MouseEvent &event);
 		bool mouseUp(MouseEvent &event);

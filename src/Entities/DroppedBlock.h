@@ -23,7 +23,7 @@ namespace voxel
 		uint8_t type;
 
 	public:
-		DroppedBlock(World &world, Chunk *chunk, uint8_t type, glm::vec3 pos, glm::vec3 vel);
+		DroppedBlock(World &world, Chunk *chunk, uint8_t type, Vec3 pos, Vec3 vel);
 		void draw();
 
 	};

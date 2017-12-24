@@ -9,7 +9,7 @@ namespace voxel
 		(void)pos;
 	}
 
-	void GuiMultiplayerEntry::draw(glm::mat4 &mat)
+	void GuiMultiplayerEntry::draw(Mat4 &mat)
 	{
 		(void)mat;
 	}

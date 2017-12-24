@@ -18,7 +18,7 @@ namespace voxel
 	: particlesManager(*this)
 	, entitiesManager(*this)
 	, world(world)
-	, aabb(glm::vec3(x, 0, z), glm::vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
+	, aabb(Vec3(x, 0, z), Vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
 	, x(x)
 	, z(z)
 	, mustGenerateLightMap(false)
@@ -382,14 +382,14 @@ endNearTop:
 			this->layers[layer].indicesBuffer = new VertexBuffer();
 		if (!this->layers[layer].colorsBuffer)
 			this->layers[layer].colorsBuffer = new VertexBuffer();
-		this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(glm::vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-		this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(Vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+		this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(Vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, this->layers[layer].tessellator.indices.data(), this->layers[layer].tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
-		this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(glm::vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
+		this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(Vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
 		this->layers[layer].verticesNb = this->layers[layer].tessellator.indices.size();
-		std::vector<glm::vec2> emptyTexCoords;
-		std::vector<glm::vec3> emptyVertexes;
-		std::vector<glm::vec3> emptyColors;
+		std::vector<Vec2> emptyTexCoords;
+		std::vector<Vec3> emptyVertexes;
+		std::vector<Vec3> emptyColors;
 		std::vector<GLuint> emptyIndices;
 		this->layers[layer].tessellator.texCoords.swap(emptyTexCoords);
 		this->layers[layer].tessellator.vertexes.swap(emptyVertexes);

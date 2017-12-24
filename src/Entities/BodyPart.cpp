@@ -1,77 +1,76 @@
 #include "BodyPart.h"
 #include "World/World.h"
 #include "Main.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace voxel
 {
 
-	BodyPart::BodyPart(glm::vec3 pos, glm::vec3 size, glm::vec2 uv)
+	BodyPart::BodyPart(Vec3 pos, Vec3 size, Vec2 uv)
 	{
-		glm::vec3 positions[24];
+		Vec3 positions[24];
 		//Front
-		positions[0]  = glm::vec3(pos.x         , pos.y         , pos.z + size.z);
-		positions[1]  = glm::vec3(pos.x + size.x, pos.y         , pos.z + size.z);
-		positions[2]  = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[3]  = glm::vec3(pos.x         , pos.y + size.y, pos.z + size.z);
+		positions[0]  = Vec3(pos.x         , pos.y         , pos.z + size.z);
+		positions[1]  = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
+		positions[2]  = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
+		positions[3]  = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
 		//Back
-		positions[4]  = glm::vec3(pos.x         , pos.y         , pos.z);
-		positions[5]  = glm::vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[6]  = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[7]  = glm::vec3(pos.x         , pos.y + size.y, pos.z);
+		positions[4]  = Vec3(pos.x         , pos.y         , pos.z);
+		positions[5]  = Vec3(pos.x + size.x, pos.y         , pos.z);
+		positions[6]  = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
+		positions[7]  = Vec3(pos.x         , pos.y + size.y, pos.z);
 		//Left
-		positions[8]  = glm::vec3(pos.x         , pos.y         , pos.z);
-		positions[9]  = glm::vec3(pos.x         , pos.y + size.y, pos.z);
-		positions[10] = glm::vec3(pos.x         , pos.y + size.y, pos.z + size.z);
-		positions[11] = glm::vec3(pos.x         , pos.y         , pos.z + size.z);
+		positions[8]  = Vec3(pos.x         , pos.y         , pos.z);
+		positions[9]  = Vec3(pos.x         , pos.y + size.y, pos.z);
+		positions[10] = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
+		positions[11] = Vec3(pos.x         , pos.y         , pos.z + size.z);
 		//Right
-		positions[12] = glm::vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[13] = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[14] = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[15] = glm::vec3(pos.x + size.x, pos.y         , pos.z + size.z);
+		positions[12] = Vec3(pos.x + size.x, pos.y         , pos.z);
+		positions[13] = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
+		positions[14] = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
+		positions[15] = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
 		//Up
-		positions[16] = glm::vec3(pos.x         , pos.y + size.y, pos.z);
-		positions[17] = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[18] = glm::vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[19] = glm::vec3(pos.x         , pos.y + size.y, pos.z + size.z);
+		positions[16] = Vec3(pos.x         , pos.y + size.y, pos.z);
+		positions[17] = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
+		positions[18] = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
+		positions[19] = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
 		//Down
-		positions[20] = glm::vec3(pos.x         , pos.y         , pos.z);
-		positions[21] = glm::vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[22] = glm::vec3(pos.x + size.x, pos.y         , pos.z + size.z);
-		positions[23] = glm::vec3(pos.x         , pos.y         , pos.z + size.z);
+		positions[20] = Vec3(pos.x         , pos.y         , pos.z);
+		positions[21] = Vec3(pos.x + size.x, pos.y         , pos.z);
+		positions[22] = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
+		positions[23] = Vec3(pos.x         , pos.y         , pos.z + size.z);
 		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, positions, sizeof(positions), GL_FLOAT, 3, GL_STATIC_DRAW);
-		const glm::vec2 texSize(64, 32);
-		glm::vec2 texCoords[24];
+		const Vec2 texSize(64, 32);
+		Vec2 texCoords[24];
 		//Front
-		texCoords[0]  = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[1]  = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[2]  = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[3]  = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[0]  = Vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[1]  = Vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[2]  = Vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[3]  = Vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
 		//Back
-		texCoords[4]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[5]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[6]  = glm::vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[7]  = glm::vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[4]  = Vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[5]  = Vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[6]  = Vec2((uv.x + size.z * 2 + size.x * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[7]  = Vec2((uv.x + size.z * 2 + size.x * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
 		//Left
-		texCoords[8]  = glm::vec2((uv.x         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[9]  = glm::vec2((uv.x         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[10] = glm::vec2((uv.x + size.z) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[11] = glm::vec2((uv.x + size.z) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[8]  = Vec2((uv.x         ) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[9]  = Vec2((uv.x         ) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[10] = Vec2((uv.x + size.z) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[11] = Vec2((uv.x + size.z) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
 		//Right
-		texCoords[12] = glm::vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
-		texCoords[13] = glm::vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[14] = glm::vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
-		texCoords[15] = glm::vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[12] = Vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
+		texCoords[13] = Vec2((uv.x + size.x + size.z * 2) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[14] = Vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z         ) / texSize.y);
+		texCoords[15] = Vec2((uv.x + size.x + size.z * 1) / texSize.x, (uv.y + size.z + size.y) / texSize.y);
 		//Up
-		texCoords[16] = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y         ) / texSize.y);
-		texCoords[17] = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y         ) / texSize.y);
-		texCoords[18] = glm::vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z) / texSize.y);
-		texCoords[19] = glm::vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z) / texSize.y);
+		texCoords[16] = Vec2((uv.x + size.z         ) / texSize.x, (uv.y         ) / texSize.y);
+		texCoords[17] = Vec2((uv.x + size.z + size.x) / texSize.x, (uv.y         ) / texSize.y);
+		texCoords[18] = Vec2((uv.x + size.z + size.x) / texSize.x, (uv.y + size.z) / texSize.y);
+		texCoords[19] = Vec2((uv.x + size.z         ) / texSize.x, (uv.y + size.z) / texSize.y);
 		//Down
-		texCoords[20] = glm::vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y + size.z * 1) / texSize.y);
-		texCoords[21] = glm::vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y + size.z * 1) / texSize.y);
-		texCoords[22] = glm::vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y             ) / texSize.y);
-		texCoords[23] = glm::vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y             ) / texSize.y);
+		texCoords[20] = Vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y + size.z * 1) / texSize.y);
+		texCoords[21] = Vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y + size.z * 1) / texSize.y);
+		texCoords[22] = Vec2((uv.x + size.z + size.x * 2) / texSize.x, (uv.y             ) / texSize.y);
+		texCoords[23] = Vec2((uv.x + size.z + size.x * 1) / texSize.x, (uv.y             ) / texSize.y);
 		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords, sizeof(texCoords), GL_FLOAT, 2, GL_STATIC_DRAW);
 		GLuint indices[36];
 		//Front
@@ -119,14 +118,14 @@ namespace voxel
 		this->indicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices, sizeof(indices), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
 	}
 
-	void BodyPart::draw(World *world, glm::mat4 model)
+	void BodyPart::draw(World *world, Mat4 model)
 	{
 		Main::getEntityShader().program->use();
-		model = glm::translate(model, this->pos);
-		model = glm::rotate(model, this->rot.z, glm::vec3(0, 0, 1));
-		model = glm::rotate(model, this->rot.y, glm::vec3(0, 1, 0));
-		model = glm::rotate(model, this->rot.x, glm::vec3(1, 0, 0));
-		glm::mat4 mvp = world->getPlayer().getViewProjMat() * model;
+		model = Mat4::translate(model, this->pos);
+		model = Mat4::rotateZ(model, this->rot.z);
+		model = Mat4::rotateY(model, this->rot.y);
+		model = Mat4::rotateX(model, this->rot.x);
+		Mat4 mvp = world->getPlayer().getViewProjMat() * model;
 		Main::getEntityShader().mvpLocation->setMat4f(mvp);
 		Main::getEntityShader().mLocation->setMat4f(model);
 		Main::getEntityShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);

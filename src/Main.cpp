@@ -51,6 +51,8 @@ namespace voxel
 
 	void Main::main(int ac, char **av)
 	{
+		(void)ac;
+		(void)av;
 		/*NBTFile file(av[1]);
 		file.load();
 		file.printDebug();

@@ -3,6 +3,7 @@
 
 # include "Particles/ParticlesManager.h"
 # include "Entities/EntitiesManager.h"
+# include "NBT/NBTTagCompound.h"
 # include "ChunkStorage.h"
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
@@ -37,6 +38,7 @@ namespace voxel
 	private:
 		ParticlesManager particlesManager;
 		EntitiesManager entitiesManager;
+		NBTTagCompound *nbt;
 		ChunkStorage *storages[16];
 		ChunkLayer layers[3];
 		Chunk *chunkXLess;
@@ -55,6 +57,7 @@ namespace voxel
 		bool recursiveLightMap;
 		bool generated;
 		bool deleted;
+		bool changed;
 		bool visible;
 		void updateGLBuffer(uint8_t layer);
 		void updateGLBuffers();
@@ -98,7 +101,10 @@ namespace voxel
 		inline int32_t getZ() {return (this->z);};
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
+		inline void setChanged(bool changed) {this->changed = changed;};
+		inline bool isChanged() {return (this->changed);};
 		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
+		inline ChunkStorage **getStorages() {return (this->storages);};
 		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};

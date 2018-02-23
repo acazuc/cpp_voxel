@@ -1,7 +1,7 @@
 #include "NBTTagByte.h"
 #include "NBTException.h"
-#include "NBTFile.h"
 #include "Debug.h"
+#include <cstring>
 
 namespace voxel
 {
@@ -13,16 +13,21 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagByte::readDataFromFile(NBTFile *file)
+	void NBTTagByte::readData(NBTStream *stream)
 	{
-		if (!file->readInt8(&this->value))
+		if (!stream->readInt8(&this->value))
 			throw NBTException("NBTTagByte: invalid read");
 	}
 
-	void NBTTagByte::writeDataToFile(NBTFile *file)
+	void NBTTagByte::writeData(NBTStream *stream)
 	{
-		if (!file->writeInt8(this->value))
+		if (!stream->writeInt8(this->value))
 			throw NBTException("NBTTagByte: invalid write");
+	}
+
+	size_t NBTTagByte::getDataSize()
+	{
+		return (1);
 	}
 
 	void NBTTagByte::printDebug()

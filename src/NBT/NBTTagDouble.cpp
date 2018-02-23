@@ -13,16 +13,21 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagDouble::readDataFromFile(NBTFile *file)
+	void NBTTagDouble::readData(NBTStream *stream)
 	{
-		if (!file->readDouble(&this->value))
+		if (!stream->readDouble(&this->value))
 			throw NBTException("NBTTagDouble: invalid read");
 	}
 
-	void NBTTagDouble::writeDataToFile(NBTFile *file)
+	void NBTTagDouble::writeData(NBTStream *stream)
 	{
-		if (!file->writeDouble(this->value))
+		if (!stream->writeDouble(this->value))
 			throw NBTException("NBTTagDouble: invalid write");
+	}
+
+	size_t NBTTagDouble::getDataSize()
+	{
+		return (8);
 	}
 
 	void NBTTagDouble::printDebug()

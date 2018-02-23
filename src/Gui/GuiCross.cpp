@@ -9,11 +9,7 @@ namespace voxel
 	{
 		this->sprite.setTexture(Gui::getGuiTex());
 		this->sprite.setSize(15 * Main::getGuiScale(), 15 * Main::getGuiScale());
-		this->sprite.setProgram(Main::getGuiShader().program);
-		this->sprite.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->sprite.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->sprite.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->sprite.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->sprite.setProgram(Gui::getShaderSpriteProgram());
 		this->sprite.setTexPos(.9375, 0);
 		this->sprite.setTexSize(0.0586, 0.0586);
 	}

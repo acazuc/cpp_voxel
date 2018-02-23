@@ -14,6 +14,7 @@
 # include "NBTTagList.h"
 # include "NBTTagEnd.h"
 # include "NBTTagInt.h"
+# include "NBTStream.h"
 # include "NBTTag.h"
 # include <libgzip/GZipOutputStream.h>
 # include <libgzip/GZipInputStream.h>
@@ -26,7 +27,7 @@ using libgzip::GZipInputStream;
 namespace voxel
 {
 
-	class NBTFile
+	class NBTFile : public NBTStream
 	{
 
 	private:
@@ -34,29 +35,14 @@ namespace voxel
 		GZipOutputStream ostream;
 		GZipInputStream istream;
 		std::string name;
-		uint16_t htons(uint16_t val);
-		uint32_t htonl(uint32_t val);
-		uint64_t htonll(uint64_t val);
 
 	public:
 		NBTFile(std::string name);
 		void load();
 		void save();
 		void printDebug();
-		bool readInt8(int8_t *data);
-		bool readInt16(int16_t *data);
-		bool readInt32(int32_t *data);
-		bool readInt64(int64_t *data);
-		bool readFloat(float *data);
-		bool readDouble(double *data);
-		bool readData(void *data, size_t len);
-		bool writeInt8(int8_t value);
-		bool writeInt16(int16_t value);
-		bool writeInt32(int32_t value);
-		bool writeInt64(int64_t value);
-		bool writeFloat(float value);
-		bool writeDouble(double value);
-		bool writeData(void *data, size_t len);
+		bool read(void *data, size_t len);
+		bool write(void *data, size_t len);
 		std::string readTagName();
 		NBTTag *readNextTag();
 		NBTTag *readTagOfType(enum NBTTagType type, std::string name);

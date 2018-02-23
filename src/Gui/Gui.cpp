@@ -9,13 +9,15 @@ using librender::TEXTURE_WRAP_REPEAT;
 namespace voxel
 {
 
-	Mat4 Gui::mat;
+	ShaderSpriteProgram Gui::shaderSpriteProgram;
+	ShaderTextProgram Gui::shaderTextProgram;
 	Texture *Gui::inventoryTex;
 	Texture *Gui::iconsTex;
 	Texture *Gui::waterTex;
 	Texture *Gui::logoTex;
 	Texture *Gui::guiTex;
 	Texture *Gui::bgTex;
+	Mat4 Gui::mat;
 
 	static Color *textColors[16];
 	static Color *textShadowColors[16];
@@ -101,6 +103,16 @@ namespace voxel
 		textColors[13] = new Color(1.00, .333, 1.00);
 		textColors[14] = new Color(1.00, 1.00, .333);
 		textColors[15] = new Color(1.00, 1.00, 1.00);
+		shaderSpriteProgram.program = Main::getGuiShader().program;
+		shaderSpriteProgram.texCoordsLocation = Main::getGuiShader().texCoordsLocation;
+		shaderSpriteProgram.vertexesLocation = Main::getGuiShader().vertexesLocation;
+		shaderSpriteProgram.colorsLocation = Main::getGuiShader().colorsLocation;
+		shaderSpriteProgram.mvpLocation = Main::getGuiShader().mvpLocation;
+		shaderTextProgram.program = Main::getGuiShader().program;
+		shaderTextProgram.texCoordsLocation = Main::getGuiShader().texCoordsLocation;
+		shaderTextProgram.vertexesLocation = Main::getGuiShader().vertexesLocation;
+		shaderTextProgram.colorsLocation = Main::getGuiShader().colorsLocation;
+		shaderTextProgram.mvpLocation = Main::getGuiShader().mvpLocation;
 	}
 
 	void Gui::clear()

@@ -14,11 +14,7 @@ namespace voxel
 	, quit(0, 0, "Quit Game")
 	{
 		this->logo.setTexture(Gui::getLogoTex());
-		this->logo.setProgram(Main::getGuiShader().program);
-		this->logo.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->logo.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->logo.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->logo.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->logo.setProgram(Gui::getShaderSpriteProgram());
 		this->logo.setSize(256 * Main::getGuiScale(), 48 * Main::getGuiScale());
 		this->logo.setTexSize(1, .1875);
 		this->logo.setTexPos(0, 0);

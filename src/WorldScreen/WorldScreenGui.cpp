@@ -16,11 +16,7 @@ namespace voxel
 	, inventoryEnabled(false)
 	{
 		this->water.setTexture(Gui::getWaterTex());
-		this->water.setProgram(Main::getGuiShader().program);
-		this->water.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->water.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->water.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->water.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->water.setProgram(Gui::getShaderSpriteProgram());
 		Color color(.825, .5);
 		this->water.setColor(color);
 	}

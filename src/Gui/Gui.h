@@ -1,9 +1,13 @@
 #ifndef GUI_H
 # define GUI_H
 
+# include <librender/Shader/Sprite/ShaderSpriteProgram.h>
+# include <librender/Shader/Text/ShaderTextProgram.h>
 # include <librender/Mat/Mat4.h>
 # include <librender/Texture.h>
 
+using librender::ShaderSpriteProgram;
+using librender::ShaderTextProgram;
 using librender::Texture;
 using librender::Color;
 using librender::Mat4;
@@ -15,6 +19,8 @@ namespace voxel
 	{
 
 	private:
+		static ShaderSpriteProgram shaderSpriteProgram;
+		static ShaderTextProgram shaderTextProgram;
 		static Texture *inventoryTex;
 		static Texture *iconsTex;
 		static Texture *waterTex;
@@ -30,6 +36,8 @@ namespace voxel
 		static void init();
 		static void clear();
 		static void updateMat();
+		static inline ShaderSpriteProgram &getShaderSpriteProgram() {return (shaderSpriteProgram);};
+		static inline ShaderTextProgram &getShaderTextProgram() {return (shaderTextProgram);};
 		static inline Texture *getInventoryTex() {return (inventoryTex);};
 		static inline Texture *getIconsTex() {return (iconsTex);};
 		static inline Texture *getWaterTex() {return (waterTex);};

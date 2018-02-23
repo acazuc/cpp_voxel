@@ -60,7 +60,7 @@ namespace voxel
 		static void keyDown(KeyEvent &event);
 
 	public:
-		static void main();
+		static void main(int ac, char **av);
 		static void glErrors(std::string str);
 		static ParticlesShader &getParticlesShader() {return (*particlesShader);};
 		static FocusedShader &getFocusedShader() {return (*focusedShader);};

@@ -10,11 +10,7 @@ namespace voxel
 	, y(y)
 	{
 		this->text.setFont(Main::getFont());
-		this->text.setProgram(Main::getGuiShader().program);
-		this->text.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->text.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->text.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->text.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->text.setProgram(Gui::getShaderTextProgram());
 		this->text.setShadowSize(1);
 		this->text.setShadowPos(Main::getGuiScale(), Main::getGuiScale());
 		this->text.setText(text);

@@ -8,11 +8,7 @@ namespace voxel
 	GuiHearts::GuiHearts()
 	{
 		this->spriteBatch.setTexture(Gui::getIconsTex());
-		this->spriteBatch.setProgram(Main::getGuiShader().program);
-		this->spriteBatch.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->spriteBatch.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->spriteBatch.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->spriteBatch.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->spriteBatch.setProgram(Gui::getShaderSpriteProgram());
 		for (uint8_t i = 0; i < 10; ++i)
 		{
 			this->spriteBatch.addEntry(&this->heartsBackgrounds[i]);

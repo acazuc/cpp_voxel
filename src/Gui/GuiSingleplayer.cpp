@@ -17,24 +17,12 @@ namespace voxel
 	, play(0, 0, "Play Selected World")
 	, selected(-1)
 	{
-		this->topGradient.setProgram(Main::getGuiShader().program);
-		this->topGradient.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->topGradient.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->topGradient.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->topGradient.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->topGradient.setTexture(Main::getEmpty());
-		this->botGradient.setProgram(Main::getGuiShader().program);
-		this->botGradient.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->botGradient.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->botGradient.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->botGradient.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->topGradient.setProgram(Gui::getShaderSpriteProgram());
 		this->botGradient.setTexture(Main::getEmpty());
-		this->bgDarker.setProgram(Main::getGuiShader().program);
-		this->bgDarker.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->bgDarker.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->bgDarker.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->bgDarker.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->botGradient.setProgram(Gui::getShaderSpriteProgram());
 		this->bgDarker.setTexture(Gui::getBgTex());
+		this->bgDarker.setProgram(Gui::getShaderSpriteProgram());
 		Color color(0, 1);
 		this->topGradient.setTopColor(color);
 		this->botGradient.setBotColor(color);

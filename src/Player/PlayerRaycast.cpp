@@ -345,8 +345,8 @@ nextStep:
 					}
 				}
 			}
-			Vec3 position(pos + .4f + std::rand() * .2f / RAND_MAX);
-			Vec3 velocity(std::rand() * .2 / RAND_MAX - .1, .25 + std::rand() * .25 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
+			Vec3 position(pos + .5f);
+			Vec3 velocity(std::rand() * .2 / RAND_MAX - .1, .25 + std::rand() * .1 / RAND_MAX, std::rand() * .2 / RAND_MAX - .1);
 			DroppedBlock *tmp = new DroppedBlock(this->player.getWorld(), chunk, block->getType(), position, velocity);
 			chunk->getEntitiesManager().addEntity(tmp);
 			chunk->destroyBlock(relative.x, relative.y, relative.z);

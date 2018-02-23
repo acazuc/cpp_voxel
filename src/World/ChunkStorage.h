@@ -15,10 +15,10 @@ namespace voxel
 		uint8_t blocks[16 * 16 * 16];
 		uint8_t blockLights[16 * 16 * 8];
 		uint8_t skyLights[16 * 16 * 8];
-		int32_t y;
+		uint8_t y;
 
 	public:
-		ChunkStorage(int32_t y);
+		ChunkStorage(uint8_t y);
 		~ChunkStorage();
 		void fillBuffers(Chunk *chunk, ChunkTessellator &tessellator, uint8_t layer);
 		void resetLights();

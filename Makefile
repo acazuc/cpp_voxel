@@ -123,6 +123,8 @@ SRCS_NAME = Main.cpp \
 	    NBT/NBTTagCompound.cpp \
 	    NBT/NBTTagIntArray.cpp \
 	    NBT/NBTTagLongArray.cpp \
+	    NBT/NBTBuffer.cpp \
+	    NBT/NBTStream.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 
@@ -132,15 +134,15 @@ OBJS_NAME = $(SRCS_NAME:.cpp=.o)
 
 OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 
-LIBRARY = -L lib/glfw/src -l:libglfw3.a
+LIBRARY = -L lib/glfw -l:libglfw3.a
 LIBRARY+= -L lib/glad -l:libglad.a
 LIBRARY+= -L lib/librender -l:librender.a
 LIBRARY+= -L lib/libformat -l:libformat.a
 LIBRARY+= -L lib/libgzip -l:libgzip.a
-LIBRARY+= -L lib/freetype/objs/.libs -l:libfreetype.a
+LIBRARY+= -L lib/freetype -l:libfreetype.a
 LIBRARY+= -L lib/libpng -l:libpng16.a
 LIBRARY+= -L lib/zlib -l:libz.a
-LIBRARY+= -L lib/harfbuzz/src/.libs -l:libharfbuzz.a
+LIBRARY+= -L lib/harfbuzz -l:libharfbuzz.a
 LIBRARY+= -lGL -lGLU -lX11 -lXrandr -lXinerama -lXcursor -lXxf86vm
 LIBRARY+= -ldl -lrt -lm -lpthread
 #LIBRARY+= -lws2_32 -lwsock32 -lwinmm -lgdi32 -static-libstdc++ -static-libgcc -lopengl32 -lm

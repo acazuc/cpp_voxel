@@ -1,12 +1,11 @@
 #include "ChunkStorage.h"
-#include "Debug.h"
 #include "Chunk.h"
 #include <cstring>
 
 namespace voxel
 {
 
-	ChunkStorage::ChunkStorage(int32_t y)
+	ChunkStorage::ChunkStorage(uint8_t y)
 	: y(y)
 	{
 		std::memset(this->blocks, 0, sizeof(this->blocks));
@@ -38,8 +37,8 @@ namespace voxel
 
 	void ChunkStorage::resetLights()
 	{
-		std::memset(this->skyLights, 0, sizeof(this->skyLights));
 		std::memset(this->blockLights, 0, sizeof(this->blockLights));
+		std::memset(this->skyLights, 0, sizeof(this->skyLights));
 	}
 
 	void ChunkStorage::setBlock(int32_t x, int32_t y, int32_t z, uint8_t type)

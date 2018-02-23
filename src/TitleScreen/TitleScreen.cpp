@@ -13,11 +13,7 @@ namespace voxel
 	{
 		glfwSetInputMode(Main::getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		this->background.setTexture(Gui::getBgTex());
-		this->background.setProgram(Main::getGuiShader().program);
-		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->background.setProgram(Gui::getShaderSpriteProgram());
 		Color color(.25);
 		this->background.setColor(color);
 	}

@@ -1,5 +1,6 @@
 #include "GuiSingleplayerEntry.h"
 #include "GuiSingleplayer.h"
+#include "Gui/Gui.h"
 #include "Main.h"
 
 using librender::Color;
@@ -16,30 +17,18 @@ namespace voxel
 	, pos(pos)
 	, hover(false)
 	{
-		this->background.setProgram(Main::getGuiShader().program);
-		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->background.setTexture(Main::getEmpty());
+		this->background.setProgram(Gui::getShaderSpriteProgram());
 		this->background.setSize((270 - 2) * Main::getGuiScale(), (36 - 2) * Main::getGuiScale());
 		this->background.setPos(Main::getGuiScale(), Main::getGuiScale());
 		this->background.setColor(Color::BLACK);
-		this->border.setProgram(Main::getGuiShader().program);
-		this->border.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->border.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->border.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->border.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->border.setTexture(Main::getEmpty());
+		this->border.setProgram(Gui::getShaderSpriteProgram());
 		this->border.setSize(270 * Main::getGuiScale(), 36 * Main::getGuiScale());
 		Color color(.666);
 		this->border.setColor(color);
-		this->image.setProgram(Main::getGuiShader().program);
-		this->image.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->image.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->image.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->image.setMvpLocation(Main::getGuiShader().mvpLocation);
 		this->image.setTexture(Main::getUnknownPack());
+		this->image.setProgram(Gui::getShaderSpriteProgram());
 		this->dirDate.setColor('7');
 		this->other.setColor('7');
 		this->dirDate.setShadow(false);

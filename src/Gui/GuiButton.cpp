@@ -17,11 +17,7 @@ namespace voxel
 	, hover(false)
 	{
 		this->background.setTexture(Gui::getGuiTex());
-		this->background.setProgram(Main::getGuiShader().program);
-		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->background.setProgram(Gui::getShaderSpriteProgram());
 		this->background.addEntry(&this->bgLeft);
 		this->background.addEntry(&this->bgRight);
 		this->bgLeft.setTexX(0);

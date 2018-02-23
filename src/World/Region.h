@@ -4,6 +4,7 @@
 # include "./Chunk.h"
 
 # define REGION_WIDTH 32
+# define REGION_SECTOR_SIZE 4096
 
 namespace voxel
 {
@@ -14,14 +15,19 @@ namespace voxel
 	{
 
 	private:
+		std::vector<bool> sectors;
+		std::string filename;
 		Chunk *chunks[REGION_WIDTH * REGION_WIDTH];
 		World &world;
+		uint32_t storageHeader[REGION_WIDTH * REGION_WIDTH];
 		int32_t x;
 		int32_t z;
+		FILE *file;
 
 	public:
 		Region(World &world, int32_t x, int32_t z);
 		~Region();
+		void load();
 		void save();
 		void moveGLBuffersToWorld();
 		void tick();

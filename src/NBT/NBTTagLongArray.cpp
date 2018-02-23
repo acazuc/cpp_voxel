@@ -12,29 +12,34 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagLongArray::readDataFromFile(NBTFile *file)
+	void NBTTagLongArray::readData(NBTStream *stream)
 	{
 		int32_t size;
-		if (!file->readInt32(&size))
+		if (!stream->readInt32(&size))
 			throw NBTException("NBTTagLongArray: invalid read size");
 		int64_t value;
 		for (int32_t i = 0; i < size; ++i)
 		{
-			if (!file->readInt64(&value))
+			if (!stream->readInt64(&value))
 				throw NBTException("NBTTagLongArray: invalid read value");
 			this->values.push_back(value);
 		}
 	}
 
-	void NBTTagLongArray::writeDataToFile(NBTFile *file)
+	void NBTTagLongArray::writeData(NBTStream *stream)
 	{
-		if (!file->writeInt32(this->values.size()))
+		if (!stream->writeInt32(this->values.size()))
 			throw NBTException("NBTTagLongArray: invalid write size");
 		for (uint32_t i = 0; i < this->values.size(); ++i)
 		{
-			if (!file->writeInt64(this->values[i]))
+			if (!stream->writeInt64(this->values[i]))
 				throw NBTException("NBTTabLongArray: invalid write value");
 		}
+	}
+
+	size_t NBTTagLongArray::getDataSize()
+	{
+		return (4 + this->values.size() * 8);
 	}
 
 	void NBTTagLongArray::printDebug()

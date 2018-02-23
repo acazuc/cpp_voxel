@@ -13,16 +13,21 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagFloat::readDataFromFile(NBTFile *file)
+	void NBTTagFloat::readData(NBTStream *stream)
 	{
-		if (!file->readFloat(&this->value))
+		if (!stream->readFloat(&this->value))
 			throw NBTException("NBTTagFloat: invalid read");
 	}
 
-	void NBTTagFloat::writeDataToFile(NBTFile *file)
+	void NBTTagFloat::writeData(NBTStream *stream)
 	{
-		if (!file->writeFloat(this->value))
+		if (!stream->writeFloat(this->value))
 			throw NBTException("NBTTabFloat: invalid write");
+	}
+
+	size_t NBTTagFloat::getDataSize()
+	{
+		return (4);
 	}
 
 	void NBTTagFloat::printDebug()

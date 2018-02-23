@@ -5,7 +5,6 @@
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "World.h"
-#include "Debug.h"
 #include "Main.h"
 #include <cstring>
 
@@ -27,6 +26,7 @@ namespace voxel
 	, recursiveLightMap(false)
 	, generated(false)
 	, deleted(false)
+	, changed(false)
 	{
 		if ((this->chunkXLess = this->world.getChunk(this->x - CHUNK_WIDTH, this->z)))
 			this->chunkXLess->setChunkXMore(this);
@@ -430,8 +430,10 @@ endNearTop:
 			if (!type)
 				return;
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
+			//Add storage to NBT
 		}
 		this->storages[storageY]->setBlock(x, y - storageY * 16, z, type);
+		this->changed = true;
 		regenerateLightMap();
 		if (x == 0)
 		{
@@ -480,7 +482,8 @@ endNearTop:
 		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			this->storages[storageY] = new ChunkStorage(storageY * 16);
-		return (this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light));
+		this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light);
+		this->changed = true;
 	}
 
 	uint8_t Chunk::getSkyLightVal(int32_t x, int32_t y, int32_t z)
@@ -510,7 +513,8 @@ endNearTop:
 		uint8_t storageY = y / 16;
 		if (!this->storages[storageY])
 			return;
-		return (this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light));
+		this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light);
+		this->changed = true;
 	}
 
 	uint8_t Chunk::getBlockLight(int32_t x, int32_t y, int32_t z)

@@ -11,9 +11,10 @@ namespace voxel
 
 	public:
 		NBTTagEnd();
-		void readDataFromFile(NBTFile *file);
-		void writeDataToFile(NBTFile *file);
-		void writeNameToFile(NBTFile *file) {(void)file;};
+		void readData(NBTStream *stream) {(void)stream;};
+		void writeData(NBTStream *stream) {(void)stream;};
+		void writeName(NBTStream *stream) {(void)stream;};
+		size_t getDataSize() {return (0);};
 		void printDebug();
 
 	};

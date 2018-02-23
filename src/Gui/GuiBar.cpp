@@ -9,11 +9,7 @@ namespace voxel
 	GuiBar::GuiBar()
 	{
 		this->spriteBatch.setTexture(Gui::getGuiTex());
-		this->spriteBatch.setProgram(Main::getGuiShader().program);
-		this->spriteBatch.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->spriteBatch.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->spriteBatch.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->spriteBatch.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->spriteBatch.setProgram(Gui::getShaderSpriteProgram());
 		this->spriteBatch.addEntry(&this->background);
 		this->background.setSize(182 * Main::getGuiScale(), 22 * Main::getGuiScale());
 		this->background.setTexPos(0, 0);

@@ -17,11 +17,7 @@ namespace voxel
 	, hover(false)
 	{
 		this->background.setTexture(Gui::getGuiTex());
-		this->background.setProgram(Main::getGuiShader().program);
-		this->background.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->background.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->background.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->background.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->background.setProgram(Gui::getShaderSpriteProgram());
 		this->background.addEntry(&this->bgLeft);
 		this->background.addEntry(&this->bgRight);
 		this->bgLeft.setTexPos(0, 46 / 256.);
@@ -30,11 +26,7 @@ namespace voxel
 		this->bgRight.setTexSize(this->width / 2 / 256., 20 / 256.);
 		this->bgRight.setX(this->width / 2 * Main::getGuiScale());
 		this->button.setTexture(Gui::getGuiTex());
-		this->button.setProgram(Main::getGuiShader().program);
-		this->button.setTexCoordsLocation(Main::getGuiShader().texCoordsLocation);
-		this->button.setVertexesLocation(Main::getGuiShader().vertexesLocation);
-		this->button.setColorsLocation(Main::getGuiShader().colorsLocation);
-		this->button.setMvpLocation(Main::getGuiShader().mvpLocation);
+		this->button.setProgram(Gui::getShaderSpriteProgram());
 		this->button.addEntry(&this->buttonRight);
 		this->button.addEntry(&this->buttonLeft);
 		this->buttonLeft.setTexX(0);

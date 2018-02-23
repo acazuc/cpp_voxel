@@ -13,16 +13,21 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagShort::readDataFromFile(NBTFile *file)
+	void NBTTagShort::readData(NBTStream *stream)
 	{
-		if (!file->readInt16(&this->value))
+		if (!stream->readInt16(&this->value))
 			throw NBTException("NBTTagShort: invalid read");
 	}
 
-	void NBTTagShort::writeDataToFile(NBTFile *file)
+	void NBTTagShort::writeData(NBTStream *stream)
 	{
-		if (!file->writeInt16(this->value))
+		if (!stream->writeInt16(this->value))
 			throw NBTException("NBTTagShort: invalid write");
+	}
+
+	size_t NBTTagShort::getDataSize()
+	{
+		return (2);
 	}
 
 	void NBTTagShort::printDebug()

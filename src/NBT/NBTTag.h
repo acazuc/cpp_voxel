@@ -2,6 +2,7 @@
 # define NBT_TAG_H
 
 # include "NBTTagType.h"
+# include "NBTStream.h"
 # include <string>
 
 namespace voxel
@@ -19,13 +20,18 @@ namespace voxel
 	public:
 		NBTTag(enum NBTTagType type, std::string name);
 		virtual ~NBTTag();
-		virtual void readDataFromFile(NBTFile *file) {(void)file;};
-		virtual void writeDataToFile(NBTFile *file) {(void)file;};
-		void writeIdToFile(NBTFile *file);
-		virtual void writeNameToFile(NBTFile *file);
+		virtual void readData(NBTStream *stream) {(void)stream;};
+		virtual void writeData(NBTStream *stream) {(void)stream;};
+		void writeId(NBTStream *stream);
+		virtual void writeName(NBTStream *stream);
+		size_t getHeaderSize();
+		virtual size_t getDataSize() {return (0);};
 		virtual void printDebug();
 		inline enum NBTTagType getType() {return (this->typeId);};
 		inline std::string &getName() {return (this->name);};
+		static NBTTag *readTag(NBTStream *stream);
+		static std::string readTagName(NBTStream *stream);
+		static NBTTag *readTagOfType(enum NBTTagType type, std::string name);
 
 	};
 

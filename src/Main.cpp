@@ -49,12 +49,13 @@ namespace voxel
 	bool Main::ssao = true;
 	int Main::disableTex = 0;
 
-	void Main::main()
+	void Main::main(int ac, char **av)
 	{
-		//NBTFile file("./level.dat");
-		//file.load();
-		//file.printDebug();
-		//file.save();
+		/*NBTFile file(av[1]);
+		file.load();
+		file.printDebug();
+		return;
+		file.save();*/
 		//glfwWindowHint(GLFW_SAMPLES, 32);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -290,7 +291,7 @@ int main(int ac, char **av)
 	}
 	if (!glfwInit())
 		ERROR("Failed to init glfw");
-	voxel::Main::main();
+	voxel::Main::main(ac, av);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);
 }

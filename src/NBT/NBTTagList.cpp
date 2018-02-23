@@ -12,28 +12,36 @@ namespace voxel
 		//Empty
 	}
 
-	void NBTTagList::readDataFromFile(NBTFile *file)
+	void NBTTagList::readData(NBTStream *stream)
 	{
 		int32_t size;
-		if (!file->readInt8(reinterpret_cast<int8_t*>(&this->type)))
+		if (!stream->readInt8(reinterpret_cast<int8_t*>(&this->type)))
 			throw NBTException("NBTTagList: invalid read type");
-		if (!file->readInt32(&size))
+		if (!stream->readInt32(&size))
 			throw NBTException("NBTTagList: invalid read size");
 		for (int32_t i = 0; i < size; ++i)
 		{
-			this->values.push_back(file->readTagOfType(static_cast<enum NBTTagType>(this->type), ""));
-			this->values.back()->readDataFromFile(file);
+			this->values.push_back(NBTTag::readTagOfType(static_cast<enum NBTTagType>(this->type), ""));
+			this->values.back()->readData(stream);
 		}
 	}
 
-	void NBTTagList::writeDataToFile(NBTFile *file)
+	void NBTTagList::writeData(NBTStream *stream)
 	{
-		if (!file->writeInt8(this->type))
+		if (!stream->writeInt8(this->type))
 			throw NBTException("NBTTagList: invalid write type");
-		if (!file->writeInt32(this->values.size()))
+		if (!stream->writeInt32(this->values.size()))
 			throw NBTException("NBTTagList: invalid write size");
 		for (uint32_t i = 0; i < this->values.size(); ++i)
-			this->values[i]->writeDataToFile(file);
+			this->values[i]->writeData(stream);
+	}
+
+	size_t NBTTagList::getDataSize()
+	{
+		size_t len = 1 + 4;
+		for (uint32_t i = 0; i < this->values.size(); ++i)
+			len += this->values[i]->getHeaderSize() + this->values[i]->getDataSize();
+		return (len);
 	}
 
 	void NBTTagList::printDebug()

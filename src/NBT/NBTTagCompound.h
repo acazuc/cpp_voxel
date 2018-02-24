@@ -15,10 +15,12 @@ namespace voxel
 
 	public:
 		NBTTagCompound(std::string name);
+		~NBTTagCompound();
 		void readData(NBTStream *stream);
 		void writeData(NBTStream *stream);
 		size_t getDataSize();
 		void printDebug();
+		inline void addTag(NBTTag *tag) {this->tags.push_back(tag);};
 		inline std::vector<NBTTag*> &getTags() {return (this->tags);};
 
 	};

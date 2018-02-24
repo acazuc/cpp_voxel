@@ -4,6 +4,8 @@
 #include "ChunkTessellator.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
+#include "NBT/NBT.h"
+#include "Debug.h"
 #include "World.h"
 #include "Main.h"
 #include <cstring>
@@ -24,7 +26,6 @@ namespace voxel
 	, mustGenerateBuffers(false)
 	, mustUpdateBuffers(false)
 	, recursiveLightMap(false)
-	, generated(false)
 	, deleted(false)
 	, changed(false)
 	{
@@ -36,15 +37,14 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
-		std::memset(this->topBlocks, 0, sizeof(this->topBlocks));
 		std::memset(this->storages, 0, sizeof(this->storages));
-		std::memset(this->biomes, 0, sizeof(this->biomes));
 	}
 
 	Chunk::~Chunk()
 	{
 		for (uint8_t i = 0; i < 16; ++i)
 			delete (this->storages[i]);
+		delete (this->NBT.NBT);
 		if (this->chunkXLess)
 		{
 			this->chunkXLess->setChunkXMore(NULL);
@@ -87,9 +87,9 @@ namespace voxel
 
 	void Chunk::generate()
 	{
-		if (this->generated)
+		if (isGenerated())
 			return;
-		this->generated = true;
+		setGenerated(true);
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
@@ -151,7 +151,7 @@ namespace voxel
 
 	void Chunk::drawEntities()
 	{
-		if (!this->generated || !this->visible)
+		if (!isGenerated() || !this->visible)
 			return;
 		this->particlesManager.draw();
 		this->entitiesManager.draw();
@@ -159,7 +159,7 @@ namespace voxel
 
 	void Chunk::draw(uint8_t layer)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return;
 		if (layer == 0)
 			this->visible = this->world.getFrustum().check(this->aabb);
@@ -193,7 +193,7 @@ namespace voxel
 		bool isTopBlock = false;
 		if (light == 0xf)
 			goto endNearTop;
-		if (y >= this->topBlocks[getXZId(x, z)])
+		if (y >= getTopBlock(x, z))
 		{
 			isTopBlock = true;
 			light = 0xf;
@@ -215,7 +215,7 @@ namespace voxel
 	endCheckAround:
 		if (x > 0)
 		{
-			if (y > this->topBlocks[getXZId(x - 1, z)])
+			if (y > getTopBlock(x - 1, z))
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -231,7 +231,7 @@ namespace voxel
 		}
 		if (x < CHUNK_WIDTH - 1)
 		{
-			if (y > this->topBlocks[getXZId(x + 1, z)])
+			if (y > getTopBlock(x + 1, z))
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -247,7 +247,7 @@ namespace voxel
 		}
 		if (z > 0)
 		{
-			if (y > this->topBlocks[getXZId(x, z - 1)])
+			if (y > getTopBlock(x, z - 1))
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -263,7 +263,7 @@ namespace voxel
 		}
 		if (z < CHUNK_WIDTH - 1)
 		{
-			if (y > this->topBlocks[getXZId(x, z + 1)])
+			if (y > getTopBlock(x, z + 1))
 			{
 				light = 0xf;
 				goto endNearTop;
@@ -339,15 +339,16 @@ endNearTop:
 		}
 		for (uint8_t i = 0; i < 16; ++i)
 		{
-			if (!this->storages[i])
+			ChunkStorage *storage = getStorage(i);
+			if (!storage)
 				continue;
-			this->storages[i]->resetLights();
+			storage->resetLights();
 		}
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				uint8_t topBlock = this->topBlocks[getXZId(x, z)];
+				uint8_t topBlock = getTopBlock(x, z);
 				if (topBlock == CHUNK_HEIGHT)
 					setBlockLightRec(x, topBlock, z, 0xf);
 				else
@@ -363,9 +364,10 @@ endNearTop:
 		{
 			for (uint8_t i = 0; i < 16; ++i)
 			{
-				if (!this->storages[i])
+				ChunkStorage *storage = getStorage(i);
+				if (!storage)
 					continue;
-				this->storages[i]->fillBuffers(this, this->layers[layer].tessellator, layer);
+				storage->fillBuffers(this, this->layers[layer].tessellator, layer);
 			}
 		}
 		this->mustUpdateBuffers = true;
@@ -420,19 +422,18 @@ endNearTop:
 	{
 		if (type)
 		{
-			uint8_t *top = &this->topBlocks[getXZId(x, z)];
-			if (y > *top)
-				*top = y;
+			uint8_t top = getTopBlock(x, z);
+			if (y > top)
+				setTopBlock(x, z, y);
 		}
-		int32_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 		{
 			if (!type)
 				return;
-			this->storages[storageY] = new ChunkStorage(storageY * 16);
-			//Add storage to NBT
+			storage = createStorage(y / 16);
 		}
-		this->storages[storageY]->setBlock(x, y - storageY * 16, z, type);
+		storage->setBlock(x, y - storage->getId() * 16, z, type);
 		this->changed = true;
 		regenerateLightMap();
 		if (x == 0)
@@ -459,97 +460,107 @@ endNearTop:
 
 	ChunkBlock *Chunk::getBlock(int32_t x, int32_t y, int32_t z)
 	{
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return (NULL);
-		return (this->storages[storageY]->getBlock(x, y - storageY * 16, z));
+		return (storage->getBlock(x, y - storage->getId() * 16, z));
 	}
 
 	uint8_t Chunk::getLight(int32_t x, int32_t y, int32_t z)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return (0);
-		if (y > this->topBlocks[getXZId(x, z)])
+		if (y > getTopBlock(x, z))
 			return (15);
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return (15);
-		return (this->storages[storageY]->getLight(x, y - storageY * 16, z));
+		return (storage->getLight(x, y - storage->getId() * 16, z));
 	}
 
 	void Chunk::setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
-			this->storages[storageY] = new ChunkStorage(storageY * 16);
-		this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light);
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
+			storage = createStorage(y / 16);
+		storage->setSkyLight(x, y - storage->getId() * 16, z, light);
 		this->changed = true;
 	}
 
 	uint8_t Chunk::getSkyLightVal(int32_t x, int32_t y, int32_t z)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return (0);
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return (0);
-		return (this->storages[storageY]->getSkyLight(x, y - storageY * 16, z));
+		return (storage->getSkyLight(x, y - storage->getId() * 16, z));
 	}
 
 	uint8_t Chunk::getSkyLight(int32_t x, int32_t y, int32_t z)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return (0);
-		if (y > this->topBlocks[getXZId(x, z)])
+		if (y > getTopBlock(x, z))
 			return (15);
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return (15);
-		return (this->storages[storageY]->getSkyLight(x, y - storageY * 16, z));
+		return (storage->getSkyLight(x, y - storage->getId() * 16, z));
 	}
 
 	void Chunk::setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return;
-		this->storages[storageY]->setSkyLight(x, y - storageY * 16, z, light);
+		storage->setSkyLight(x, y - storage->getId() * 16, z, light);
 		this->changed = true;
 	}
 
 	uint8_t Chunk::getBlockLight(int32_t x, int32_t y, int32_t z)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return (0);
-		uint8_t storageY = y / 16;
-		if (!this->storages[storageY])
+		ChunkStorage *storage = getStorage(y / 16);
+		if (!storage)
 			return (0);
-		return (this->storages[storageY]->getBlockLight(x, y - storageY * 16, z));
+		return (storage->getBlockLight(x, y - storage->getId() * 16, z));
+	}
+
+	void Chunk::setTopBlock(int32_t x, int32_t z, uint8_t top)
+	{
+		this->NBT.HeightMap->getValues()[getXZId(x, z)] = top;
 	}
 
 	uint8_t Chunk::getTopBlock(int32_t x, int32_t z)
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return (CHUNK_HEIGHT);
-		return (this->topBlocks[getXZId(x, z)]);
+		return (this->NBT.HeightMap->getValues()[getXZId(x, z)]);
+	}
+
+	void Chunk::setBiome(int32_t x, int32_t z, uint8_t biome)
+	{
+		this->NBT.Biomes->getValues()[getXZId(x, z)] = biome;
 	}
 
 	uint8_t Chunk::getBiome(int32_t x, int32_t z)
 	{
-		return (this->biomes[getXZId(x, z)]);
+		return (this->NBT.Biomes->getValues()[getXZId(x, z)]);
 	}
 
 	void Chunk::destroyBlock(int32_t x, int32_t y, int32_t z)
 	{
-		uint8_t *top = &this->topBlocks[getXZId(x, z)];
-		if (y == *top)
+		uint8_t top = getTopBlock(x, z);
+		if (y == top)
 		{
-			for (int16_t i = *top - 1; i >= 0; --i)
+			for (int16_t i = top - 1; i >= 0; --i)
 			{
 				ChunkBlock *block = getBlock(x, i, z);
 				if (block && block->getType())
 				{
-					*top = (uint8_t)i;
+					setTopBlock(x, z, i);
 					break;
 				}
 			}
@@ -580,7 +591,7 @@ endNearTop:
 
 	void Chunk::regenerateBuffers()
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return;
 		if (this->mustGenerateBuffers)
 			return;
@@ -590,7 +601,7 @@ endNearTop:
 
 	void Chunk::regenerateLightMap()
 	{
-		if (!this->generated)
+		if (!isGenerated())
 			return;
 		if (this->mustGenerateLightMap)
 			return;
@@ -605,6 +616,234 @@ endNearTop:
 	{
 		//this->recursiveLightMap = true;
 		regenerateLightMap();
+	}
+
+	ChunkStorage *Chunk::getStorage(uint8_t id)
+	{
+		return (this->storages[id]);
+	}
+
+	ChunkStorage *Chunk::createStorage(uint8_t id)
+	{
+		if (this->storages[id])
+			return (this->storages[id]);
+		NBTTagCompound *NBT = NULL;
+		this->storages[id] = new ChunkStorage(id);
+		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
+		{
+			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(this->NBT.Sections->getValues()[i]);
+			for (uint32_t i = 0; i < section->getTags().size(); ++i)
+			{
+				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(section->getTags()[i]);
+				if (Y->getValue() != id)
+					continue;
+				NBT = section;
+				goto found;
+			}
+		}
+		NBT = new NBTTagCompound("");
+		this->NBT.Sections->addValue(NBT);
+found:
+		this->storages[id]->initNBT(NBT);
+		return (this->storages[id]);
+	}
+
+	void Chunk::initNBT(NBTTagCompound *NBT)
+	{
+		std::memset(&this->NBT, 0, sizeof(this->NBT));
+		this->NBT.NBT = NBT;
+		if (!this->NBT.NBT)
+			this->NBT.NBT = new NBTTagCompound("");
+		for (std::vector<NBTTag*>::iterator iter = this->NBT.NBT->getTags().begin(); iter != this->NBT.NBT->getTags().end(); ++iter)
+		{
+			if (!(*iter)->getName().compare("DataVersion") && (*iter)->getType() == NBT_TAG_INT)
+				this->NBT.DataVersion = reinterpret_cast<NBTTagInt*>(*iter);
+			else if (!(*iter)->getName().compare("Level") && (*iter)->getType() == NBT_TAG_COMPOUND)
+				this->NBT.Level = reinterpret_cast<NBTTagCompound*>(*iter);
+			else
+				goto erase1;
+			continue;
+erase1:
+			this->NBT.NBT->getTags().erase(iter);
+			iter = this->NBT.NBT->getTags().begin();
+			if (iter == this->NBT.NBT->getTags().end())
+				break;
+		}
+		if (!this->NBT.DataVersion)
+		{
+			this->NBT.DataVersion = new NBTTagInt("DataVersion");
+			this->NBT.DataVersion->setValue(1);
+			this->NBT.NBT->addTag(this->NBT.DataVersion);
+		}
+		if (!this->NBT.Level)
+		{
+			this->NBT.Level = new NBTTagCompound("Level");
+			this->NBT.NBT->addTag(this->NBT.Level);
+		}
+		for (std::vector<NBTTag*>::iterator iter = this->NBT.Level->getTags().begin(); iter != this->NBT.Level->getTags().end(); ++iter)
+		{
+			if (!(*iter)->getName().compare("xPos") && (*iter)->getType() == NBT_TAG_INT)
+				this->NBT.xPos = reinterpret_cast<NBTTagInt*>(*iter);
+			else if (!(*iter)->getName().compare("zPos") && (*iter)->getType() == NBT_TAG_INT)
+				this->NBT.zPos = reinterpret_cast<NBTTagInt*>(*iter);
+			else if (!(*iter)->getName().compare("LastUpdate") && (*iter)->getType() == NBT_TAG_LONG)
+				this->NBT.LastUpdate = reinterpret_cast<NBTTagLong*>(*iter);
+			else if (!(*iter)->getName().compare("LightPopulated") && (*iter)->getType() == NBT_TAG_BYTE)
+				this->NBT.LightPopulated = reinterpret_cast<NBTTagByte*>(*iter);
+			else if (!(*iter)->getName().compare("TerrainPopulated") && (*iter)->getType() == NBT_TAG_BYTE)
+				this->NBT.TerrainPopulated = reinterpret_cast<NBTTagByte*>(*iter);
+			else if (!(*iter)->getName().compare("V") && (*iter)->getType() == NBT_TAG_BYTE)
+				this->NBT.V = reinterpret_cast<NBTTagByte*>(*iter);
+			else if (!(*iter)->getName().compare("InhabitedTime") && (*iter)->getType() == NBT_TAG_LONG)
+				this->NBT.InhabitedTime = reinterpret_cast<NBTTagLong*>(*iter);
+			else if (!(*iter)->getName().compare("Biomes") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
+				this->NBT.Biomes = reinterpret_cast<NBTTagByteArray*>(*iter);
+			else if (!(*iter)->getName().compare("HeightMap") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
+				this->NBT.HeightMap = reinterpret_cast<NBTTagByteArray*>(*iter);
+			else if (!(*iter)->getName().compare("Sections") && (*iter)->getType() == NBT_TAG_LIST)
+				this->NBT.Sections = reinterpret_cast<NBTTagList*>(*iter);
+			else if (!(*iter)->getName().compare("Entities") && (*iter)->getType() == NBT_TAG_LIST)
+				this->NBT.Entities = reinterpret_cast<NBTTagList*>(*iter);
+			else if (!(*iter)->getName().compare("TileEntities") && (*iter)->getType() == NBT_TAG_LIST)
+				this->NBT.TileEntities = reinterpret_cast<NBTTagList*>(*iter);
+			else if (!(*iter)->getName().compare("TileTicks") && (*iter)->getType() == NBT_TAG_LIST)
+				this->NBT.TileTicks = reinterpret_cast<NBTTagList*>(*iter);
+			else
+				goto erase2;
+			continue;
+erase2:
+			this->NBT.Level->getTags().erase(iter);
+			iter = this->NBT.Level->getTags().begin();
+			if (iter == this->NBT.Level->getTags().end())
+				break;
+		}
+		if (!this->NBT.xPos)
+		{
+			this->NBT.xPos = new NBTTagInt("xPos");
+			this->NBT.xPos->setValue(this->x);
+			this->NBT.Level->addTag(this->NBT.xPos);
+		}
+		if (!this->NBT.zPos)
+		{
+			this->NBT.zPos = new NBTTagInt("zPos");
+			this->NBT.zPos->setValue(this->z);
+			this->NBT.Level->addTag(this->NBT.zPos);
+		}
+		if (!this->NBT.LastUpdate)
+		{
+			this->NBT.LastUpdate = new NBTTagLong("LastUpdate");
+			this->NBT.LastUpdate->setValue(0);
+			this->NBT.Level->addTag(this->NBT.LastUpdate);
+		}
+		if (!this->NBT.LightPopulated)
+		{
+			this->NBT.LightPopulated = new NBTTagByte("LightPopulated");
+			this->NBT.LightPopulated->setValue(0);
+			this->NBT.Level->addTag(this->NBT.LightPopulated);
+		}
+		if (!this->NBT.TerrainPopulated)
+		{
+			this->NBT.TerrainPopulated = new NBTTagByte("TerrainPopulated");
+			this->NBT.TerrainPopulated->setValue(0);
+			this->NBT.Level->addTag(this->NBT.TerrainPopulated);
+		}
+		if (!this->NBT.V)
+		{
+			this->NBT.V = new NBTTagByte("V");
+			this->NBT.V->setValue(1);
+			this->NBT.Level->addTag(this->NBT.V);
+		}
+		if (!this->NBT.InhabitedTime)
+		{
+			this->NBT.InhabitedTime = new NBTTagLong("InhabitedTime");
+			this->NBT.InhabitedTime->setValue(0);
+			this->NBT.Level->addTag(this->NBT.InhabitedTime);
+		}
+		if (!this->NBT.Biomes)
+		{
+			this->NBT.Biomes = new NBTTagByteArray("Biomes");
+			this->NBT.Biomes->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
+			this->NBT.Level->addTag(this->NBT.Biomes);
+		}
+		if (this->NBT.Biomes->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH)
+		{
+			this->NBT.Biomes->getValues().clear();
+			this->NBT.Biomes->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
+		}
+		if (!this->NBT.HeightMap)
+		{
+			this->NBT.HeightMap = new NBTTagByteArray("HeightMap");
+			this->NBT.HeightMap->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
+			this->NBT.Level->addTag(this->NBT.HeightMap);
+		}
+		if (this->NBT.HeightMap->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH)
+		{
+			this->NBT.HeightMap->getValues().clear();
+			this->NBT.HeightMap->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
+		}
+		if (!this->NBT.Sections)
+		{
+			this->NBT.Sections = new NBTTagList("Sections");
+			this->NBT.Sections->setType(NBT_TAG_COMPOUND);
+			this->NBT.Level->addTag(this->NBT.Sections);
+		}
+		uint8_t sections[16];
+		std::memset(sections, 0, sizeof(sections));
+		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
+		{
+			NBTTag *tmp = this->NBT.Sections->getValues()[i];
+			bool found = false;
+			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(tmp);
+			if (tmp->getType() != NBT_TAG_COMPOUND)
+				goto erase3;
+			for (uint32_t i = 0; i < section->getTags().size(); ++i)
+			{
+				if (section->getTags()[i]->getName().compare("Y") || section->getTags()[i]->getType() != NBT_TAG_BYTE)
+					continue;
+				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(section->getTags()[i]);
+				if (Y->getValue() >= 0 && Y->getValue() <= 15 && !sections[Y->getValue()])
+				{
+					sections[Y->getValue()] = 1;
+					found = true;
+				}
+				break;
+			}
+			if (!found)
+				goto erase3;
+			continue;
+erase3:
+			delete (tmp);
+			this->NBT.Sections->getValues().erase(this->NBT.Sections->getValues().begin() + i);
+			i--;
+		}
+		if (!this->NBT.Entities)
+		{
+			this->NBT.Entities = new NBTTagList("Entities");
+			this->NBT.Entities->setType(NBT_TAG_COMPOUND);
+			this->NBT.Level->addTag(this->NBT.Entities);
+		}
+		if (!this->NBT.TileEntities)
+		{
+			this->NBT.TileEntities = new NBTTagList("TileEntities");
+			this->NBT.TileEntities->setType(NBT_TAG_COMPOUND);
+			this->NBT.Level->addTag(this->NBT.TileEntities);
+		}
+		if (!this->NBT.TileTicks)
+		{
+			this->NBT.TileTicks = new NBTTagList("TileTicks");
+			this->NBT.TileTicks->setType(NBT_TAG_COMPOUND);
+			this->NBT.Level->addTag(this->NBT.TileTicks);
+		}
+	}
+
+	void Chunk::setGenerated(bool generated)
+	{
+		this->NBT.TerrainPopulated->setValue(generated ? 1 : 0);
+	}
+
+	bool Chunk::isGenerated()
+	{
+		return (this->NBT.TerrainPopulated->getValue());
 	}
 
 	void Chunk::setChunkXLess(Chunk *chunk)

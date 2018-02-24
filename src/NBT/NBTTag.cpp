@@ -14,7 +14,6 @@
 #include "NBTTagEnd.h"
 #include "NBTTagInt.h"
 #include "NBTFile.h"
-#include "Debug.h"
 #include <cstring>
 
 namespace voxel
@@ -45,6 +44,12 @@ namespace voxel
 			stream->write(const_cast<char*>(this->name.data()), this->name.length());
 	}
 
+	void NBTTag::writeHeader(NBTStream *stream)
+	{
+		writeId(stream);
+		writeName(stream);
+	}
+
 	size_t NBTTag::getHeaderSize()
 	{
 		return (1 + 2 + this->name.length());
@@ -63,13 +68,15 @@ namespace voxel
 		std::string name;
 		if (id)
 			name = readTagName(stream);
-		return (readTagOfType(static_cast<enum NBTTagType>(id), name));
+		NBTTag *tag = getTagOfType(static_cast<enum NBTTagType>(id), name);
+		tag->readData(stream);
+		return (tag);
 	}
 
 	std::string NBTTag::readTagName(NBTStream *stream)
 	{
-		int16_t length = 0;
-		if (!stream->readInt16(&length))
+		uint16_t length = 0;
+		if (!stream->readInt16((int16_t*)&length))
 			throw NBTException("Can't read name len");
 		if (!length)
 			return ("");
@@ -79,7 +86,7 @@ namespace voxel
 		return (result);
 	}
 
-	NBTTag *NBTTag::readTagOfType(enum NBTTagType type, std::string name)
+	NBTTag *NBTTag::getTagOfType(enum NBTTagType type, std::string name)
 	{
 		switch (type)
 		{

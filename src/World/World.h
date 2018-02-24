@@ -57,6 +57,7 @@ namespace voxel
 		void setBlock(int32_t x, int32_t y, int32_t z, uint8_t type);
 		void setBlockIfReplaceable(int32_t x, int32_t y, int32_t z, uint8_t type);
 		void generateChunk(int32_t x, int32_t z);
+		Chunk *createChunk(int32_t x, int32_t z);
 		void addChunk(Chunk *chunk);
 		Chunk *getChunk(int32_t x, int32_t z);
 		ChunkBlock *getBlock(int32_t x, int32_t y, int32_t z);

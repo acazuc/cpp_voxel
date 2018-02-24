@@ -3,8 +3,8 @@
 
 # include "Particles/ParticlesManager.h"
 # include "Entities/EntitiesManager.h"
-# include "NBT/NBTTagCompound.h"
 # include "ChunkStorage.h"
+# include "NBT/NBT.h"
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
 # include <librender/Shader/VertexArray.h>
@@ -19,6 +19,26 @@ namespace voxel
 {
 
 	class World;
+
+	struct ChunkNBT
+	{
+		NBTTagCompound *NBT;
+		NBTTagInt *DataVersion;
+		NBTTagCompound *Level;
+		NBTTagInt *xPos;
+		NBTTagInt *zPos;
+		NBTTagLong *LastUpdate;
+		NBTTagByte *LightPopulated;
+		NBTTagByte *TerrainPopulated;
+		NBTTagByte *V;
+		NBTTagLong *InhabitedTime;
+		NBTTagByteArray *Biomes;
+		NBTTagByteArray *HeightMap;
+		NBTTagList *Sections;
+		NBTTagList *Entities;
+		NBTTagList *TileEntities;
+		NBTTagList *TileTicks;
+	};
 
 	struct ChunkLayer
 	{
@@ -38,24 +58,21 @@ namespace voxel
 	private:
 		ParticlesManager particlesManager;
 		EntitiesManager entitiesManager;
-		NBTTagCompound *nbt;
 		ChunkStorage *storages[16];
 		ChunkLayer layers[3];
+		ChunkNBT NBT;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
 		Chunk *chunkZLess;
 		Chunk *chunkZMore;
 		World &world;
 		AABB aabb;
-		uint8_t topBlocks[CHUNK_WIDTH * CHUNK_WIDTH];
-		uint8_t biomes[CHUNK_WIDTH * CHUNK_WIDTH];
 		int32_t x;
 		int32_t z;
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool mustUpdateBuffers;
 		bool recursiveLightMap;
-		bool generated;
 		bool deleted;
 		bool changed;
 		bool visible;
@@ -85,7 +102,9 @@ namespace voxel
 		uint8_t getSkyLight(int32_t x, int32_t y, int32_t z);
 		void setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light);
 		uint8_t getBlockLight(int32_t x, int32_t y, int32_t z);
+		void setTopBlock(int32_t x, int32_t y, uint8_t top);
 		uint8_t getTopBlock(int32_t x, int32_t z);
+		void setBiome(int32_t x, int32_t y, uint8_t biome);
 		uint8_t getBiome(int32_t x, int32_t z);
 		void destroyBlock(int32_t x, int32_t y, int32_t z);
 		inline void setChunkXLess(Chunk *chunk);
@@ -99,12 +118,18 @@ namespace voxel
 		inline World &getWorld() {return (this->world);};
 		inline int32_t getX() {return (this->x);};
 		inline int32_t getZ() {return (this->z);};
+		void setGenerated(bool generated);
+		bool isGenerated();
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
 		inline bool isDeleted() {return (this->deleted);};
 		inline void setChanged(bool changed) {this->changed = changed;};
 		inline bool isChanged() {return (this->changed);};
-		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
+		void initNBT(NBTTagCompound *NBT);
+		inline NBTTagCompound *getNBT() {return (this->NBT.NBT);};
+		ChunkStorage *getStorage(uint8_t id);
+		ChunkStorage *createStorage(uint8_t id);
 		inline ChunkStorage **getStorages() {return (this->storages);};
+		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
 		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
 		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
 		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};

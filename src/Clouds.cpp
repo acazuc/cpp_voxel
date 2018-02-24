@@ -30,7 +30,7 @@ namespace voxel
 		if (!libformat::PNG::read("data/textures/clouds.png", data, width, height))
 			ERROR("Failed to read clouds.png");
 		for (uint32_t i = 0; i < width * height; ++i)
-			this->parts.push_back(data[i * 4 + 3] < 0);
+			this->parts.push_back(data[i/* * 4 + 3*/] < 0);
 		this->partsWidth = width;
 		this->partsHeight = height;
 		delete[] (data);

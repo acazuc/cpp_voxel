@@ -5,18 +5,18 @@ namespace voxel
 
 	bool NBTBuffer::read(void *data, size_t len)
 	{
-		if (this->len - this->pos < len)
+		if (this->pos + len > this->len)
 			return (false);
-		std::memcpy(data, this->data + this->pos, len);
+		std::memcpy(data, (uint8_t*)this->data + this->pos, len);
 		this->pos += len;
 		return (true);
 	}
 
 	bool NBTBuffer::write(const void *data, size_t len)
 	{
-		if (this->pos - this->pos < len)
+		if (this->pos + len > this->len)
 			return (false);
-		std::memcpy(this->data + this->pos, data, len);
+		std::memcpy((uint8_t*)this->data + this->pos, data, len);
 		this->pos += len;
 		return (true);
 	}

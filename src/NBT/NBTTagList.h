@@ -18,11 +18,14 @@ namespace voxel
 
 	public:
 		NBTTagList(std::string name);
+		~NBTTagList();
 		void readData(NBTStream *stream);
 		void writeData(NBTStream *stream);
 		size_t getDataSize();
 		void printDebug();
+		inline void addValue(NBTTag* value) {this->values.push_back(value);};
 		inline std::vector<NBTTag*> &getValues() {return (this->values);};
+		inline void setType(enum NBTTagType type) {this->type = type;};
 		inline enum NBTTagType getType() {return (this->type);};
 
 	};

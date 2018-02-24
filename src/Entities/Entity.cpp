@@ -69,7 +69,7 @@ namespace voxel
 		pos.y -= this->size.y / 2 - .4;
 		ChunkBlock *block = this->world.getBlock(pos.x, pos.y, pos.z);
 		this->inWater = block && (block->getType() == 8 || block->getType() == 9);
-		if (this->inWater)
+		if (this->inWater && !this->flying)
 			this->sliperness = Vec3(.8);
 		else
 			this->sliperness = Vec3(.91, .98, .91);

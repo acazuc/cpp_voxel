@@ -13,6 +13,12 @@ namespace voxel
 		//Empty
 	}
 
+	NBTTagCompound::~NBTTagCompound()
+	{
+		for (uint32_t i = 0; i < this->tags.size(); ++i)
+			delete (this->tags[i]);
+	}
+
 	void NBTTagCompound::readData(NBTStream *stream)
 	{
 		NBTTag *tag;
@@ -23,7 +29,6 @@ namespace voxel
 				delete (tag);
 				return;
 			}
-			tag->readData(stream);
 			this->tags.push_back(tag);
 		}
 	}

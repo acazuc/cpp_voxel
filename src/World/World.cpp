@@ -208,10 +208,7 @@ nextRegion:
 		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
-		{
-			chunk = new Chunk(*this, chunkX, chunkZ);
-			addChunk(chunk);
-		}
+			chunk = createChunk(chunkX, chunkZ);
 		chunk->setBlock(x - chunkX, y, z - chunkZ, type);
 	}
 
@@ -223,10 +220,7 @@ nextRegion:
 		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
-		{
-			chunk = new Chunk(*this, chunkX, chunkZ);
-			addChunk(chunk);
-		}
+			chunk = createChunk(chunkX, chunkZ);
 		chunk->setBlockIfReplaceable(x - chunkX, y, z - chunkZ, type);
 	}
 
@@ -246,6 +240,21 @@ nextRegion:
 		Region *region = new Region(*this, regionX, regionZ);
 		this->regions.push_back(region);
 		region->generateChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH);
+	}
+
+	Chunk *World::createChunk(int32_t x, int32_t z)
+	{
+		int32_t regionX = getRegionCoord(x);
+		int32_t regionZ = getRegionCoord(z);
+		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		{
+			Region *region = this->regions[i];
+			if (region->getX() == regionX && region->getZ() == regionZ)
+				return (region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
+		}
+		Region *region = new Region(*this, regionX, regionZ);
+		this->regions.push_back(region);
+		return (region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
 	}
 
 	void World::addChunk(Chunk *chunk)

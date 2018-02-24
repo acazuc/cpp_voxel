@@ -18,10 +18,7 @@ namespace voxel
 			throw NBTException("Failed to open file " + this->name);
 		NBTTag *tag;
 		while ((tag = NBTTag::readTag(this)))
-		{
-			tag->readData(this);
 			this->tags.push_back(tag);
-		}
 		this->istream.close();
 	}
 

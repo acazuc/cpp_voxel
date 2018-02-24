@@ -24,6 +24,7 @@ namespace voxel
 		virtual void writeData(NBTStream *stream) {(void)stream;};
 		void writeId(NBTStream *stream);
 		virtual void writeName(NBTStream *stream);
+		void writeHeader(NBTStream *stream);
 		size_t getHeaderSize();
 		virtual size_t getDataSize() {return (0);};
 		virtual void printDebug();
@@ -31,7 +32,7 @@ namespace voxel
 		inline std::string &getName() {return (this->name);};
 		static NBTTag *readTag(NBTStream *stream);
 		static std::string readTagName(NBTStream *stream);
-		static NBTTag *readTagOfType(enum NBTTagType type, std::string name);
+		static NBTTag *getTagOfType(enum NBTTagType type, std::string name);
 
 	};
 

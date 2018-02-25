@@ -231,7 +231,7 @@ write:
 			if (std::fread(&compression, 1, 1, this->file) != 1)
 				ERROR("Failed to read section compression");
 			if (compression != 2)
-				ERROR("Section compression not supported (" << compression << ")");
+				ERROR("Section compression not supported (" << (int)compression << ") in " << this->filename << " at " << (this->storageHeader[getXZId(x, z)] >> 8) * REGION_SECTOR_SIZE);
 			NBTBuffer buffer;
 			buffer.pos = 0;
 			buffer.len = len;

@@ -141,6 +141,14 @@ namespace voxel
 		}
 		Biomes::getBiome(1)->generate(*this);
 		regenerateLightMapRec();
+		if (this->chunkXLess)
+			this->chunkXLess->regenerateLightMap();
+		if (this->chunkXMore)
+			this->chunkXMore->regenerateLightMap();
+		if (this->chunkZLess)
+			this->chunkZLess->regenerateLightMap();
+		if (this->chunkZMore)
+			this->chunkZMore->regenerateLightMap();
 	}
 
 	void Chunk::tick()
@@ -790,8 +798,6 @@ erase2:
 			this->NBT.Sections->setType(NBT_TAG_COMPOUND);
 			this->NBT.Level->addTag(this->NBT.Sections);
 		}
-		uint8_t sections[16];
-		std::memset(sections, 0, sizeof(sections));
 		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
 		{
 			NBTTag *tmp = this->NBT.Sections->getValues()[i];
@@ -799,14 +805,26 @@ erase2:
 			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(tmp);
 			if (tmp->getType() != NBT_TAG_COMPOUND)
 				goto erase3;
-			for (uint32_t i = 0; i < section->getTags().size(); ++i)
+			for (uint32_t j = 0; j < section->getTags().size(); ++i)
 			{
-				if (section->getTags()[i]->getName().compare("Y") || section->getTags()[i]->getType() != NBT_TAG_BYTE)
+				if (section->getTags()[j]->getName().compare("Y"))
 					continue;
-				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(section->getTags()[i]);
-				if (Y->getValue() >= 0 && Y->getValue() <= 15 && !sections[Y->getValue()])
+				if (section->getTags()[j]->getType() != NBT_TAG_BYTE)
+					break;
+				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(section->getTags()[j]);
+				if (Y->getValue() >= 0 && Y->getValue() <= 15 && !this->storages[Y->getValue()])
 				{
-					sections[Y->getValue()] = 1;
+					this->storages[Y->getValue()] = new ChunkStorage(Y->getValue());
+					this->storages[Y->getValue()]->initNBT(section);
+					regenerateLightMap();
+					if (this->chunkXLess)
+						this->chunkXLess->regenerateLightMap();
+					if (this->chunkXMore)
+						this->chunkXMore->regenerateLightMap();
+					if (this->chunkZLess)
+						this->chunkZLess->regenerateLightMap();
+					if (this->chunkZMore)
+						this->chunkZMore->regenerateLightMap();
 					found = true;
 				}
 				break;

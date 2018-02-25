@@ -5,7 +5,7 @@
 #include <vector>
 
 #define HEIGHT 166
-#define PX_PER_MS 20
+#define PX_PER_MS 10
 
 using librender::Vec3;
 using librender::Vec2;
@@ -20,10 +20,19 @@ namespace voxel
 	{
 		for (uint32_t i = 0; i < 512; ++i)
 			values[i] = 0;
+		this->background.setTexture(Main::getEmpty());
+		this->background.setProgram(Gui::getShaderSpriteProgram());
+		this->background.setSize(512, 1000. / 60 * PX_PER_MS);
+		this->background.setPos(0, Main::getWindow()->getHeight() - 1000. / 60 * PX_PER_MS);
+		Color color(0, 0);
+		this->background.setBotColor(color);
+		color = Color(0, .5);
+		this->background.setTopColor(color);
 	}
 
 	void GuiLagometer::draw()
 	{
+		this->background.draw(Gui::getMat());
 		std::vector<Vec2> texCoords;
 		std::vector<Vec2> vertexes;
 		std::vector<Vec3> colors;

@@ -22,7 +22,7 @@ namespace voxel
 	{
 		this->flying = true;
 		setSize(Vec3(.6, 1.8, .6));
-		setPos(Vec3(0, 150, 0));
+		setPos(Vec3(8, 150, 8));
 	}
 
 	void Player::handleMovement()
@@ -72,15 +72,15 @@ namespace voxel
 				angle += 0;
 			add.x = std::cos(angle / 180. * M_PI);
 			add.z = std::sin(angle / 180. * M_PI);
-			if (this->inWater)
-			{
-				add.x *= SWIM_SPEED;
-				add.z *= SWIM_SPEED;
-			}
-			else if (this->flying)
+			if (this->flying)
 			{
 				add.x *= FLY_SPEED;
 				add.z *= FLY_SPEED;
+			}
+			else if (this->inWater)
+			{
+				add.x *= SWIM_SPEED;
+				add.z *= SWIM_SPEED;
 			}
 			else if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			{
@@ -110,9 +110,11 @@ namespace voxel
 						jump();
 			}
 		}
-		if (!this->inWater)
+		if (this->flying)
+			add *= 0.1;
+		else if (!this->inWater)
 		{
-			if (this->isOnFloor || this->flying)
+			if (this->isOnFloor)
 				add *= 0.1;
 			else
 				add *= 0.02;

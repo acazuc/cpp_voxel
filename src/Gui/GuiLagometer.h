@@ -1,10 +1,12 @@
 #ifndef GUI_LAGOMETER_H
 # define GUI_LAGOMETER_H
 
+# include <librender/Shader/Sprite/ShaderSprite.h>
 # include <librender/Shader/VertexBuffer.h>
 # include <cstdint>
 
 using librender::VertexBuffer;
+using librender::ShaderSprite;
 
 namespace voxel
 {
@@ -18,6 +20,7 @@ namespace voxel
 		VertexBuffer texCoordsBuffer;
 		VertexBuffer vertexesBuffer;
 		VertexBuffer colorsBuffer;
+		ShaderSprite background;
 
 	public:
 		GuiLagometer();

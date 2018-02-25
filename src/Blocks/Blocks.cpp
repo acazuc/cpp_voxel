@@ -2,8 +2,10 @@
 #include "./BlockDoubleSlab.h"
 #include "./BlockRedstone.h"
 #include "./BlockSapling.h"
+#include "./BlockLeaves.h"
 #include "./BlockWater.h"
 #include "./BlockTorch.h"
+#include "./BlockGrass.h"
 #include "./BlockBase.h"
 #include "./BlockRail.h"
 #include "./BlockLava.h"
@@ -22,7 +24,7 @@ namespace voxel
 		blocks[0] = (new BlockBase(0))->setDefaultName("air")->setOpacity(1)->setTransparent(true)->setSolid(false)->setReplaceable(true)->setFocusable(false);
 		blocks[1] = (new BlockBase(1))->setDefaultName("stone")->setHardness(1.5)->setResistance(10);
 		reinterpret_cast<BlockBase*>(blocks[1])->setTex(1. / 16, 0);
-		blocks[2] = (new BlockBase(2))->setDefaultName("grass")->setHardness(.6);
+		blocks[2] = (new BlockGrass(2))->setDefaultName("grass")->setHardness(.6);
 		reinterpret_cast<BlockBase*>(blocks[2])->setTexTop(0, 0)->setTexSide(3. / 16, 0)->setTexBot(2. / 16, 0);
 		blocks[3] = (new BlockBase(3))->setDefaultName("dirt")->setHardness(.5);
 		reinterpret_cast<BlockBase*>(blocks[3])->setTex(2. / 16, 0);
@@ -54,7 +56,7 @@ namespace voxel
 		reinterpret_cast<BlockBase*>(blocks[16])->setTex(2. / 16, 2. / 16);
 		blocks[17] = (new BlockBase(17))->setDefaultName("tree")->setHardness(2);
 		reinterpret_cast<BlockBase*>(blocks[17])->setTex(5. / 16, 1. / 16)->setTexSide(4. / 16, 1. / 16);
-		blocks[18] = (new BlockBase(18))->setDefaultName("tree_leaves")->setHardness(.2)->setLayer(1)->setTransparent(true)->setRenderSameNeighbor(true)->setOpacity(1);
+		blocks[18] = (new BlockLeaves(18))->setDefaultName("tree_leaves")->setHardness(.2)->setLayer(1)->setTransparent(true)->setRenderSameNeighbor(true)->setOpacity(1);
 		reinterpret_cast<BlockBase*>(blocks[18])->setTex(4. / 16, 3. / 16);
 		blocks[19] = (new BlockBase(19))->setDefaultName("sponge")->setHardness(.6);
 		reinterpret_cast<BlockBase*>(blocks[19])->setTex(0, 3. / 16);

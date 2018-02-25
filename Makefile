@@ -48,6 +48,8 @@ SRCS_NAME = Main.cpp \
 	    Blocks/BlockSlab.cpp \
 	    Blocks/BlockDoubleSlab.cpp \
 	    Blocks/BlockTorch.cpp \
+	    Blocks/BlockGrass.cpp \
+	    Blocks/BlockLeaves.cpp \
 	    Shaders/BlocksShader.cpp \
 	    Shaders/CloudsShader.cpp \
 	    Shaders/SkyboxShader.cpp \

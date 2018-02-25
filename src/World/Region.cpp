@@ -218,14 +218,14 @@ write:
 		NBTTag *NBT = NULL;
 		if (this->storageHeader[getXZId(x, z)])
 		{
-			LOG(this->filename);
 			if (std::fseek(this->file, (this->storageHeader[getXZId(x, z)] >> 8) * REGION_SECTOR_SIZE, SEEK_SET))
 				ERROR("Failed to seek section");
-			LOG((this->storageHeader[getXZId(x, z)] >> 8) * REGION_SECTOR_SIZE);
-			LOG(ftell(this->file));
-			int32_t len;
+			int32_t len = 0;
 			if (std::fread(&len, 4, 1, this->file) != 1)
 				ERROR("Failed to read section length");
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+			len = ((len >> 24) & 0xff) | ((len >> 8) & 0xff00) | ((len & 0xff00) << 8) | ((len & 0xff) << 24);
+#endif
 			len--;
 			int8_t compression;
 			if (std::fread(&compression, 1, 1, this->file) != 1)
@@ -235,7 +235,6 @@ write:
 			NBTBuffer buffer;
 			buffer.pos = 0;
 			buffer.len = len;
-			LOG("len: " << len << " (" << *reinterpret_cast<uint32_t*>(&len) << ")");
 			buffer.data = new uint8_t[buffer.len];
 			if (std::fread(buffer.data, buffer.len, 1, this->file) != 1)
 				ERROR("Invalid region sectors read");

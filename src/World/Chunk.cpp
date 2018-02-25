@@ -634,7 +634,10 @@ endNearTop:
 			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(this->NBT.Sections->getValues()[i]);
 			for (uint32_t i = 0; i < section->getTags().size(); ++i)
 			{
-				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(section->getTags()[i]);
+				NBTTag *tag = section->getTags()[i];
+				if (tag->getName().compare("Y") || tag->getType() != NBT_TAG_BYTE)
+					continue;
+				NBTTagByte *Y = reinterpret_cast<NBTTagByte*>(tag);
 				if (Y->getValue() != id)
 					continue;
 				NBT = section;

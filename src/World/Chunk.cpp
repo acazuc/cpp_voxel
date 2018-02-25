@@ -5,7 +5,6 @@
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
 #include "NBT/NBT.h"
-#include "Debug.h"
 #include "World.h"
 #include "Main.h"
 #include <cstring>
@@ -805,7 +804,7 @@ erase2:
 			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(tmp);
 			if (tmp->getType() != NBT_TAG_COMPOUND)
 				goto erase3;
-			for (uint32_t j = 0; j < section->getTags().size(); ++i)
+			for (uint32_t j = 0; j < section->getTags().size(); ++j)
 			{
 				if (section->getTags()[j]->getName().compare("Y"))
 					continue;

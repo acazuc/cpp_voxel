@@ -3,13 +3,10 @@
 
 # include "NBTStream.h"
 # include "NBTTag.h"
-# include <libgzip/GZipOutputStream.h>
-# include <libgzip/GZipInputStream.h>
+# include <libgzip/FileOutputStream.h>
+# include <libgzip/FileInputStream.h>
 # include <string>
 # include <vector>
-
-using libgzip::GZipOutputStream;
-using libgzip::GZipInputStream;
 
 namespace voxel
 {
@@ -19,8 +16,8 @@ namespace voxel
 
 	private:
 		std::vector<NBTTag*> tags;
-		GZipOutputStream ostream;
-		GZipInputStream istream;
+		gz::FileOutputStream ostream;
+		gz::FileInputStream istream;
 		std::string name;
 
 	public:

@@ -2,7 +2,15 @@
 #include "NBT/NBTBuffer.h"
 #include "World.h"
 #include "Debug.h"
+#include <libgzip/MemoryOutputStream.h>
+#include <libgzip/MemoryInputStream.h>
 #include <cstring>
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+# define ntohl(val) (((val >> 24) & 0xff) | ((val >> 8) & 0xff00) | ((val & 0xff00) << 8) | ((val & 0xff) << 24))
+#else
+# define ntohl(val) (val)
+#endif
 
 namespace voxel
 {
@@ -76,6 +84,7 @@ namespace voxel
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			uint32_t offsetAlloc = this->storageHeader[i];
+			offsetAlloc = ntohl(offsetAlloc);
 			if (!offsetAlloc)
 				continue;
 			uint32_t offset = (offsetAlloc >> 8) & 0xffffff;
@@ -106,24 +115,37 @@ namespace voxel
 			return;
 		chunk->setChanged(false);
 		uint32_t dataLen = chunk->getNBT()->getHeaderSize() + chunk->getNBT()->getDataSize() + 5;
-		uint32_t sectorsLen = std::ceil(dataLen / (float)REGION_SECTOR_SIZE);
-		char *data = new char[sectorsLen * REGION_SECTOR_SIZE];
-		std::memset(data, 0, sectorsLen * REGION_SECTOR_SIZE);
-		NBTBuffer buffer;
-		buffer.data = data;
-		buffer.pos = 0;
-		buffer.len = sectorsLen * REGION_SECTOR_SIZE;
-		buffer.writeInt32(dataLen - 4);
-		buffer.writeInt8(2);
-		chunk->getNBT()->writeHeader(&buffer);
-		chunk->getNBT()->writeData(&buffer);
-		if (!sectorsLen)
+		uint32_t sectorsLen = 0;
+		char *data = new char[dataLen];
+		std::memset(data, 0, dataLen);
 		{
+			NBTBuffer buffer;
+			buffer.data = data;
+			buffer.pos = 0;
+			buffer.len = dataLen;
+			chunk->getNBT()->writeHeader(&buffer);
+			chunk->getNBT()->writeData(&buffer);
+			gz::MemoryOutputStream os;
+			if (os.write(data, dataLen) != dataLen)
+				ERROR("Failed to gzip chunk data");
+			if (!os.flush())
+				ERROR("Failed to flush gzip chunk data");
+			sectorsLen = std::ceil((os.getData().size() + 5) / (float)REGION_SECTOR_SIZE);
 			delete[] (data);
-			return;
+			data = new char[sectorsLen * REGION_SECTOR_SIZE];
+			int32_t len = os.getData().size();
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+			len = ((len >> 24) & 0xff) | ((len >> 8) & 0xff00) | ((len & 0xff00) << 8) | ((len & 0xff) << 24);
+#endif
+			std::memmove(data, &len, 4);
+			int8_t compression = 2;
+			std::memmove(data + 4, &compression, 1);
+			std::memmove(data + 5, os.getData().data(), os.getData().size());
+			std::memset(data + 5 + os.getData().size(), 0, sectorsLen * REGION_SECTOR_SIZE - os.getData().size());
 		}
 		uint32_t headerPos = getXZId((chunk->getX() - this->x) / CHUNK_WIDTH, (chunk->getZ() - this->z) / CHUNK_WIDTH);
-		uint32_t &offsetAlloc = this->storageHeader[headerPos];
+		uint32_t offsetAlloc = this->storageHeader[headerPos];
+		offsetAlloc = ntohl(offsetAlloc);
 		uint32_t offset = (offsetAlloc >> 8) & 0xffffff;
 		uint8_t allocated = offsetAlloc & 0xff;
 		if (!offset || allocated < sectorsLen)
@@ -145,6 +167,7 @@ namespace voxel
 				offset = a;
 				allocated = sectorsLen;
 				offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
+				this->storageHeader[headerPos] = ntohl(offsetAlloc);
 				for (uint32_t i = 0; i < allocated; ++i)
 					this->sectors[offset + i] = true;
 				goto write;
@@ -155,6 +178,7 @@ newSector:
 			offset = this->sectors.size();
 			allocated = sectorsLen;
 			offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
+			this->storageHeader[headerPos] = ntohl(offsetAlloc);
 			this->sectors.resize(this->sectors.size() + allocated, true);
 		}
 write:
@@ -216,28 +240,41 @@ write:
 	Chunk *Region::createChunk(int32_t x, int32_t z)
 	{
 		NBTTag *NBT = NULL;
-		if (this->storageHeader[getXZId(x, z)])
+		uint32_t storage = this->storageHeader[getXZId(x, z)];
+		storage = ntohl(storage);
+		if (storage)
 		{
-			if (std::fseek(this->file, (this->storageHeader[getXZId(x, z)] >> 8) * REGION_SECTOR_SIZE, SEEK_SET))
+			if (std::fseek(this->file, (storage >> 8) * REGION_SECTOR_SIZE, SEEK_SET))
 				ERROR("Failed to seek section");
-			int32_t len = 0;
-			if (std::fread(&len, 4, 1, this->file) != 1)
+			int32_t clen = 0;
+			if (std::fread(&clen, 4, 1, this->file) != 1)
 				ERROR("Failed to read section length");
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-			len = ((len >> 24) & 0xff) | ((len >> 8) & 0xff00) | ((len & 0xff00) << 8) | ((len & 0xff) << 24);
+			clen = ((clen >> 24) & 0xff) | ((clen >> 8) & 0xff00) | ((clen & 0xff00) << 8) | ((clen & 0xff) << 24);
 #endif
-			len--;
+			clen--;
 			int8_t compression;
 			if (std::fread(&compression, 1, 1, this->file) != 1)
 				ERROR("Failed to read section compression");
 			if (compression != 2)
-				ERROR("Section compression not supported (" << (int)compression << ") in " << this->filename << " at " << (this->storageHeader[getXZId(x, z)] >> 8) * REGION_SECTOR_SIZE);
+				ERROR("Section compression not supported (" << (int)compression << ") in " << this->filename << " at " << (storage >> 8) * REGION_SECTOR_SIZE);
+			uint8_t *cdata = new uint8_t[clen];
+			if (std::fread(cdata, clen, 1, this->file) != 1)
+				ERROR("Invalid region sectors read");
+			std::vector<uint8_t> data;
+			{
+				gz::MemoryInputStream is(cdata, clen);
+				data.resize(data.size() + 1024);
+				ssize_t ret;
+				while ((ret = is.read(data.data() + data.size() - 1024, 1024)) > 0)
+					data.resize(data.size() + 1024);
+				if (ret == -1)
+					ERROR("Error while gunzip chunk data");
+			}
 			NBTBuffer buffer;
 			buffer.pos = 0;
-			buffer.len = len;
-			buffer.data = new uint8_t[buffer.len];
-			if (std::fread(buffer.data, buffer.len, 1, this->file) != 1)
-				ERROR("Invalid region sectors read");
+			buffer.len = data.size();
+			buffer.data = data.data();
 			if (!(NBT = NBTTag::readTag(&buffer)))
 			{
 				WARN("No NBT found");
@@ -248,7 +285,6 @@ write:
 				delete (NBT);
 				NBT = NULL;
 			}
-			delete[] ((uint8_t*)buffer.data);
 		}
 		Chunk *chunk = new Chunk(this->world, this->x + x * CHUNK_WIDTH, this->z + z * CHUNK_WIDTH);
 		chunk->initNBT(reinterpret_cast<NBTTagCompound*>(NBT));

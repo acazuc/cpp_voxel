@@ -797,6 +797,7 @@ erase2:
 			this->NBT.Sections->setType(NBT_TAG_COMPOUND);
 			this->NBT.Level->addTag(this->NBT.Sections);
 		}
+		bool sectionAdded = false;
 		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
 		{
 			NBTTag *tmp = this->NBT.Sections->getValues()[i];
@@ -815,16 +816,8 @@ erase2:
 				{
 					this->storages[Y->getValue()] = new ChunkStorage(Y->getValue());
 					this->storages[Y->getValue()]->initNBT(section);
-					regenerateLightMap();
-					if (this->chunkXLess)
-						this->chunkXLess->regenerateLightMap();
-					if (this->chunkXMore)
-						this->chunkXMore->regenerateLightMap();
-					if (this->chunkZLess)
-						this->chunkZLess->regenerateLightMap();
-					if (this->chunkZMore)
-						this->chunkZMore->regenerateLightMap();
 					found = true;
+					sectionAdded = true;
 				}
 				break;
 			}
@@ -835,6 +828,18 @@ erase3:
 			delete (tmp);
 			this->NBT.Sections->getValues().erase(this->NBT.Sections->getValues().begin() + i);
 			i--;
+		}
+		if (sectionAdded)
+		{
+			regenerateLightMap();
+			if (this->chunkXLess)
+				this->chunkXLess->regenerateLightMap();
+			if (this->chunkXMore)
+				this->chunkXMore->regenerateLightMap();
+			if (this->chunkZLess)
+				this->chunkZLess->regenerateLightMap();
+			if (this->chunkZMore)
+				this->chunkZMore->regenerateLightMap();
 		}
 		if (!this->NBT.Entities)
 		{

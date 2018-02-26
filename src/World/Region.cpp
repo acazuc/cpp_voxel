@@ -1,5 +1,6 @@
 #include "Region.h"
 #include "NBT/NBTBuffer.h"
+#include "Utils/System.h"
 #include "World.h"
 #include "Debug.h"
 #include <libgzip/MemoryOutputStream.h>
@@ -89,8 +90,9 @@ namespace voxel
 				continue;
 			uint32_t offset = (offsetAlloc >> 8) & 0xffffff;
 			uint32_t allocated = offsetAlloc & 0xff;
-			if (offset + allocated >= this->sectors.size())
+			if (offset + allocated > this->sectors.size())
 			{
+				LOG("Invalid (offset + allocated): " << offset + allocated << ", sectors count: " << this->sectors.size());
 				this->storageHeader[i] = 0;
 				continue;
 			}
@@ -144,6 +146,8 @@ namespace voxel
 			std::memset(data + 5 + os.getData().size(), 0, sectorsLen * REGION_SECTOR_SIZE - os.getData().size());
 		}
 		uint32_t headerPos = getXZId((chunk->getX() - this->x) / CHUNK_WIDTH, (chunk->getZ() - this->z) / CHUNK_WIDTH);
+		int32_t timestamp = System::microtime();
+		this->storageTimestamp[headerPos] = ntohl(timestamp);
 		uint32_t offsetAlloc = this->storageHeader[headerPos];
 		offsetAlloc = ntohl(offsetAlloc);
 		uint32_t offset = (offsetAlloc >> 8) & 0xffffff;
@@ -190,6 +194,10 @@ write:
 			ERROR("Failed to seek region \"" << this->filename << "\" offset");
 		if (std::fwrite(&this->storageHeader[headerPos], 4, 1, this->file) != 1)
 			ERROR("Failed to write region \"" << this->filename << "\" offset");
+		if (std::fseek(this->file, 4096 + headerPos * 4, SEEK_SET))
+			ERROR("Failed to seek region \"" << this->filename << "\" timestamp");
+		if (std::fwrite(&this->storageTimestamp[headerPos], 4, 1, this->file) != 1)
+			ERROR("Failed to write region \"" << this->filename << "\" timestamp");
 		delete[] (data);
 	}
 

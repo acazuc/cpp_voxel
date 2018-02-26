@@ -81,6 +81,7 @@ SRCS_NAME = Main.cpp \
 	    World/ChunkLoader.cpp \
 	    World/ChunkUpdater.cpp \
 	    World/ChunkStorage.cpp \
+	    World/Level.cpp \
 	    World/Biomes/Biome.cpp \
 	    World/Biomes/Biomes.cpp \
 	    World/Generators/GeneratorTree.cpp \

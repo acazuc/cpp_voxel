@@ -5,109 +5,169 @@ namespace voxel
 
 	void NBTMgr::childTagByteDefault(NBTTagCompound *parent, NBTTagByte **tag, std::string name, int8_t value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagByte(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagByte *val = new NBTTagByte(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagShortDefault(NBTTagCompound *parent, NBTTagShort **tag, std::string name, int16_t value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagShort(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagShort *val = new NBTTagShort(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagIntDefault(NBTTagCompound *parent, NBTTagInt **tag, std::string name, int32_t value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagInt(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagInt *val = new NBTTagInt(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagLongDefault(NBTTagCompound *parent, NBTTagLong **tag, std::string name, int64_t value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagLong(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagLong *val = new NBTTagLong(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagFloatDefault(NBTTagCompound *parent, NBTTagFloat **tag, std::string name, float value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagFloat(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagFloat *val = new NBTTagFloat(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagDoubleDefault(NBTTagCompound *parent, NBTTagDouble **tag, std::string name, double value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagDouble(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagDouble *val = new NBTTagDouble(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagByteArrayDefault(NBTTagCompound *parent, NBTTagByteArray **tag, std::string name, int32_t len)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagByteArray(name);
-		(*tag)->getValues().resize(len, 0);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagByteArray *val = new NBTTagByteArray(name);
+		val->getValues().resize(len, 0);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagStringDefault(NBTTagCompound *parent, NBTTagString **tag, std::string name, std::string value)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagString(name);
-		(*tag)->setValue(value);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagString *val = new NBTTagString(name);
+		val->setValue(value);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagListDefault(NBTTagCompound *parent, NBTTagList **tag, std::string name, enum NBTTagType type)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagList(name);
-		(*tag)->setType(type);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagList *val = new NBTTagList(name);
+		val->setType(type);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagCompoundDefault(NBTTagCompound *parent, NBTTagCompound **tag, std::string name)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagCompound(name);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagCompound *val = new NBTTagCompound(name);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagIntArrayDefault(NBTTagCompound *parent, NBTTagIntArray **tag, std::string name, int32_t len)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagIntArray(name);
-		(*tag)->getValues().resize(len, 0);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagIntArray *val = new NBTTagIntArray(name);
+		val->getValues().resize(len, 0);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 	void NBTMgr::childTagLongArrayDefault(NBTTagCompound *parent, NBTTagLongArray **tag, std::string name, int32_t len)
 	{
-		if (*tag)
+		if (!tag && !parent)
 			return;
-		*tag = new NBTTagLongArray(name);
-		(*tag)->getValues().resize(len, 0);
-		parent->addTag(*tag);
+		if (tag && *tag)
+			return;
+		NBTTagLongArray *val = new NBTTagLongArray(name);
+		val->getValues().resize(len, 0);
+		if (tag)
+			(*tag) = val;
+		if (parent)
+			parent->addTag(val);
 	}
 
 }

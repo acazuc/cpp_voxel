@@ -1,7 +1,9 @@
 #ifndef LEVEL_H
 # define LEVEL_H
 
+# include "NBT/NBTGZipFile.h"
 # include "NBT/NBT.h"
+# include "World.h"
 
 namespace voxel
 {
@@ -10,11 +12,14 @@ namespace voxel
 	{
 		NBTTagCompound *NBT;
 		NBTTagCompound *Data;
+		NBTTagCompound *CustomBossEvents;
+		NBTTagCompound *DataPacks;
+		NBTTagCompound *DimensionData;
 		NBTTagInt *version;
 		NBTTagByte *initialized;
 		NBTTagString *LevelName;
 		NBTTagString *generatorName;
-		NBTTagString *generatorVersion;
+		NBTTagInt *generatorVersion;
 		NBTTagString *generatorOptions;
 		NBTTagLong *RandomSeed;
 		NBTTagByte *MapFeatures;
@@ -53,12 +58,17 @@ namespace voxel
 	{
 
 	private:
+		std::vector<World*> world;
 		std::string path;
+		std::string name;
+		NBTGZipFile *level;
+		FILE *lock;
 		LevelNBT NBT;
 
 	public:
-		Level(std::string path);
+		Level(std::string path, std::string name);
 		~Level();
+		void initNBT(NBTTagCompound *tag);
 
 	};
 

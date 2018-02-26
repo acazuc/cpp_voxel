@@ -15,9 +15,6 @@
 # include "NBTTagLong.h"
 # include "NBTTagEnd.h"
 # include "NBTTagInt.h"
-# include "NBTStream.h"
-# include "NBTBuffer.h"
-# include "NBTFile.h"
 # include "NBTTag.h"
 
 #endif

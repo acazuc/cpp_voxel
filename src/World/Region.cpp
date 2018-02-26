@@ -22,7 +22,7 @@ namespace voxel
 	, z(z)
 	, file(NULL)
 	{
-		this->filename = "world/region/r." + std::to_string(this->x / (REGION_WIDTH * CHUNK_WIDTH)) + "." + std::to_string(this->z / (REGION_WIDTH * CHUNK_WIDTH)) + ".mca";
+		this->filename = "saves/world/region/r." + std::to_string(this->x / (REGION_WIDTH * CHUNK_WIDTH)) + "." + std::to_string(this->z / (REGION_WIDTH * CHUNK_WIDTH)) + ".mca";
 		std::memset(this->chunks, 0, sizeof(this->chunks));
 		std::memset(this->storageTimestamp, 0, sizeof(this->storageTimestamp));
 		std::memset(this->storageHeader, 0, sizeof(this->storageHeader));

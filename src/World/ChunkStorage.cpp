@@ -25,19 +25,13 @@ namespace voxel
 		if (!this->NBT.NBT)
 			this->NBT.NBT = new NBTTagCompound("");
 		NBTCompoundSanitizer sanitizer(this->NBT.NBT);
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE, "Y", reinterpret_cast<NBTTag**>(&this->NBT.Y)));
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Blocks", reinterpret_cast<NBTTag**>(&this->NBT.Blocks)));
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Add", reinterpret_cast<NBTTag**>(&this->NBT.Add)));
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Data", reinterpret_cast<NBTTag**>(&this->NBT.Data)));
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "BlockLight", reinterpret_cast<NBTTag**>(&this->NBT.BlockLight)));
-		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "SkyLight", reinterpret_cast<NBTTag**>(&this->NBT.SkyLight)));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByte("Y", &this->NBT.Y, this->id));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Blocks", &this->NBT.Blocks, CHUNK_WIDTH * CHUNK_WIDTH * 16));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Add", &this->NBT.Add, CHUNK_WIDTH * CHUNK_WIDTH * 8));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Data", &this->NBT.Data, CHUNK_WIDTH * CHUNK_WIDTH * 8));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("BlockLight", &this->NBT.BlockLight, CHUNK_WIDTH * CHUNK_WIDTH * 8));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("SkyLight", &this->NBT.SkyLight, CHUNK_WIDTH * CHUNK_WIDTH * 8));
 		sanitizer.sanitize();
-		NBTMgr::childTagByteDefault(this->NBT.NBT, &this->NBT.Y, "Y", this->id);
-		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Blocks, "Blocks", CHUNK_WIDTH * CHUNK_WIDTH * 16);
-		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Add, "Add", CHUNK_WIDTH * CHUNK_WIDTH * 8);
-		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Data, "Data", CHUNK_WIDTH * CHUNK_WIDTH * 8);
-		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.BlockLight, "BlockLight", CHUNK_WIDTH * CHUNK_WIDTH * 8);
-		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.SkyLight, "SkyLight", CHUNK_WIDTH * CHUNK_WIDTH * 8);
 		if (this->NBT.Blocks->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 16)
 		{
 			this->NBT.Blocks->getValues().clear();

@@ -7,7 +7,7 @@ namespace voxel
 {
 
 	NBTTagString::NBTTagString(std::string name)
-	: NBTTag(NBT_TAG_SHORT, name)
+	: NBTTag(NBT_TAG_STRING, name)
 	{
 		//Empty
 	}

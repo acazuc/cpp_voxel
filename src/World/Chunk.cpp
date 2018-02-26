@@ -612,11 +612,8 @@ endNearTop:
 			return;
 		if (this->mustGenerateLightMap)
 			return;
-		bool tmp = this->mustGenerateBuffers;
-		this->mustGenerateBuffers = true;
 		this->mustGenerateLightMap = true;
-		if (!tmp) //Already in list
-			this->world.getChunksToUpdate().push_back(this);
+		regenerateBuffers();
 	}
 
 	void Chunk::regenerateLightMapRec()

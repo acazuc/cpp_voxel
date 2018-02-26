@@ -116,11 +116,12 @@ namespace voxel
 		if (!chunk->isChanged())
 			return;
 		chunk->setChanged(false);
-		uint32_t dataLen = chunk->getNBT()->getHeaderSize() + chunk->getNBT()->getDataSize() + 5;
 		uint32_t sectorsLen = 0;
-		char *data = new char[dataLen];
-		std::memset(data, 0, dataLen);
+		char *data;
 		{
+			uint32_t dataLen = chunk->getNBT()->getHeaderSize() + chunk->getNBT()->getDataSize() + 5;
+			data = new char[dataLen];
+			std::memset(data, 0, dataLen);
 			NBTBuffer buffer;
 			buffer.data = data;
 			buffer.pos = 0;
@@ -136,9 +137,7 @@ namespace voxel
 			delete[] (data);
 			data = new char[sectorsLen * REGION_SECTOR_SIZE];
 			int32_t len = os.getData().size();
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-			len = ((len >> 24) & 0xff) | ((len >> 8) & 0xff00) | ((len & 0xff00) << 8) | ((len & 0xff) << 24);
-#endif
+			len = ntohl(len);
 			std::memmove(data, &len, 4);
 			int8_t compression = 2;
 			std::memmove(data + 4, &compression, 1);
@@ -152,39 +151,44 @@ namespace voxel
 		offsetAlloc = ntohl(offsetAlloc);
 		uint32_t offset = (offsetAlloc >> 8) & 0xffffff;
 		uint8_t allocated = offsetAlloc & 0xff;
-		if (!offset || allocated < sectorsLen)
+		if (!offset)
+			goto alloc;
+		if (sectorsLen < allocated)
+			goto write;
+		if (sectorsLen < allocated)
 		{
-			if (offset)
+			for (uint32_t i = sectorsLen; i < allocated; ++i)
+				this->sectors[i] = false;
+			goto write;
+		}
+		for (uint32_t i = 0; i < allocated; ++i)
+			this->sectors[offset + i] = false;
+alloc:
+		if (sectorsLen > this->sectors.size())
+			goto newSector;
+		for (uint32_t i = 0; i < this->sectors.size() - sectorsLen; ++i)
+		{
+			for (uint32_t j = 0; j < sectorsLen; ++j)
 			{
-				for (uint32_t a = 0; a < allocated; ++a)
-					this->sectors[a + offset] = false;
+				if (this->sectors[i + j])
+					goto nextTest;
 			}
-			if (sectorsLen > this->sectors.size())
-				goto newSector;
-			for (uint32_t a = 0; a < this->sectors.size() - sectorsLen; ++a)
-			{
-				for (uint32_t b = 0; b < sectorsLen; ++b)
-				{
-					if (this->sectors[a + b])
-						goto nextTest;
-				}
-				offset = a;
-				allocated = sectorsLen;
-				offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
-				this->storageHeader[headerPos] = ntohl(offsetAlloc);
-				for (uint32_t i = 0; i < allocated; ++i)
-					this->sectors[offset + i] = true;
-				goto write;
-nextTest:
-				continue;
-			}
-newSector:
-			offset = this->sectors.size();
+			offset = i;
 			allocated = sectorsLen;
 			offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
 			this->storageHeader[headerPos] = ntohl(offsetAlloc);
-			this->sectors.resize(this->sectors.size() + allocated, true);
+			for (uint32_t i = 0; i < allocated; ++i)
+				this->sectors[offset + i] = true;
+			goto write;
+nextTest:
+			continue;
 		}
+newSector:
+		offset = this->sectors.size();
+		allocated = sectorsLen;
+		offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
+		this->storageHeader[headerPos] = ntohl(offsetAlloc);
+		this->sectors.resize(this->sectors.size() + allocated, true);
 write:
 		if (std::fseek(this->file, offset * REGION_SECTOR_SIZE, SEEK_SET))
 			ERROR("Failed to seek region \"" << this->filename << "\" chunk storage");
@@ -257,9 +261,7 @@ write:
 			int32_t clen = 0;
 			if (std::fread(&clen, 4, 1, this->file) != 1)
 				ERROR("Failed to read section length");
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-			clen = ((clen >> 24) & 0xff) | ((clen >> 8) & 0xff00) | ((clen & 0xff00) << 8) | ((clen & 0xff) << 24);
-#endif
+			clen = ntohl(clen);
 			clen--;
 			int8_t compression;
 			if (std::fread(&compression, 1, 1, this->file) != 1)

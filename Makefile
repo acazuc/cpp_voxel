@@ -128,6 +128,8 @@ SRCS_NAME = Main.cpp \
 	    NBT/NBTBuffer.cpp \
 	    NBT/NBTStream.cpp \
 	    NBT/NBTGZipFile.cpp \
+	    NBT/NBTMgr.cpp \
+	    NBT/NBTCompoundSanitizer.cpp \
 
 SRCS = $(addprefix $(SRCS_PATH), $(SRCS_NAME))
 

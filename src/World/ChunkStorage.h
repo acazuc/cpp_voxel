@@ -25,9 +25,6 @@ namespace voxel
 
 	private:
 		ChunkStorageNBT NBT;
-		/*uint8_t blocks[16 * 16 * 16];
-		uint8_t blockLights[16 * 16 * 8];
-		uint8_t skyLights[16 * 16 * 8];*/
 		uint8_t id;
 
 	public:

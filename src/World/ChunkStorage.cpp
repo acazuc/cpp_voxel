@@ -1,5 +1,6 @@
 #include "ChunkStorage.h"
-#include "Debug.h"
+#include "NBT/NBTCompoundSanitizer.h"
+#include "NBT/NBTMgr.h"
 #include "Chunk.h"
 #include <cstring>
 
@@ -9,9 +10,7 @@ namespace voxel
 	ChunkStorage::ChunkStorage(uint8_t id)
 	: id(id)
 	{
-		/*std::memset(this->blocks, 0, sizeof(this->blocks));
-		std::memset(this->blockLights, 0, sizeof(this->blockLights));
-		std::memset(this->skyLights, 0, sizeof(this->skyLights));*/
+		//Empty
 	}
 
 	ChunkStorage::~ChunkStorage()
@@ -25,84 +24,39 @@ namespace voxel
 		this->NBT.NBT = NBT;
 		if (!this->NBT.NBT)
 			this->NBT.NBT = new NBTTagCompound("");
-		for (std::vector<NBTTag*>::iterator iter = this->NBT.NBT->getTags().begin(); iter != this->NBT.NBT->getTags().end(); ++iter)
-		{
-			if (!(*iter)->getName().compare("Y") && (*iter)->getType() == NBT_TAG_BYTE)
-				this->NBT.Y = reinterpret_cast<NBTTagByte*>(*iter);
-			else if (!(*iter)->getName().compare("Blocks") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.Blocks = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("Add") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.Add = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("Data") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.Data = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("BlockLight") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.BlockLight = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("SkyLight") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.SkyLight = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else
-				goto erase;
-			continue;
-erase:
-			this->NBT.NBT->getTags().erase(iter);
-			iter = this->NBT.NBT->getTags().begin();
-			if (iter == this->NBT.NBT->getTags().end())
-				break;
-		}
-		if (!this->NBT.Y)
-		{
-			this->NBT.Y = new NBTTagByte("Y");
-			this->NBT.Y->setValue(this->id);
-			this->NBT.NBT->addTag(this->NBT.Y);
-		}
-		if (!this->NBT.Blocks)
-		{
-			this->NBT.Blocks = new NBTTagByteArray("Blocks");
-			this->NBT.Blocks->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 16, 0);
-			this->NBT.NBT->addTag(this->NBT.Blocks);
-		}
+		NBTCompoundSanitizer sanitizer(this->NBT.NBT);
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE, "Y", reinterpret_cast<NBTTag**>(&this->NBT.Y)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Blocks", reinterpret_cast<NBTTag**>(&this->NBT.Blocks)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Add", reinterpret_cast<NBTTag**>(&this->NBT.Add)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Data", reinterpret_cast<NBTTag**>(&this->NBT.Data)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "BlockLight", reinterpret_cast<NBTTag**>(&this->NBT.BlockLight)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "SkyLight", reinterpret_cast<NBTTag**>(&this->NBT.SkyLight)));
+		sanitizer.sanitize();
+		NBTMgr::childTagByteDefault(this->NBT.NBT, &this->NBT.Y, "Y", this->id);
+		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Blocks, "Blocks", CHUNK_WIDTH * CHUNK_WIDTH * 16);
+		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Add, "Add", CHUNK_WIDTH * CHUNK_WIDTH * 8);
+		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.Data, "Data", CHUNK_WIDTH * CHUNK_WIDTH * 8);
+		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.BlockLight, "BlockLight", CHUNK_WIDTH * CHUNK_WIDTH * 8);
+		NBTMgr::childTagByteArrayDefault(this->NBT.NBT, &this->NBT.SkyLight, "SkyLight", CHUNK_WIDTH * CHUNK_WIDTH * 8);
 		if (this->NBT.Blocks->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 16)
 		{
 			this->NBT.Blocks->getValues().clear();
 			this->NBT.Blocks->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 16, 0);
-		}
-		if (!this->NBT.Add)
-		{
-			this->NBT.Add = new NBTTagByteArray("Add");
-			this->NBT.Add->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
-			this->NBT.NBT->addTag(this->NBT.Add);
 		}
 		if (this->NBT.Add->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
 		{
 			this->NBT.Add->getValues().clear();
 			this->NBT.Add->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
 		}
-		if (!this->NBT.Data)
-		{
-			this->NBT.Data = new NBTTagByteArray("Data");
-			this->NBT.Data->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
-			this->NBT.NBT->addTag(this->NBT.Data);
-		}
 		if (this->NBT.Data->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
 		{
 			this->NBT.Data->getValues().clear();
 			this->NBT.Data->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
 		}
-		if (!this->NBT.BlockLight)
-		{
-			this->NBT.BlockLight = new NBTTagByteArray("BlockLight");
-			this->NBT.BlockLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
-			this->NBT.NBT->addTag(this->NBT.BlockLight);
-		}
 		if (this->NBT.BlockLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
 		{
 			this->NBT.BlockLight->getValues().clear();
 			this->NBT.BlockLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
-		}
-		if (!this->NBT.SkyLight)
-		{
-			this->NBT.SkyLight = new NBTTagByteArray("BlockLight");
-			this->NBT.SkyLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
-			this->NBT.NBT->addTag(this->NBT.SkyLight);
 		}
 		if (this->NBT.SkyLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
 		{

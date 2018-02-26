@@ -1,9 +1,11 @@
 #include "Chunk.h"
+#include "NBT/NBTCompoundSanitizer.h"
 #include "World/Biomes/Biomes.h"
 #include "Noise/WorleyNoise.h"
 #include "ChunkTessellator.h"
 #include "Blocks/Blocks.h"
 #include "Utils/System.h"
+#include "NBT/NBTMgr.h"
 #include "NBT/NBT.h"
 #include "World.h"
 #include "Main.h"
@@ -661,138 +663,49 @@ found:
 		this->NBT.NBT = NBT;
 		if (!this->NBT.NBT)
 			this->NBT.NBT = new NBTTagCompound("");
-		for (std::vector<NBTTag*>::iterator iter = this->NBT.NBT->getTags().begin(); iter != this->NBT.NBT->getTags().end(); ++iter)
-		{
-			if (!(*iter)->getName().compare("DataVersion") && (*iter)->getType() == NBT_TAG_INT)
-				this->NBT.DataVersion = reinterpret_cast<NBTTagInt*>(*iter);
-			else if (!(*iter)->getName().compare("Level") && (*iter)->getType() == NBT_TAG_COMPOUND)
-				this->NBT.Level = reinterpret_cast<NBTTagCompound*>(*iter);
-			else
-				goto erase1;
-			continue;
-erase1:
-			this->NBT.NBT->getTags().erase(iter);
-			iter = this->NBT.NBT->getTags().begin();
-			if (iter == this->NBT.NBT->getTags().end())
-				break;
-		}
-		if (!this->NBT.DataVersion)
-		{
-			this->NBT.DataVersion = new NBTTagInt("DataVersion");
-			this->NBT.DataVersion->setValue(1);
-			this->NBT.NBT->addTag(this->NBT.DataVersion);
-		}
-		if (!this->NBT.Level)
-		{
-			this->NBT.Level = new NBTTagCompound("Level");
-			this->NBT.NBT->addTag(this->NBT.Level);
-		}
-		for (std::vector<NBTTag*>::iterator iter = this->NBT.Level->getTags().begin(); iter != this->NBT.Level->getTags().end(); ++iter)
-		{
-			if (!(*iter)->getName().compare("xPos") && (*iter)->getType() == NBT_TAG_INT)
-				this->NBT.xPos = reinterpret_cast<NBTTagInt*>(*iter);
-			else if (!(*iter)->getName().compare("zPos") && (*iter)->getType() == NBT_TAG_INT)
-				this->NBT.zPos = reinterpret_cast<NBTTagInt*>(*iter);
-			else if (!(*iter)->getName().compare("LastUpdate") && (*iter)->getType() == NBT_TAG_LONG)
-				this->NBT.LastUpdate = reinterpret_cast<NBTTagLong*>(*iter);
-			else if (!(*iter)->getName().compare("LightPopulated") && (*iter)->getType() == NBT_TAG_BYTE)
-				this->NBT.LightPopulated = reinterpret_cast<NBTTagByte*>(*iter);
-			else if (!(*iter)->getName().compare("TerrainPopulated") && (*iter)->getType() == NBT_TAG_BYTE)
-				this->NBT.TerrainPopulated = reinterpret_cast<NBTTagByte*>(*iter);
-			else if (!(*iter)->getName().compare("V") && (*iter)->getType() == NBT_TAG_BYTE)
-				this->NBT.V = reinterpret_cast<NBTTagByte*>(*iter);
-			else if (!(*iter)->getName().compare("InhabitedTime") && (*iter)->getType() == NBT_TAG_LONG)
-				this->NBT.InhabitedTime = reinterpret_cast<NBTTagLong*>(*iter);
-			else if (!(*iter)->getName().compare("Biomes") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.Biomes = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("HeightMap") && (*iter)->getType() == NBT_TAG_BYTE_ARRAY)
-				this->NBT.HeightMap = reinterpret_cast<NBTTagByteArray*>(*iter);
-			else if (!(*iter)->getName().compare("Sections") && (*iter)->getType() == NBT_TAG_LIST)
-				this->NBT.Sections = reinterpret_cast<NBTTagList*>(*iter);
-			else if (!(*iter)->getName().compare("Entities") && (*iter)->getType() == NBT_TAG_LIST)
-				this->NBT.Entities = reinterpret_cast<NBTTagList*>(*iter);
-			else if (!(*iter)->getName().compare("TileEntities") && (*iter)->getType() == NBT_TAG_LIST)
-				this->NBT.TileEntities = reinterpret_cast<NBTTagList*>(*iter);
-			else if (!(*iter)->getName().compare("TileTicks") && (*iter)->getType() == NBT_TAG_LIST)
-				this->NBT.TileTicks = reinterpret_cast<NBTTagList*>(*iter);
-			else
-				goto erase2;
-			continue;
-erase2:
-			this->NBT.Level->getTags().erase(iter);
-			iter = this->NBT.Level->getTags().begin();
-			if (iter == this->NBT.Level->getTags().end())
-				break;
-		}
-		if (!this->NBT.xPos)
-		{
-			this->NBT.xPos = new NBTTagInt("xPos");
-			this->NBT.xPos->setValue(this->x);
-			this->NBT.Level->addTag(this->NBT.xPos);
-		}
-		if (!this->NBT.zPos)
-		{
-			this->NBT.zPos = new NBTTagInt("zPos");
-			this->NBT.zPos->setValue(this->z);
-			this->NBT.Level->addTag(this->NBT.zPos);
-		}
-		if (!this->NBT.LastUpdate)
-		{
-			this->NBT.LastUpdate = new NBTTagLong("LastUpdate");
-			this->NBT.LastUpdate->setValue(0);
-			this->NBT.Level->addTag(this->NBT.LastUpdate);
-		}
-		if (!this->NBT.LightPopulated)
-		{
-			this->NBT.LightPopulated = new NBTTagByte("LightPopulated");
-			this->NBT.LightPopulated->setValue(0);
-			this->NBT.Level->addTag(this->NBT.LightPopulated);
-		}
-		if (!this->NBT.TerrainPopulated)
-		{
-			this->NBT.TerrainPopulated = new NBTTagByte("TerrainPopulated");
-			this->NBT.TerrainPopulated->setValue(0);
-			this->NBT.Level->addTag(this->NBT.TerrainPopulated);
-		}
-		if (!this->NBT.V)
-		{
-			this->NBT.V = new NBTTagByte("V");
-			this->NBT.V->setValue(1);
-			this->NBT.Level->addTag(this->NBT.V);
-		}
-		if (!this->NBT.InhabitedTime)
-		{
-			this->NBT.InhabitedTime = new NBTTagLong("InhabitedTime");
-			this->NBT.InhabitedTime->setValue(0);
-			this->NBT.Level->addTag(this->NBT.InhabitedTime);
-		}
-		if (!this->NBT.Biomes)
-		{
-			this->NBT.Biomes = new NBTTagByteArray("Biomes");
-			this->NBT.Biomes->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
-			this->NBT.Level->addTag(this->NBT.Biomes);
-		}
+		NBTCompoundSanitizer sanitizer(this->NBT.NBT);
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_INT, "DataVersion", reinterpret_cast<NBTTag**>(&this->NBT.DataVersion)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_COMPOUND, "Level", reinterpret_cast<NBTTag**>(&this->NBT.Level)));
+		sanitizer.sanitize();
+		NBTMgr::childTagIntDefault(this->NBT.NBT, &this->NBT.DataVersion, "DataVersion", 19133);
+		NBTMgr::childTagCompoundDefault(this->NBT.NBT, &this->NBT.Level, "Level");
+		sanitizer = NBTCompoundSanitizer(this->NBT.Level);
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_INT, "xPos", reinterpret_cast<NBTTag**>(&this->NBT.xPos)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_INT, "zPos", reinterpret_cast<NBTTag**>(&this->NBT.zPos)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LONG, "LastUpdate", reinterpret_cast<NBTTag**>(&this->NBT.LastUpdate)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE, "LightPopulated", reinterpret_cast<NBTTag**>(&this->NBT.LightPopulated)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE, "TerrainPopulated", reinterpret_cast<NBTTag**>(&this->NBT.TerrainPopulated)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE, "V", reinterpret_cast<NBTTag**>(&this->NBT.V)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LONG, "InhabitedTime", reinterpret_cast<NBTTag**>(&this->NBT.InhabitedTime)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "Biomes", reinterpret_cast<NBTTag**>(&this->NBT.Biomes)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, "HeightMap", reinterpret_cast<NBTTag**>(&this->NBT.HeightMap)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LIST, "Sections", reinterpret_cast<NBTTag**>(&this->NBT.Sections)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LIST, "Entities", reinterpret_cast<NBTTag**>(&this->NBT.Entities)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LIST, "TilesEntities", reinterpret_cast<NBTTag**>(&this->NBT.TileEntities)));
+		sanitizer.addEntry(NBTCompoundSanitizerEntry(NBT_TAG_LIST, "TilesTicks", reinterpret_cast<NBTTag**>(&this->NBT.TileTicks)));
+		sanitizer.sanitize();
+		NBTMgr::childTagIntDefault(this->NBT.Level, &this->NBT.xPos, "xPos", this->x);
+		NBTMgr::childTagIntDefault(this->NBT.Level, &this->NBT.zPos, "zPos", this->z);
+		NBTMgr::childTagLongDefault(this->NBT.Level, &this->NBT.LastUpdate, "LastUpdate", 0);
+		NBTMgr::childTagByteDefault(this->NBT.Level, &this->NBT.LightPopulated, "LightPopulated", 0);
+		NBTMgr::childTagByteDefault(this->NBT.Level, &this->NBT.TerrainPopulated, "TerrainPopulated", 0);
+		NBTMgr::childTagByteDefault(this->NBT.Level, &this->NBT.V, "V", 1);
+		NBTMgr::childTagLongDefault(this->NBT.Level, &this->NBT.InhabitedTime, "InhabitedTime", 0);
+		NBTMgr::childTagByteArrayDefault(this->NBT.Level, &this->NBT.Biomes, "Biomes", CHUNK_WIDTH * CHUNK_WIDTH);
+		NBTMgr::childTagByteArrayDefault(this->NBT.Level, &this->NBT.HeightMap, "HeightMap", CHUNK_WIDTH * CHUNK_WIDTH);
+		NBTMgr::childTagListDefault(this->NBT.Level, &this->NBT.Sections, "Sections", NBT_TAG_COMPOUND);
+		NBTMgr::childTagListDefault(this->NBT.Level, &this->NBT.Entities, "Entities", NBT_TAG_COMPOUND);
+		NBTMgr::childTagListDefault(this->NBT.Level, &this->NBT.TileEntities, "TileEntities", NBT_TAG_COMPOUND);
+		NBTMgr::childTagListDefault(this->NBT.Level, &this->NBT.TileTicks, "TileTicks", NBT_TAG_COMPOUND);
 		if (this->NBT.Biomes->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH)
 		{
 			this->NBT.Biomes->getValues().clear();
 			this->NBT.Biomes->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
 		}
-		if (!this->NBT.HeightMap)
-		{
-			this->NBT.HeightMap = new NBTTagByteArray("HeightMap");
-			this->NBT.HeightMap->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
-			this->NBT.Level->addTag(this->NBT.HeightMap);
-		}
 		if (this->NBT.HeightMap->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH)
 		{
 			this->NBT.HeightMap->getValues().clear();
 			this->NBT.HeightMap->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
-		}
-		if (!this->NBT.Sections)
-		{
-			this->NBT.Sections = new NBTTagList("Sections");
-			this->NBT.Sections->setType(NBT_TAG_COMPOUND);
-			this->NBT.Level->addTag(this->NBT.Sections);
 		}
 		bool sectionAdded = false;
 		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
@@ -837,24 +750,6 @@ erase3:
 				this->chunkZLess->regenerateLightMap();
 			if (this->chunkZMore)
 				this->chunkZMore->regenerateLightMap();
-		}
-		if (!this->NBT.Entities)
-		{
-			this->NBT.Entities = new NBTTagList("Entities");
-			this->NBT.Entities->setType(NBT_TAG_COMPOUND);
-			this->NBT.Level->addTag(this->NBT.Entities);
-		}
-		if (!this->NBT.TileEntities)
-		{
-			this->NBT.TileEntities = new NBTTagList("TileEntities");
-			this->NBT.TileEntities->setType(NBT_TAG_COMPOUND);
-			this->NBT.Level->addTag(this->NBT.TileEntities);
-		}
-		if (!this->NBT.TileTicks)
-		{
-			this->NBT.TileTicks = new NBTTagList("TileTicks");
-			this->NBT.TileTicks->setType(NBT_TAG_COMPOUND);
-			this->NBT.Level->addTag(this->NBT.TileTicks);
 		}
 	}
 

@@ -22,7 +22,7 @@ namespace voxel
 	, z(z)
 	, file(NULL)
 	{
-		this->filename = "world/r." + std::to_string(this->x / (REGION_WIDTH * CHUNK_WIDTH)) + "." + std::to_string(this->z / (REGION_WIDTH * CHUNK_WIDTH)) + ".mca";
+		this->filename = "world/region/r." + std::to_string(this->x / (REGION_WIDTH * CHUNK_WIDTH)) + "." + std::to_string(this->z / (REGION_WIDTH * CHUNK_WIDTH)) + ".mca";
 		std::memset(this->chunks, 0, sizeof(this->chunks));
 		std::memset(this->storageTimestamp, 0, sizeof(this->storageTimestamp));
 		std::memset(this->storageHeader, 0, sizeof(this->storageHeader));
@@ -128,7 +128,7 @@ namespace voxel
 			buffer.len = dataLen;
 			chunk->getNBT()->writeHeader(&buffer);
 			chunk->getNBT()->writeData(&buffer);
-			gz::MemoryOutputStream os;
+			gz::MemoryOutputStream os(1);
 			if (os.write(data, dataLen) != dataLen)
 				ERROR("Failed to gzip chunk data");
 			if (!os.flush())
@@ -142,7 +142,7 @@ namespace voxel
 			int8_t compression = 2;
 			std::memmove(data + 4, &compression, 1);
 			std::memmove(data + 5, os.getData().data(), os.getData().size());
-			std::memset(data + 5 + os.getData().size(), 0, sectorsLen * REGION_SECTOR_SIZE - os.getData().size());
+			std::memset(data + 5 + os.getData().size(), 0, sectorsLen * REGION_SECTOR_SIZE - os.getData().size() - 5);
 		}
 		uint32_t headerPos = getXZId((chunk->getX() - this->x) / CHUNK_WIDTH, (chunk->getZ() - this->z) / CHUNK_WIDTH);
 		int32_t timestamp = System::microtime();
@@ -210,7 +210,11 @@ write:
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (this->chunks[i])
+			{
 				this->chunks[i]->tick();
+				if (this->chunks[i]->isChanged())
+					saveChunk(this->chunks[i]);
+			}
 		}
 	}
 

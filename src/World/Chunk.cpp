@@ -21,12 +21,12 @@ namespace voxel
 	, entitiesManager(*this)
 	, world(world)
 	, aabb(Vec3(x, 0, z), Vec3(x + CHUNK_WIDTH, CHUNK_HEIGHT, z + CHUNK_WIDTH))
+	, recursiveLightMap(0)
 	, x(x)
 	, z(z)
 	, mustGenerateLightMap(false)
 	, mustGenerateBuffers(false)
 	, mustUpdateBuffers(false)
-	, recursiveLightMap(false)
 	, deleted(false)
 	, changed(false)
 	{
@@ -111,8 +111,8 @@ namespace voxel
 				//noiseIndex += this->world.getNoise().get3(this->x + x, this->z + z, 300000) / 4;
 				noiseIndex = noiseIndex * CHUNK_HEIGHT / 5 + CHUNK_HEIGHT / 4;
 				noiseIndex = std::round(noiseIndex);
-				if ((x + z) % 2 == 0)
-					noiseIndex--;
+				//if ((x + z) % 2 == 0)
+				//	noiseIndex--;
 				for (int32_t y = 0; y < CHUNK_HEIGHT; ++y)
 				{
 					if (y > noiseIndex && y > CHUNK_HEIGHT / 4)
@@ -125,7 +125,7 @@ namespace voxel
 						if (y <= CHUNK_HEIGHT / 4)
 							blockType = 12;
 						else
-							blockType = rand() / (float)RAND_MAX * 255;//2;
+							blockType = 2;//rand() / (float)RAND_MAX * 255;//2;
 					}
 					else if (y > noiseIndex)
 						blockType = 8;
@@ -142,14 +142,6 @@ namespace voxel
 		}
 		Biomes::getBiome(1)->generate(*this);
 		regenerateLightMapRec();
-		if (this->chunkXLess)
-			this->chunkXLess->regenerateLightMap();
-		if (this->chunkXMore)
-			this->chunkXMore->regenerateLightMap();
-		if (this->chunkZLess)
-			this->chunkZLess->regenerateLightMap();
-		if (this->chunkZMore)
-			this->chunkZMore->regenerateLightMap();
 	}
 
 	void Chunk::tick()
@@ -334,18 +326,6 @@ endNearTop:
 	void Chunk::generateLightMap()
 	{
 		this->mustGenerateLightMap = false;
-		if (this->recursiveLightMap)
-		{
-			this->recursiveLightMap = false;
-			if (this->chunkXLess)
-				this->chunkXLess->regenerateLightMap();
-			if (this->chunkXMore)
-				this->chunkXMore->regenerateLightMap();
-			if (this->chunkZLess)
-				this->chunkZLess->regenerateLightMap();
-			if (this->chunkZMore)
-				this->chunkZMore->regenerateLightMap();
-		}
 		for (uint8_t i = 0; i < 16; ++i)
 		{
 			ChunkStorage *storage = getStorage(i);
@@ -364,6 +344,15 @@ endNearTop:
 					setBlockLightRec(x, topBlock + 1, z, 0xe);
 			}
 		}
+		if (this->recursiveLightMap & 0x1 && this->chunkXLess)
+			this->chunkXLess->regenerateLightMap();
+		if (this->recursiveLightMap & 0x2 && this->chunkXMore)
+			this->chunkXMore->regenerateLightMap();
+		if (this->recursiveLightMap & 0x4 && this->chunkZLess)
+			this->chunkZLess->regenerateLightMap();
+		if (this->recursiveLightMap & 0x8 && this->chunkZMore)
+			this->chunkZMore->regenerateLightMap();
+		this->recursiveLightMap = 0;
 	}
 
 	void Chunk::generateBuffers()
@@ -446,25 +435,13 @@ endNearTop:
 		this->changed = true;
 		regenerateLightMap();
 		if (x == 0)
-		{
-			if (this->chunkXLess)
-				this->chunkXLess->regenerateLightMap();
-		}
+			this->recursiveLightMap |= 0x1;
 		else if (x == CHUNK_WIDTH - 1)
-		{
-			if (this->chunkXMore)
-				this->chunkXMore->regenerateLightMap();
-		}
+			this->recursiveLightMap |= 0x2;
 		if (z == 0)
-		{
-			if (this->chunkZLess)
-				this->chunkZLess->regenerateLightMap();
-		}
+			this->recursiveLightMap |= 0x4;
 		else if (z == CHUNK_WIDTH - 1)
-		{
-			if (this->chunkZMore)
-				this->chunkZMore->regenerateLightMap();
-		}
+			this->recursiveLightMap |= 0x8;
 	}
 
 	ChunkBlock *Chunk::getBlock(int32_t x, int32_t y, int32_t z)
@@ -620,7 +597,7 @@ endNearTop:
 
 	void Chunk::regenerateLightMapRec()
 	{
-		//this->recursiveLightMap = true;
+		this->recursiveLightMap = 0xff;
 		regenerateLightMap();
 	}
 
@@ -725,17 +702,7 @@ erase3:
 			i--;
 		}
 		if (sectionAdded)
-		{
-			regenerateLightMap();
-			if (this->chunkXLess)
-				this->chunkXLess->regenerateLightMap();
-			if (this->chunkXMore)
-				this->chunkXMore->regenerateLightMap();
-			if (this->chunkZLess)
-				this->chunkZLess->regenerateLightMap();
-			if (this->chunkZMore)
-				this->chunkZMore->regenerateLightMap();
-		}
+			regenerateLightMapRec();
 	}
 
 	void Chunk::setGenerated(bool generated)

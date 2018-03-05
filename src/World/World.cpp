@@ -119,15 +119,15 @@ nextRegion:
 		{
 			Main::getBlocksShader().program->use();
 			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 140);
+			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 14);
 			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
 			Main::getEntityShader().program->use();
 			Main::getEntityShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getEntityShader().fogDistanceLocation->setVec1f(16 * 140);
+			Main::getEntityShader().fogDistanceLocation->setVec1f(16 * 14);
 			Main::getEntityShader().fogDensityLocation->setVec1f(.1);
 			Main::getDroppedShader().program->use();
 			Main::getDroppedShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getDroppedShader().fogDistanceLocation->setVec1f(16 * 140);
+			Main::getDroppedShader().fogDistanceLocation->setVec1f(16 * 14);
 			Main::getDroppedShader().fogDensityLocation->setVec1f(.1);
 		}
 		Main::getTerrain()->bind();

@@ -67,12 +67,12 @@ namespace voxel
 		Chunk *chunkZMore;
 		World &world;
 		AABB aabb;
+		uint8_t recursiveLightMap;
 		int32_t x;
 		int32_t z;
 		bool mustGenerateLightMap;
 		bool mustGenerateBuffers;
 		bool mustUpdateBuffers;
-		bool recursiveLightMap;
 		bool deleted;
 		bool changed;
 		bool visible;

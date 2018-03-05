@@ -27,7 +27,7 @@ namespace voxel
 				ChunkBlock *block = chunk.getBlock(x, top, z);
 				if (block && block->getType() == 2)
 				{
-					if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 100)
+					if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 50)
 						this->treeGenerator.generate(chunk, x, top + 1, z);
 					else if (chunk.getWorld().getRandom()() < chunk.getWorld().getRandom().max() / 40)
 						chunk.setBlockIfReplaceable(x, top + 1, z, 37);

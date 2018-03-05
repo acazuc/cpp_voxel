@@ -28,6 +28,7 @@ namespace voxel
 	public:
 		Region(World &world, int32_t x, int32_t z);
 		~Region();
+		bool checkClear();
 		void load();
 		void save();
 		void saveChunk(Chunk *chunk);

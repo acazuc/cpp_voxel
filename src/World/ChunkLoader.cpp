@@ -107,6 +107,8 @@ namespace voxel
 							delete (chunk);
 						}
 					}
+					if (region->checkClear())
+						i--;
 				}
 			}
 			if (checkChunk(world, frustum, playerChunkX, playerChunkZ))

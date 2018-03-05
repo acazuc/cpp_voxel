@@ -3,8 +3,8 @@
 
 # include <librender/Shader/Sprite/ShaderSpriteProgram.h>
 # include <librender/Shader/Text/ShaderTextProgram.h>
+# include <librender/Texture/Texture.h>
 # include <librender/Mat/Mat4.h>
-# include <librender/Texture.h>
 
 using librender::ShaderSpriteProgram;
 using librender::ShaderTextProgram;

@@ -2,7 +2,7 @@
 # define SKYBOX_H
 
 # include <librender/Shader/VertexBuffer.h>
-# include <librender/Texture.h>
+# include <librender/Texture/Texture.h>
 
 using librender::VertexBuffer;
 using librender::Texture;

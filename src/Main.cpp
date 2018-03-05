@@ -53,11 +53,6 @@ namespace voxel
 	{
 		(void)ac;
 		(void)av;
-		/*NBTFile file(av[1]);
-		file.load();
-		file.printDebug();
-		return;
-		file.save();*/
 		//glfwWindowHint(GLFW_SAMPLES, 32);
 		window = new Window("C++ Voxel", 1920, 1080);
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

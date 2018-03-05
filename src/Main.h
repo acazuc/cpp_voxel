@@ -12,9 +12,9 @@
 # include "Shaders/BreakShader.h"
 # include "Shaders/GuiShader.h"
 # include "Screen.h"
+# include <librender/Texture/Texture.h>
 # include <librender/Window/Window.h>
 # include <librender/Font/Font.h>
-# include <librender/Texture.h>
 
 using librender::ScrollEvent;
 using librender::KeyEvent;

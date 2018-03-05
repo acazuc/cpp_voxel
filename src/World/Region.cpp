@@ -38,6 +38,26 @@ namespace voxel
 			delete (this->chunks[i]);
 	}
 
+	bool Region::checkClear()
+	{
+		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		{
+			if (this->chunks[i])
+				return (false);
+		}
+		std::vector<Region*> &regions = this->world.getRegions();
+		for (std::vector<Region*>::iterator iter = regions.begin(); iter != regions.end(); ++iter)
+		{
+			if (*iter == this)
+			{
+				regions.erase(iter);
+				delete (this);
+				return (true);
+			}
+		}
+		return (false);
+	}
+
 	void Region::load()
 	{
 		if (!(this->file = std::fopen(this->filename.c_str(), "rb+")))
@@ -209,12 +229,11 @@ write:
 	{
 		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
-			if (this->chunks[i])
-			{
-				this->chunks[i]->tick();
-				if (this->chunks[i]->isChanged())
-					saveChunk(this->chunks[i]);
-			}
+			if (!this->chunks[i])
+				continue;
+			this->chunks[i]->tick();
+			if (this->chunks[i]->isChanged())
+				saveChunk(this->chunks[i]);
 		}
 	}
 
@@ -310,26 +329,8 @@ write:
 	{
 		Chunk *oldChunk = this->chunks[getXZId(x, z)];
 		this->chunks[getXZId(x, z)] = chunk;
-		if (!chunk)
-		{
-			if (oldChunk)
-				saveChunk(oldChunk);
-			for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
-			{
-				if (this->chunks[i])
-					return;
-			}
-			std::vector<Region*> &regions = this->world.getRegions();
-			for (std::vector<Region*>::iterator iter = regions.begin(); iter != regions.end(); ++iter)
-			{
-				if (*iter == this)
-				{
-					regions.erase(iter);
-					delete (this);
-					return;
-				}
-			}
-		}
+		if (!chunk && oldChunk)
+			saveChunk(oldChunk);
 	}
 
 	Chunk *Region::getChunk(int32_t x, int32_t z)

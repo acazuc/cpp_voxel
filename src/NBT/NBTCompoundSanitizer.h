@@ -29,6 +29,7 @@ namespace voxel
 		std::string name;
 		NBTTag **entry;
 		NBTCompoundSanitizerEntry(enum NBTTagType type, std::string name, NBTTag **entry) : type(type), name(name), entry(entry) {};
+		virtual ~NBTCompoundSanitizerEntry() {};
 
 	};
 
@@ -116,7 +117,7 @@ namespace voxel
 
 	public:
 		std::string value;
-		NBTCompoundSanitizerEntryString(std::string name, NBTTagString **entry, std::string value) : NBTCompoundSanitizerEntry(NBT_TAG_BYTE_ARRAY, name, reinterpret_cast<NBTTag**>(entry)), value(value) {};
+		NBTCompoundSanitizerEntryString(std::string name, NBTTagString **entry, std::string value) : NBTCompoundSanitizerEntry(NBT_TAG_STRING, name, reinterpret_cast<NBTTag**>(entry)), value(value) {};
 
 	};
 

@@ -1,5 +1,6 @@
 #include "NBTCompoundSanitizer.h"
 #include "NBT/NBTMgr.h"
+#include "Debug.h"
 
 namespace voxel
 {
@@ -35,7 +36,7 @@ erase:
 		for (std::unordered_map<std::string, NBTCompoundSanitizerEntry*>::iterator iter = this->entries.begin(); iter != this->entries.end(); ++iter)
 		{
 			NBTCompoundSanitizerEntry *entry = iter->second;
-			switch (tag->getType())
+			switch (entry->type)
 			{
 				case NBT_TAG_BYTE:
 					NBTMgr::childTagByteDefault(this->tag, reinterpret_cast<NBTTagByte**>(entry->entry), entry->name, reinterpret_cast<NBTCompoundSanitizerEntryByte*>(entry)->value);

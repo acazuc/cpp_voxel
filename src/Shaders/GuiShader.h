@@ -1,30 +1,20 @@
 #ifndef GUI_SHADER_H
 # define GUI_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class GuiShader
+	class GuiShader : public Shader
 	{
 
 	public:
-		ProgramLocation *texCoordsLocation;
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *colorsLocation;
-		ProgramLocation *mvpLocation;
-		ProgramLocation *texLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		GuiShader();
-		~GuiShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation vertexColorLocation;
+		ProgramLocation vertexUVLocation;
+		ProgramLocation mvpLocation;
+		ProgramLocation texLocation;
 		void load();
 
 	};

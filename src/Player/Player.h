@@ -34,13 +34,13 @@ namespace voxel
 		void update();
 		void tick();
 		void draw();
-		inline PlayerInventory &getInventory() {return (this->inventory);};
-		inline PlayerRaycast &getRaycast() {return (this->raycast);};
-		inline Mat4 &getViewProjMat() {return (this->viewProjMat);};
-		inline Mat4 &getProjMat() {return (this->projMat);};
-		inline Mat4 &getViewMat() {return (this->viewMat);};
-		inline uint8_t getEyeLight() {return (this->eyeLight);};
-		inline bool isEyeInWater() {return (this->eyeInWater);};
+		inline PlayerInventory &getInventory() {return this->inventory;};
+		inline PlayerRaycast &getRaycast() {return this->raycast;};
+		inline Mat4 &getViewProjMat() {return this->viewProjMat;};
+		inline Mat4 &getProjMat() {return this->projMat;};
+		inline Mat4 &getViewMat() {return this->viewMat;};
+		inline uint8_t getEyeLight() {return this->eyeLight;};
+		inline bool isEyeInWater() {return this->eyeInWater;};
 
 	};
 

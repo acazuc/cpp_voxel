@@ -16,8 +16,8 @@ namespace voxel
 	public:
 		PlayerInventory();
 		~PlayerInventory();
-		PlayerInventorySlot *getSlots() {return (this->slots);};
-		inline int8_t &getBarPos() {return (this->barPos);};
+		PlayerInventorySlot *getSlots() {return this->slots;};
+		inline int8_t &getBarPos() {return this->barPos;};
 
 	};
 

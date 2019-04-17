@@ -26,26 +26,26 @@ namespace voxel
 		Color color(0, 1);
 		this->topGradient.setTopColor(color);
 		this->botGradient.setBotColor(color);
-		color.set(0, 0);
+		color = Color(0, 0);
 		this->topGradient.setBotColor(color);
 		this->botGradient.setTopColor(color);
-		color.set(.25 * .5);
+		color = Color(.25 * .5);
 		this->bgDarker.setColor(color);
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 0));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 1));
 		this->entries.push_back(new GuiSingleplayerEntry(*this, 2));
 		this->recreate.setSize(72, 20);
-		this->recreate.setCallback(&GuiSingleplayer::recreateCallback, NULL);
+		this->recreate.setCallback(&GuiSingleplayer::recreateCallback, nullptr);
 		this->cancel.setSize(72, 20);
-		this->cancel.setCallback(&GuiSingleplayer::cancelCallback, NULL);
+		this->cancel.setCallback(&GuiSingleplayer::cancelCallback, nullptr);
 		this->remove.setSize(72, 20);
-		this->remove.setCallback(&GuiSingleplayer::removeCallback, NULL);
+		this->remove.setCallback(&GuiSingleplayer::removeCallback, nullptr);
 		this->create.setSize(150, 20);
-		this->create.setCallback(&GuiSingleplayer::createCallback, NULL);
+		this->create.setCallback(&GuiSingleplayer::createCallback, nullptr);
 		this->edit.setSize(72, 20);
-		this->edit.setCallback(&GuiSingleplayer::editCallback, NULL);
+		this->edit.setCallback(&GuiSingleplayer::editCallback, nullptr);
 		this->play.setSize(150, 20);
-		this->play.setCallback(&GuiSingleplayer::playCallback, NULL);
+		this->play.setCallback(&GuiSingleplayer::playCallback, nullptr);
 	}
 
 	void GuiSingleplayer::recreateCallback(void *data)
@@ -128,27 +128,27 @@ namespace voxel
 		for (uint32_t i = 0; i < this->entries.size(); ++i)
 		{
 			if (this->entries[i]->mouseDown(event))
-				return (true);
+				return true;
 		}
 		if (this->create.mouseDown(event))
-			return (true);
+			return true;
 		if (this->edit.mouseDown(event))
-			return (true);
+			return true;
 		if (this->remove.mouseDown(event))
-			return (true);
+			return true;
 		if (this->play.mouseDown(event))
-			return (true);
+			return true;
 		if (this->recreate.mouseDown(event))
-			return (true);
+			return true;
 		if (this->cancel.mouseDown(event))
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 	bool GuiSingleplayer::mouseUp(MouseEvent &event)
 	{
 		(void)event;
-		return (false);
+		return false;
 	}
 
 	bool GuiSingleplayer::keyDown(KeyEvent &event)
@@ -156,9 +156,9 @@ namespace voxel
 		if (event.key == GLFW_KEY_ESCAPE)
 		{
 			TitleScreen::setMode(TITLE_SCREEN_TITLE);
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 }

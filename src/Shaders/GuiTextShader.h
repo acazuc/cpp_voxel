@@ -1,23 +1,20 @@
-#ifndef BREAK_SHADER_H
-# define BREAK_SHADER_H
+#ifndef GUI_TEXT_SHADER_H
+# define GUI_TEXT_SHADER_H
 
 # include "./Shader.h"
 
 namespace voxel
 {
 
-	class BreakShader : public Shader
+	class GuiTextShader : public Shader
 	{
 
 	public:
 		ProgramLocation vertexPositionLocation;
-		ProgramLocation fogDistanceLocation;
+		ProgramLocation vertexColorLocation;
 		ProgramLocation vertexUVLocation;
-		ProgramLocation fogColorLocation;
 		ProgramLocation mvpLocation;
 		ProgramLocation texLocation;
-		ProgramLocation mLocation;
-		ProgramLocation vLocation;
 		void load();
 
 	};

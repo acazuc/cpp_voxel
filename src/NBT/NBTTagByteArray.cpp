@@ -1,8 +1,6 @@
 #include "NBTTagByteArray.h"
 #include "NBTException.h"
-#include "NBTFile.h"
-#include "Debug.h"
-#include <cstring>
+#include <iostream>
 
 namespace voxel
 {
@@ -10,7 +8,6 @@ namespace voxel
 	NBTTagByteArray::NBTTagByteArray(std::string name)
 	: NBTTag(NBT_TAG_BYTE_ARRAY, name)
 	{
-		//Empty
 	}
 
 	void NBTTagByteArray::readData(NBTStream *stream)
@@ -33,12 +30,14 @@ namespace voxel
 
 	size_t NBTTagByteArray::getDataSize()
 	{
-		return (4 + this->values.size());
+		return 4 + this->values.size();
 	}
 
-	void NBTTagByteArray::printDebug()
+	void NBTTagByteArray::printDebug(size_t tab)
 	{
-		LOG("NBTTag_ByteArray(\"" << this->name << "\") : [" << this->values.size() << " bytes]");
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "NBTTag_ByteArray(\"" << this->name << "\") : [" << this->values.size() << " bytes]" << std::endl;
 	}
 
 }

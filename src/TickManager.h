@@ -17,8 +17,8 @@ namespace voxel
 	public:
 		static void init();
 		static void update();
-		static inline int64_t getTicksToDo() {return (ticksToDo);};
-		static inline float getDelta() {return (delta);};
+		static inline int64_t getTicksToDo() {return ticksToDo;};
+		static inline float getDelta() {return delta;};
 
 	};
 

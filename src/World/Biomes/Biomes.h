@@ -16,7 +16,7 @@ namespace voxel
 		static void init();
 		static void clear();
 		static uint8_t getBiomeFor(float temp, float rain);
-		static inline Biome *getBiome(uint8_t id) {return (biomes[id]);};
+		static inline Biome *getBiome(uint8_t id) {return biomes[id];};
 
 	};
 

@@ -16,7 +16,7 @@ namespace voxel
 	public:
 		NBTException(std::string str): err(str) {};
 		~NBTException() throw() {};
-		const char *what() const throw() {return (this->err.c_str());};
+		const char *what() const throw() {return this->err.c_str();};
 
 	};
 

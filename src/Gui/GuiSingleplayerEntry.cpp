@@ -76,9 +76,9 @@ namespace voxel
 		if (this->hover)
 		{
 			this->parent.setSelected(this->pos);
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 }

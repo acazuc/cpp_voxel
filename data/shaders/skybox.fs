@@ -1,9 +1,11 @@
-#version 120
+#version 330
 
-centroid varying vec3 color;
+in vec3 color;
+
+out vec4 output;
 
 void main()
 {
 	vec4 col = vec4(color, 1);
-	gl_FragColor = col;
+	output = col;
 }

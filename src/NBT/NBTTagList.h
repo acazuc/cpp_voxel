@@ -22,11 +22,11 @@ namespace voxel
 		void readData(NBTStream *stream);
 		void writeData(NBTStream *stream);
 		size_t getDataSize();
-		void printDebug();
+		void printDebug(size_t tab = 0);
 		inline void addValue(NBTTag* value) {this->values.push_back(value);};
-		inline std::vector<NBTTag*> &getValues() {return (this->values);};
+		inline std::vector<NBTTag*> &getValues() {return this->values;};
 		inline void setType(enum NBTTagType type) {this->type = type;};
-		inline enum NBTTagType getType() {return (this->type);};
+		inline enum NBTTagType getType() {return this->type;};
 
 	};
 

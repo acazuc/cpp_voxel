@@ -130,7 +130,7 @@ namespace voxel
 			t2 *= t2;
 			n2 = t2 * t2 * dot2(&grad3[gi2], x2, y2);
 		}
-		return (70 * (n0 + n1 + n2));
+		return 70 * (n0 + n1 + n2);
 	}
 
 
@@ -273,7 +273,7 @@ namespace voxel
 			t3 *= t3;
 			n3 = t3 * t3 * dot3(&grad3[gi3], x3, y3, z3);
 		}
-		return (32 * (n0 + n1 + n2 + n3));
+		return 32 * (n0 + n1 + n2 + n3);
 	}
 
 	double SimplexNoiseOctave::get4(double x, double y, double z, double w)
@@ -412,28 +412,28 @@ namespace voxel
 			t4 *= t4;
 			n4 = t4 * t4 * dot4(&grad4[gi4], x4, y4, z4, w4);
 		}
-		return (27 * (n0 + n1 + n2 + n3 + n4));
+		return 27 * (n0 + n1 + n2 + n3 + n4);
 	}
 
 	double SimplexNoiseOctave::dot2(SimplexNoiseGrad *g, double x, double y)
 	{
-		return (g->x * x + g->y * y);
+		return g->x * x + g->y * y;
 	}
 
 	double SimplexNoiseOctave::dot3(SimplexNoiseGrad *g, double x, double y, double z)
 	{
-		return (g->x * x + g->y * y + g->z * z);
+		return g->x * x + g->y * y + g->z * z;
 	}
 
 	double SimplexNoiseOctave::dot4(SimplexNoiseGrad *g, double x, double y, double z, double w)
 	{
-		return (g->x * x + g->y * y + g->z * z + g->w * w);
+		return g->x * x + g->y * y + g->z * z + g->w * w;
 	}
 
 	int32_t SimplexNoiseOctave::fastFloor(double x)
 	{
 		int32_t xi = x;
-		return (x < xi ? xi - 1 : xi);
+		return x < xi ? xi - 1 : xi;
 	}
 
 }

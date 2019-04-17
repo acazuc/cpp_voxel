@@ -64,11 +64,11 @@ namespace voxel
 		model = Mat4::rotateY(model, this->rot.y);
 		model = Mat4::rotateX(model, this->rot.x);
 		model = Mat4::scale(model, Vec3(.058, .058, .058));
-		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
+		Main::getEntityShader().vLocation.setMat4f(this->world.getPlayer().getViewMat());
 		Vec4 col(1, 1, 1, 1);
 		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
 		col.a = 1;
-		Main::getEntityShader().colorLocation->setVec4f(col);
+		Main::getEntityShader().colorLocation.setVec4f(col);
 		float time = nanotime / 1000000000.;
 		armL->setRotZ(std::sin(time * 1) * .05 + .05);
 		armR->setRotZ(-std::sin(time * 1) * .05 - .05);

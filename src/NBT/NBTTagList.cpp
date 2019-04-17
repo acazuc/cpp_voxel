@@ -1,7 +1,6 @@
 #include "NBTTagList.h"
 #include "NBTException.h"
-#include "NBTFile.h"
-#include "Debug.h"
+#include <iostream>
 
 namespace voxel
 {
@@ -9,12 +8,11 @@ namespace voxel
 	NBTTagList::NBTTagList(std::string name)
 	: NBTTag(NBT_TAG_LIST, name)
 	{
-		//Empty
 	}
 
 	NBTTagList::~NBTTagList()
 	{
-		for (uint32_t i = 0; i < this->values.size(); ++i)
+		for (size_t i = 0; i < this->values.size(); ++i)
 			delete (this->values[i]);
 	}
 
@@ -40,21 +38,23 @@ namespace voxel
 			throw NBTException("NBTTagList: invalid write type");
 		if (!stream->writeInt32(this->values.size()))
 			throw NBTException("NBTTagList: invalid write size");
-		for (uint32_t i = 0; i < this->values.size(); ++i)
+		for (size_t i = 0; i < this->values.size(); ++i)
 			this->values[i]->writeData(stream);
 	}
 
 	size_t NBTTagList::getDataSize()
 	{
 		size_t len = 1 + 4;
-		for (uint32_t i = 0; i < this->values.size(); ++i)
+		for (size_t i = 0; i < this->values.size(); ++i)
 			len += this->values[i]->getDataSize();
-		return (len);
+		return len;
 	}
 
-	void NBTTagList::printDebug()
+	void NBTTagList::printDebug(size_t tab)
 	{
-		LOG("NBTTag_List(\"" << this->name << "\") : " << this->values.size() << " entries of type " << this->type);
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "NBTTag_List(\"" << this->name << "\") : " << this->values.size() << " entries of type " << this->type << std::endl;
 	}
 
 }

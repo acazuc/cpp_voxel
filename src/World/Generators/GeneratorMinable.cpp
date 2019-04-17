@@ -8,7 +8,6 @@ namespace voxel
 	: block(0)
 	, size(0)
 	{
-		//Empty
 	}
 
 	void GeneratorMinable::generate(Chunk &chunk, uint8_t x, uint8_t y, uint8_t z)

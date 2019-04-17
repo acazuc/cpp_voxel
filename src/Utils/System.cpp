@@ -7,12 +7,12 @@ namespace voxel
 
 	int64_t System::nanotime()
 	{
-		return (glfwGetTime() * 1000000000);
+		return glfwGetTime() * 1000000000;
 	}
 
 	int64_t System::microtime()
 	{
-		return (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch()).count());
+		return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::time_point_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
 	}
 
 }

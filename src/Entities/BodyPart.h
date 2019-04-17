@@ -18,9 +18,9 @@ namespace voxel
 	{
 
 	private:
-		VertexBuffer texCoordsBuffer;
-		VertexBuffer vertexesBuffer;
-		VertexBuffer indicesBuffer;
+		VertexBuffer positionBuffer;
+		VertexBuffer indiceBuffer;
+		VertexBuffer uvBuffer;
 		Vec3 pos;
 		Vec3 rot;
 

@@ -10,12 +10,10 @@ namespace voxel
 	ChunkStorage::ChunkStorage(uint8_t id)
 	: id(id)
 	{
-		//Empty
 	}
 
 	ChunkStorage::~ChunkStorage()
 	{
-		//Empty
 	}
 
 	void ChunkStorage::initNBT(NBTTagCompound *NBT)
@@ -89,12 +87,12 @@ namespace voxel
 
 	ChunkBlock *ChunkStorage::getBlock(int32_t x, int32_t y, int32_t z)
 	{
-		return (reinterpret_cast<ChunkBlock*>(&this->NBT.Blocks->getValues()[getXYZId(x, y, z)]));
+		return reinterpret_cast<ChunkBlock*>(&this->NBT.Blocks->getValues()[getXYZId(x, y, z)]);
 	}
 
 	uint8_t ChunkStorage::getLight(int32_t x, int32_t y, int32_t z)
 	{
-		return (std::max(getSkyLight(x, y, z), getBlockLight(x, y, z)));
+		return std::max(getSkyLight(x, y, z), getBlockLight(x, y, z));
 	}
 
 	void ChunkStorage::setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light)
@@ -110,8 +108,8 @@ namespace voxel
 	{
 		uint32_t idx = getXYZId(x, y, z);
 		if (idx & 1)
-			return (this->NBT.SkyLight->getValues()[idx / 2] & 0xf);
-		return ((this->NBT.SkyLight->getValues()[idx / 2] >> 4) & 0xf);
+			return this->NBT.SkyLight->getValues()[idx / 2] & 0xf;
+		return (this->NBT.SkyLight->getValues()[idx / 2] >> 4) & 0xf;
 	}
 
 	void ChunkStorage::setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light)
@@ -127,13 +125,13 @@ namespace voxel
 	{
 		uint32_t idx = getXYZId(x, y, z);
 		if (idx & 1)
-			return (this->NBT.BlockLight->getValues()[idx / 2] & 0xf);
-		return ((this->NBT.BlockLight->getValues()[idx / 2] >> 4) & 0xf);
+			return this->NBT.BlockLight->getValues()[idx / 2] & 0xf;
+		return (this->NBT.BlockLight->getValues()[idx / 2] >> 4) & 0xf;
 	}
 
 	uint32_t ChunkStorage::getXYZId(int8_t x, int8_t y, int8_t z)
 	{
-		return ((y * CHUNK_WIDTH + z) * CHUNK_WIDTH + x);
+		return (y * CHUNK_WIDTH + z) * CHUNK_WIDTH + x;
 	}
 
 }

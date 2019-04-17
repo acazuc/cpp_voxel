@@ -9,13 +9,13 @@
 #include "Utils/System.h"
 #include "TickManager.h"
 #include "World/World.h"
+#include "World/Level.h"
 #include "NBT/NBTFile.h"
 #include "Gui/Gui.h"
 #include "Debug.h"
 #include <cstring>
 #include <librender/Font/FontModel.h>
 #include <libformat/PNG.h>
-#include <GL/glu.h>
 
 using librender::FontModel;
 using librender::Mat4;
@@ -29,6 +29,7 @@ namespace voxel
 	FocusedShader *Main::focusedShader;
 	SunMoonShader *Main::sunMoonShader;
 	DroppedShader *Main::droppedShader;
+	GuiTextShader *Main::guiTextShader;
 	BlocksShader *Main::blocksShader;
 	CloudsShader *Main::cloudsShader;
 	SkyboxShader *Main::skyboxShader;
@@ -68,49 +69,62 @@ namespace voxel
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		window->show();
 		window->setVSync(true);
+		LOG("Loading ParticlesShader");
 		particlesShader = new ParticlesShader();
 		particlesShader->load();
+		LOG("Loading FocusedShader");
 		focusedShader = new FocusedShader();
 		focusedShader->load();
+		LOG("Loading SunMoonShader");
 		sunMoonShader = new SunMoonShader();
 		sunMoonShader->load();
+		LOG("Loading DroppedShader");
 		droppedShader = new DroppedShader();
 		droppedShader->load();
+		LOG("Loading GuiTextShader");
+		guiTextShader = new GuiTextShader();
+		guiTextShader->load();
+		LOG("Loading SkyboxShader");
 		skyboxShader = new SkyboxShader();
 		skyboxShader->load();
+		LOG("Loading CloudsShader");
 		cloudsShader = new CloudsShader();
 		cloudsShader->load();
+		LOG("Loading BlocksShader");
 		blocksShader = new BlocksShader();
 		blocksShader->load();
+		LOG("Loading EntityShader");
 		entityShader = new EntityShader();
 		entityShader->load();
+		LOG("Loading BreakShader");
 		breakShader = new BreakShader();
 		breakShader->load();
+		LOG("Loading GuiShader");
 		guiShader = new GuiShader();
 		guiShader->load();
 		glErrors("shader");
 		{
 			Mat4 osef(1);
 			blocksShader->program->use();
-			blocksShader->mLocation->setMat4f(osef);
-			blocksShader->texLocation->setVec1i(0);
-			blocksShader->fogDistanceLocation->setVec1f(16 * 14);
-			blocksShader->disableTexLocation->setVec1i(0);
+			blocksShader->mLocation.setMat4f(osef);
+			blocksShader->texLocation.setVec1i(0);
+			blocksShader->fogDistanceLocation.setVec1f(16 * 14);
+			blocksShader->disableTexLocation.setVec1i(0);
 			cloudsShader->program->use();
-			cloudsShader->mLocation->setMat4f(osef);
-			cloudsShader->fogDistanceLocation->setVec1f(16 * 14);
+			cloudsShader->mLocation.setMat4f(osef);
+			cloudsShader->fogDistanceLocation.setVec1f(16 * 14);
 			sunMoonShader->program->use();
-			sunMoonShader->texLocation->setVec1i(0);
+			sunMoonShader->texLocation.setVec1i(0);
 			entityShader->program->use();
-			entityShader->fogDistanceLocation->setVec1f(16 * 14);
+			entityShader->fogDistanceLocation.setVec1f(16 * 14);
 			particlesShader->program->use();
-			particlesShader->fogDistanceLocation->setVec1f(16 * 14);
+			particlesShader->fogDistanceLocation.setVec1f(16 * 14);
 			breakShader->program->use();
-			breakShader->fogDistanceLocation->setVec1f(16 * 14);
+			breakShader->fogDistanceLocation.setVec1f(16 * 14);
 			guiShader->program->use();
-			guiShader->texLocation->setVec1i(0);
+			guiShader->texLocation.setVec1i(0);
 			droppedShader->program->use();
-			droppedShader->fogDistanceLocation->setVec1f(16 * 14);
+			droppedShader->fogDistanceLocation.setVec1f(16 * 14);
 		}
 		char *datas;
 		uint32_t width;
@@ -122,7 +136,7 @@ namespace voxel
 		terrain->setData(datas, width, height);
 		delete[] (datas);
 		terrain->bind();
-		glGenerateMipmap(GL_TEXTURE_2D);
+		//glGenerateMipmap(GL_TEXTURE_2D);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); 
@@ -171,8 +185,9 @@ namespace voxel
 				fpsCount = 0;
 			}
 			skyColor = Vec4(.71, .82, 1, 1);
+			glViewport(0, 0, window->getWidth(), window->getHeight());
 			glClearColor(skyColor.x, skyColor.y, skyColor.z, skyColor.w);
-			window->clearScreen();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			TickManager::update();
 			for (uint32_t i = 0; i < TickManager::getTicksToDo(); ++i)
 				screen->tick();
@@ -190,6 +205,8 @@ namespace voxel
 		delete (particlesShader);
 		delete (focusedShader);
 		delete (sunMoonShader);
+		delete (droppedShader);
+		delete (guiTextShader);
 		delete (skyboxShader);
 		delete (cloudsShader);
 		delete (blocksShader);
@@ -244,7 +261,7 @@ namespace voxel
 			else
 				Main::disableTex = 1;
 			blocksShader->program->use();
-			blocksShader->disableTexLocation->setVec1i(Main::disableTex);
+			blocksShader->disableTexLocation.setVec1i(Main::disableTex);
 			return;
 		}
 		screen->keyDown(event);

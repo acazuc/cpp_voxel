@@ -13,15 +13,13 @@ namespace voxel
 	bool ChunkLoader::running = false;
 
 	ChunkLoader::ChunkLoader(World *world)
-	: thread(NULL)
+	: thread(nullptr)
 	, world(world)
 	{
-		//Empty
 	}
 
 	ChunkLoader::~ChunkLoader()
 	{
-		//Empty
 	}
 
 	void ChunkLoader::start()
@@ -37,28 +35,28 @@ namespace voxel
 		{
 			this->thread->join();
 			delete (this->thread);
-			this->thread = NULL;
+			this->thread = nullptr;
 		}
 	}
 
 	bool ChunkLoader::checkChunk(World &world, Frustum &frustum, int32_t chunkX, int32_t chunkZ)
 	{
 		if (!running)
-			return (true);
+			return true;
 		int32_t part1 = world.getPlayer().getPos().x - (chunkX + CHUNK_WIDTH / 2);
 		int32_t part2 = world.getPlayer().getPos().z - (chunkZ + CHUNK_WIDTH / 2);
 		int32_t distance = sqrt(part1 * part1 + part2 * part2);
 		if (distance > LOAD_DISTANCE * CHUNK_WIDTH)
-			return (false);
+			return false;
 		if (distance > 2 * 16)
 		{
 			AABB aabb(Vec3(chunkX, 0, chunkZ), Vec3(chunkX + CHUNK_WIDTH, CHUNK_HEIGHT, chunkZ + CHUNK_WIDTH));
 			if (!frustum.check(aabb))
-				return (false);
+				return false;
 		}
-		std::lock_guard<std::recursive_mutex> lock_guard(world.getChunksMutex());
+		std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 		world.generateChunk(chunkX, chunkZ);
-		return (true);
+		return true;
 	}
 
 	void ChunkLoader::run(void *data)
@@ -79,11 +77,11 @@ namespace voxel
 			int32_t playerChunkZ = World::getChunkCoord(playerZ);
 			{
 				std::vector<Region*> &regions = world.getRegions();
-				for (uint32_t i = 0; i < regions.size(); ++i)
+				for (size_t i = 0; i < regions.size(); ++i)
 				{
 					Region *region = regions[i];
 					Chunk **chunks = region->getChunks();
-					for (uint32_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
+					for (size_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
 					{
 						Chunk *chunk = chunks[j];
 						if (!chunk)
@@ -96,7 +94,7 @@ namespace voxel
 						{
 							std::lock_guard<std::recursive_mutex> lock(world.getChunksMutex());
 							chunk->moveGLBuffersToWorld();
-							region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, NULL);
+							region->setChunk((chunk->getX() - region->getX()) / CHUNK_WIDTH, (chunk->getZ() - region->getZ()) / CHUNK_WIDTH, nullptr);
 							for (std::list<Chunk*>::iterator iter = world.getChunksToUpdate().begin(); iter != world.getChunksToUpdate().end(); ++iter)
 							{
 								if (*iter != chunk)

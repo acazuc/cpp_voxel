@@ -7,12 +7,12 @@ namespace voxel
 
 	GuiButton::GuiButton(int32_t x, int32_t y, std::string text, int32_t width, int32_t height)
 	: text(0, 0, text)
-	, callback(NULL)
+	, callback(nullptr)
 	, height(height)
 	, width(width)
 	, x(x)
 	, y(y)
-	, callbackData(NULL)
+	, callbackData(nullptr)
 	, disabled(false)
 	, hover(false)
 	{
@@ -77,10 +77,10 @@ namespace voxel
 	bool GuiButton::mouseDown(MouseEvent &event)
 	{
 		if (!this->hover || event.button != GLFW_MOUSE_BUTTON_LEFT)
-			return (false);
+			return false;
 		if (this->callback)
 			this->callback(this->callbackData);
-		return (true);
+		return true;
 	}
 
 	void GuiButton::setText(std::string text)

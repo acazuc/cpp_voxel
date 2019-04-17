@@ -17,9 +17,9 @@ namespace voxel
 		void readData(NBTStream *stream);
 		void writeData(NBTStream *stream);
 		size_t getDataSize();
-		void printDebug();
+		void printDebug(size_t tab = 0);
 		inline void setValue(double value) {this->value = value;};
-		inline double getValue() {return (this->value);};
+		inline double getValue() {return this->value;};
 
 	};
 

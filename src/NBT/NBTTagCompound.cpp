@@ -1,8 +1,6 @@
 #include "NBTTagCompound.h"
 #include "NBTException.h"
-#include "NBTFile.h"
-#include "Debug.h"
-#include <cstring>
+#include <iostream>
 
 namespace voxel
 {
@@ -10,12 +8,11 @@ namespace voxel
 	NBTTagCompound::NBTTagCompound(std::string name)
 	: NBTTag(NBT_TAG_COMPOUND, name)
 	{
-		//Empty
 	}
 
 	NBTTagCompound::~NBTTagCompound()
 	{
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		for (size_t i = 0; i < this->tags.size(); ++i)
 			delete (this->tags[i]);
 	}
 
@@ -35,7 +32,7 @@ namespace voxel
 
 	void NBTTagCompound::writeData(NBTStream *stream)
 	{
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		for (size_t i = 0; i < this->tags.size(); ++i)
 		{
 			NBTTag *tag = this->tags[i];
 			tag->writeId(stream);
@@ -49,18 +46,24 @@ namespace voxel
 	size_t NBTTagCompound::getDataSize()
 	{
 		size_t len = 4; //NBTTagEnd
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		for (size_t i = 0; i < this->tags.size(); ++i)
 			len += this->tags[i]->getHeaderSize() + this->tags[i]->getDataSize();
-		return (len);
+		return len;
 	}
 
-	void NBTTagCompound::printDebug()
+	void NBTTagCompound::printDebug(size_t tab)
 	{
-		LOG("NBTTag_Compound(\"" << this->name << "\") : " << this->tags.size() << " entries");
-		LOG("{");
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
-			this->tags[i]->printDebug();
-		LOG("}");
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "NBTTag_Compound(\"" << this->name << "\") : " << this->tags.size() << " entries" << std::endl;
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "{" << std::endl;
+		for (size_t i = 0; i < this->tags.size(); ++i)
+			this->tags[i]->printDebug(tab + 1);
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "}" << std::endl;
 	}
 
 }

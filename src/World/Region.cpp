@@ -20,7 +20,7 @@ namespace voxel
 	: world(world)
 	, x(x)
 	, z(z)
-	, file(NULL)
+	, file(nullptr)
 	{
 		this->filename = "saves/world/region/r." + std::to_string(this->x / (REGION_WIDTH * CHUNK_WIDTH)) + "." + std::to_string(this->z / (REGION_WIDTH * CHUNK_WIDTH)) + ".mca";
 		std::memset(this->chunks, 0, sizeof(this->chunks));
@@ -34,16 +34,16 @@ namespace voxel
 		save();
 		if (this->file)
 			std::fclose(this->file);
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 			delete (this->chunks[i]);
 	}
 
 	bool Region::checkClear()
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (this->chunks[i])
-				return (false);
+				return false;
 		}
 		std::vector<Region*> &regions = this->world.getRegions();
 		for (std::vector<Region*>::iterator iter = regions.begin(); iter != regions.end(); ++iter)
@@ -52,10 +52,10 @@ namespace voxel
 			{
 				regions.erase(iter);
 				delete (this);
-				return (true);
+				return true;
 			}
 		}
-		return (false);
+		return false;
 	}
 
 	void Region::load()
@@ -102,7 +102,7 @@ namespace voxel
 		this->sectors.resize(filesize / REGION_SECTOR_SIZE, false);
 		this->sectors[0] = true;
 		this->sectors[1] = true;
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			uint32_t offsetAlloc = this->storageHeader[i];
 			offsetAlloc = ntohl(offsetAlloc);
@@ -116,14 +116,14 @@ namespace voxel
 				this->storageHeader[i] = 0;
 				continue;
 			}
-			for (uint32_t j = 0; j < allocated; ++j)
+			for (size_t j = 0; j < allocated; ++j)
 				this->sectors[offset + j] = true;
 		}
 	}
 
 	void Region::save()
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (!this->chunks[i])
 				continue;
@@ -177,16 +177,16 @@ namespace voxel
 			goto write;
 		if (sectorsLen < allocated)
 		{
-			for (uint32_t i = sectorsLen; i < allocated; ++i)
+			for (size_t i = sectorsLen; i < allocated; ++i)
 				this->sectors[i] = false;
 			goto write;
 		}
-		for (uint32_t i = 0; i < allocated; ++i)
+		for (size_t i = 0; i < allocated; ++i)
 			this->sectors[offset + i] = false;
 alloc:
 		if (sectorsLen > this->sectors.size())
 			goto newSector;
-		for (uint32_t i = 0; i < this->sectors.size() - sectorsLen; ++i)
+		for (size_t i = 0; i < this->sectors.size() - sectorsLen; ++i)
 		{
 			for (uint32_t j = 0; j < sectorsLen; ++j)
 			{
@@ -197,7 +197,7 @@ alloc:
 			allocated = sectorsLen;
 			offsetAlloc = ((offset & 0xffffff) << 8) | allocated;
 			this->storageHeader[headerPos] = ntohl(offsetAlloc);
-			for (uint32_t i = 0; i < allocated; ++i)
+			for (size_t i = 0; i < allocated; ++i)
 				this->sectors[offset + i] = true;
 			goto write;
 nextTest:
@@ -227,7 +227,7 @@ write:
 
 	void Region::tick()
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (!this->chunks[i])
 				continue;
@@ -239,7 +239,7 @@ write:
 
 	void Region::drawEntities()
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (this->chunks[i])
 				this->chunks[i]->drawEntities();
@@ -248,7 +248,7 @@ write:
 
 	void Region::draw(uint8_t layer)
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (this->chunks[i])
 				this->chunks[i]->draw(layer);
@@ -257,7 +257,7 @@ write:
 
 	void Region::moveGLBuffersToWorld()
 	{
-		for (uint32_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
+		for (size_t i = 0; i < REGION_WIDTH * REGION_WIDTH; ++i)
 		{
 			if (this->chunks[i])
 				this->chunks[i]->moveGLBuffersToWorld();
@@ -274,7 +274,7 @@ write:
 
 	Chunk *Region::createChunk(int32_t x, int32_t z)
 	{
-		NBTTag *NBT = NULL;
+		NBTTag *NBT = nullptr;
 		uint32_t storage = this->storageHeader[getXZId(x, z)];
 		storage = ntohl(storage);
 		if (storage)
@@ -316,13 +316,13 @@ write:
 			{
 				WARN("Invalid chunk NBT tag: " << (int)NBT->getType());
 				delete (NBT);
-				NBT = NULL;
+				NBT = nullptr;
 			}
 		}
 		Chunk *chunk = new Chunk(this->world, this->x + x * CHUNK_WIDTH, this->z + z * CHUNK_WIDTH);
 		chunk->initNBT(reinterpret_cast<NBTTagCompound*>(NBT));
 		setChunk(x, z, chunk);
-		return (chunk);
+		return chunk;
 	}
 
 	void Region::setChunk(int32_t x, int32_t z, Chunk *chunk)
@@ -335,12 +335,12 @@ write:
 
 	Chunk *Region::getChunk(int32_t x, int32_t z)
 	{
-		return (this->chunks[getXZId(x, z)]);
+		return this->chunks[getXZId(x, z)];
 	}
 
 	uint32_t Region::getXZId(int32_t x, int32_t z)
 	{
-		return (x + z * REGION_WIDTH);
+		return x + z * REGION_WIDTH;
 	}
 
 }

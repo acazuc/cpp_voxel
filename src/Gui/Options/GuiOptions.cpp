@@ -19,14 +19,14 @@ namespace voxel
 	, title(0, 0, "Options")
 	{
 		this->title.setColor('f');
-		this->resources.setCallback(&GuiOptions::resourcesCallback, NULL);
-		this->controls.setCallback(&GuiOptions::controlsCallback, NULL);
-		this->language.setCallback(&GuiOptions::languageCallback, NULL);
-		this->sound.setCallback(&GuiOptions::soundCallback, NULL);
-		this->video.setCallback(&GuiOptions::videoCallback, NULL);
-		this->chat.setCallback(&GuiOptions::chatCallback, NULL);
-		this->done.setCallback(&GuiOptions::doneCallback, NULL);
-		this->skin.setCallback(&GuiOptions::skinCallback, NULL);
+		this->resources.setCallback(&GuiOptions::resourcesCallback, nullptr);
+		this->controls.setCallback(&GuiOptions::controlsCallback, nullptr);
+		this->language.setCallback(&GuiOptions::languageCallback, nullptr);
+		this->sound.setCallback(&GuiOptions::soundCallback, nullptr);
+		this->video.setCallback(&GuiOptions::videoCallback, nullptr);
+		this->chat.setCallback(&GuiOptions::chatCallback, nullptr);
+		this->done.setCallback(&GuiOptions::doneCallback, nullptr);
+		this->skin.setCallback(&GuiOptions::skinCallback, nullptr);
 		this->fov.setCallback(&GuiOptions::fovCallback, this);
 	}
 
@@ -119,31 +119,31 @@ namespace voxel
 	bool GuiOptions::mouseDown(MouseEvent &event)
 	{
 		if (this->resources.mouseDown(event))
-			return (true);
+			return true;
 		if (this->controls.mouseDown(event))
-			return (true);
+			return true;
 		if (this->language.mouseDown(event))
-			return (true);
+			return true;
 		if (this->sound.mouseDown(event))
-			return (true);
+			return true;
 		if (this->video.mouseDown(event))
-			return (true);
+			return true;
 		if (this->chat.mouseDown(event))
-			return (true);
+			return true;
 		if (this->done.mouseDown(event))
-			return (true);
+			return true;
 		if (this->skin.mouseDown(event))
-			return (true);
+			return true;
 		if (this->fov.mouseDown(event))
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 	bool GuiOptions::mouseUp(MouseEvent &event)
 	{
 		if (this->fov.mouseUp(event))
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 	bool GuiOptions::keyDown(KeyEvent &event)
@@ -151,9 +151,9 @@ namespace voxel
 		if (event.key == GLFW_KEY_ESCAPE)
 		{
 			TitleScreen::setMode(TITLE_SCREEN_TITLE);
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 }

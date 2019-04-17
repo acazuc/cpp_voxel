@@ -24,7 +24,7 @@ namespace voxel
 		Biome(uint8_t id);
 		Biome *setName(std::string name);
 		void generate(Chunk &chunk);
-		inline std::string &getName() {return (this->name);};
+		inline std::string &getName() {return this->name;};
 
 	};
 

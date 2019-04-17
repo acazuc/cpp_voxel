@@ -8,6 +8,7 @@
 #include "NBT/NBTMgr.h"
 #include "NBT/NBT.h"
 #include "World.h"
+#include "Debug.h"
 #include "Main.h"
 #include <cstring>
 
@@ -43,44 +44,44 @@ namespace voxel
 
 	Chunk::~Chunk()
 	{
-		for (uint8_t i = 0; i < 16; ++i)
+		for (size_t i = 0; i < 16; ++i)
 			delete (this->storages[i]);
 		delete (this->NBT.NBT);
 		if (this->chunkXLess)
 		{
-			this->chunkXLess->setChunkXMore(NULL);
+			this->chunkXLess->setChunkXMore(nullptr);
 			this->chunkXLess->regenerateLightMap();
 		}
 		if (this->chunkXMore)
 		{
-			this->chunkXMore->setChunkXLess(NULL);
+			this->chunkXMore->setChunkXLess(nullptr);
 			this->chunkXMore->regenerateLightMap();
 		}
 		if (this->chunkZLess)
 		{
-			this->chunkZLess->setChunkZMore(NULL);
+			this->chunkZLess->setChunkZMore(nullptr);
 			this->chunkZLess->regenerateLightMap();
 		}
 		if (this->chunkZMore)
 		{
-			this->chunkZMore->setChunkZLess(NULL);
+			this->chunkZMore->setChunkZLess(nullptr);
 			this->chunkZMore->regenerateLightMap();
 		}
 	}
 
 	void Chunk::moveGLBuffersToWorld()
 	{
-		for (uint8_t i = 0; i < 3; ++i)
+		for (size_t i = 0; i < 3; ++i)
 		{
 			ChunkLayer &layer = this->layers[i];
-			if (layer.texCoordsBuffer)
-				this->world.getVBOToDelete().push_back(layer.texCoordsBuffer);
-			if (layer.vertexesBuffer)
-				this->world.getVBOToDelete().push_back(layer.vertexesBuffer);
-			if (layer.indicesBuffer)
-				this->world.getVBOToDelete().push_back(layer.indicesBuffer);
-			if (layer.colorsBuffer)
-				this->world.getVBOToDelete().push_back(layer.colorsBuffer);
+			if (layer.positionBuffer)
+				this->world.getVBOToDelete().push_back(layer.positionBuffer);
+			if (layer.indiceBuffer)
+				this->world.getVBOToDelete().push_back(layer.indiceBuffer);
+			if (layer.colorBuffer)
+				this->world.getVBOToDelete().push_back(layer.colorBuffer);
+			if (layer.uvBuffer)
+				this->world.getVBOToDelete().push_back(layer.uvBuffer);
 			if (layer.vertexArray)
 				this->world.getVAOToDelete().push_back(layer.vertexArray);
 		}
@@ -95,12 +96,12 @@ namespace voxel
 		{
 			for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 			{
-				//float fac = 1. / 50;
+				//float fac = 50;
 				//float temp = this->world.getBiomeTempNoise().get2((this->x + x) * fac, (this->z + z) * fac) / 2 + .5;
 				//float rain = this->world.getBiomeRainNoise().get2((this->x + x) * fac, (this->z + z) * fac) / 2 + .5;
-				//float temp = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac, (this->z + z) * fac)));
-				//float rain = 1.;//std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac / 100, (this->z + z) * fac / 100)));
-				//this->biomes[getXZId(x, z)] = Biomes::getBiomeFor(temp, rain);
+				//float temp = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac, (this->z + z) * fac))) / 2 + .5;
+				//float rain = std::min(1., std::max(-1., WorleyNoise::get2((this->x + x) * fac, (this->z + z) * fac))) / 2 + .5;
+				//this->NBT.Biomes->getValues()[getXZId(x, z)] = Biomes::getBiomeFor(temp, rain);
 				//float noiseIndex = -.02;
 				//float noiseIndex = 0;
 				float noiseIndex = this->world.getNoise().get2((this->x + x) * 100, (this->z + z) * 100);
@@ -131,7 +132,7 @@ namespace voxel
 						blockType = 8;
 					else if (y > noiseIndex - 3)
 					{
-						if (y <= CHUNK_HEIGHT / 4)
+						if (y < CHUNK_HEIGHT / 4)
 							blockType = 12;
 						else
 							blockType = 3;
@@ -160,26 +161,32 @@ namespace voxel
 
 	void Chunk::draw(uint8_t layer)
 	{
+		Main::glErrors("Chunk::draw 1");
 		if (!isGenerated())
 			return;
+		Main::glErrors("Chunk::draw 2");
 		if (layer == 0)
 			this->visible = this->world.getFrustum().check(this->aabb);
+		Main::glErrors("Chunk::draw 3");
 		if (!this->visible)
 			return;
+		Main::glErrors("Chunk::draw 4");
 		if (layer == 0)
 		{
 			if (this->mustUpdateBuffers)
 				updateGLBuffers();
 		}
-		if (!this->layers[layer].verticesNb)
+		Main::glErrors("Chunk::draw 5");
+		if (!this->layers[layer].indicesNb)
 			return;
-		if (layer == 3)
-			updateGLBuffer(3);
-		Main::getBlocksShader().texCoordsLocation->setVertexBuffer(*this->layers[layer].texCoordsBuffer);
-		Main::getBlocksShader().vertexesLocation->setVertexBuffer(*this->layers[layer].vertexesBuffer);
-		Main::getBlocksShader().colorsLocation->setVertexBuffer(*this->layers[layer].colorsBuffer);
-		this->layers[layer].indicesBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
-		glDrawElements(GL_TRIANGLES, this->layers[layer].verticesNb, GL_UNSIGNED_INT, NULL);
+		Main::glErrors("Chunk::draw 6");
+		//if (layer == 3)
+		//	updateGLBuffer(3);
+		this->layers[layer].vertexArray->bind();
+		Main::glErrors("Chunk::draw 7");
+		glDrawElements(GL_TRIANGLES, this->layers[layer].indicesNb, GL_UNSIGNED_INT, nullptr);
+		Main::glErrors("Chunk::draw 8, indices: " + std::to_string(this->layers[layer].indicesNb));
+		glBindVertexArray(0);
 	}
 
 	void Chunk::setBlockLightRec(int32_t x, int32_t y, int32_t z, uint8_t light)
@@ -326,7 +333,7 @@ endNearTop:
 	void Chunk::generateLightMap()
 	{
 		this->mustGenerateLightMap = false;
-		for (uint8_t i = 0; i < 16; ++i)
+		for (size_t i = 0; i < 16; ++i)
 		{
 			ChunkStorage *storage = getStorage(i);
 			if (!storage)
@@ -373,34 +380,52 @@ endNearTop:
 
 	void Chunk::updateGLBuffer(uint8_t layer)
 	{
-		Main::getBlocksShader().program->use();
-		if (!this->layers[layer].texCoordsBuffer)
-			this->layers[layer].texCoordsBuffer = new VertexBuffer();
-		if (!this->layers[layer].vertexesBuffer)
-			this->layers[layer].vertexesBuffer = new VertexBuffer();
-		if (!this->layers[layer].indicesBuffer)
-			this->layers[layer].indicesBuffer = new VertexBuffer();
-		if (!this->layers[layer].colorsBuffer)
-			this->layers[layer].colorsBuffer = new VertexBuffer();
-		this->layers[layer].texCoordsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.texCoords.data(), this->layers[layer].tessellator.texCoords.size() * sizeof(Vec2), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
-		this->layers[layer].vertexesBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.vertexes.data(), this->layers[layer].tessellator.vertexes.size() * sizeof(Vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->layers[layer].indicesBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, this->layers[layer].tessellator.indices.data(), this->layers[layer].tessellator.indices.size() * sizeof(GLuint), GL_UNSIGNED_INT, 1, GL_DYNAMIC_DRAW);
-		this->layers[layer].colorsBuffer->setData(GL_ARRAY_BUFFER, this->layers[layer].tessellator.colors.data(), this->layers[layer].tessellator.colors.size() * sizeof(Vec3), GL_FLOAT, 3, GL_DYNAMIC_DRAW);
-		this->layers[layer].verticesNb = this->layers[layer].tessellator.indices.size();
-		std::vector<Vec2> emptyTexCoords;
-		std::vector<Vec3> emptyVertexes;
+		if (!this->layers[layer].positionBuffer)
+			this->layers[layer].positionBuffer = new VertexBuffer();
+		if (!this->layers[layer].indiceBuffer)
+			this->layers[layer].indiceBuffer = new VertexBuffer();
+		if (!this->layers[layer].colorBuffer)
+			this->layers[layer].colorBuffer = new VertexBuffer();
+		if (!this->layers[layer].uvBuffer)
+			this->layers[layer].uvBuffer = new VertexBuffer();
+		if (!this->layers[layer].vertexArray)
+		{
+			this->layers[layer].vertexArray = new VertexArray();
+			this->layers[layer].vertexArray->bind();
+			Main::getBlocksShader().vertexPositionLocation.setVertexBuffer(*this->layers[layer].positionBuffer, 3, GL_FLOAT);
+			Main::getBlocksShader().vertexPositionLocation.setVertexAttribArray(true);
+			Main::getBlocksShader().vertexColorLocation.setVertexBuffer(*this->layers[layer].colorBuffer, 3, GL_FLOAT);
+			Main::getBlocksShader().vertexColorLocation.setVertexAttribArray(true);
+			Main::getBlocksShader().vertexUVLocation.setVertexBuffer(*this->layers[layer].uvBuffer, 2, GL_FLOAT);
+			Main::getBlocksShader().vertexUVLocation.setVertexAttribArray(true);
+			this->layers[layer].indiceBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
+			glBindVertexArray(0);
+		}
+		Main::glErrors("setData_before");
+		std::vector<Vec3> &positions = this->layers[layer].tessellator.positions;
+		std::vector<Vec3> &colors = this->layers[layer].tessellator.colors;
+		std::vector<Vec2> &uvs = this->layers[layer].tessellator.uvs;
+		std::vector<GLuint> &indices = this->layers[layer].tessellator.indices;
+		this->layers[layer].positionBuffer->setData(GL_ARRAY_BUFFER, positions.data(), positions.size() * sizeof(*positions.data()), GL_DYNAMIC_DRAW);
+		this->layers[layer].colorBuffer->setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(*colors.data()), GL_DYNAMIC_DRAW);
+		this->layers[layer].uvBuffer->setData(GL_ARRAY_BUFFER, uvs.data(), uvs.size() * sizeof(*uvs.data()), GL_DYNAMIC_DRAW);
+		this->layers[layer].indiceBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(*indices.data()), GL_DYNAMIC_DRAW);
+		Main::glErrors("setData_after");
+		this->layers[layer].indicesNb = this->layers[layer].tessellator.indices.size();
+		std::vector<Vec2> emptyUVs;
 		std::vector<Vec3> emptyColors;
+		std::vector<Vec3> emptyPositions;
 		std::vector<GLuint> emptyIndices;
-		this->layers[layer].tessellator.texCoords.swap(emptyTexCoords);
-		this->layers[layer].tessellator.vertexes.swap(emptyVertexes);
+		this->layers[layer].tessellator.positions.swap(emptyPositions);
 		this->layers[layer].tessellator.colors.swap(emptyColors);
+		this->layers[layer].tessellator.uvs.swap(emptyUVs);
 		this->layers[layer].tessellator.indices.swap(emptyIndices);
 	}
 
 	void Chunk::updateGLBuffers()
 	{
 		this->mustUpdateBuffers = false;
-		for (uint8_t layer = 0; layer < 3; ++layer)
+		for (size_t layer = 0; layer < 3; ++layer)
 			updateGLBuffer(layer);
 	}
 
@@ -448,20 +473,20 @@ endNearTop:
 	{
 		ChunkStorage *storage = getStorage(y / 16);
 		if (!storage)
-			return (NULL);
-		return (storage->getBlock(x, y - storage->getId() * 16, z));
+			return nullptr;
+		return storage->getBlock(x, y - storage->getId() * 16, z);
 	}
 
 	uint8_t Chunk::getLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!isGenerated())
-			return (0);
+			return 0;
 		if (y > getTopBlock(x, z))
-			return (15);
+			return 15;
 		ChunkStorage *storage = getStorage(y / 16);
 		if (!storage)
-			return (15);
-		return (storage->getLight(x, y - storage->getId() * 16, z));
+			return 15;
+		return storage->getLight(x, y - storage->getId() * 16, z);
 	}
 
 	void Chunk::setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light)
@@ -476,23 +501,23 @@ endNearTop:
 	uint8_t Chunk::getSkyLightVal(int32_t x, int32_t y, int32_t z)
 	{
 		if (!isGenerated())
-			return (0);
+			return 0;
 		ChunkStorage *storage = getStorage(y / 16);
 		if (!storage)
-			return (0);
-		return (storage->getSkyLight(x, y - storage->getId() * 16, z));
+			return 0;
+		return storage->getSkyLight(x, y - storage->getId() * 16, z);
 	}
 
 	uint8_t Chunk::getSkyLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!isGenerated())
-			return (0);
+			return 0;
 		if (y > getTopBlock(x, z))
-			return (15);
+			return 15;
 		ChunkStorage *storage = getStorage(y / 16);
 		if (!storage)
-			return (15);
-		return (storage->getSkyLight(x, y - storage->getId() * 16, z));
+			return 15;
+		return storage->getSkyLight(x, y - storage->getId() * 16, z);
 	}
 
 	void Chunk::setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light)
@@ -507,11 +532,11 @@ endNearTop:
 	uint8_t Chunk::getBlockLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (!isGenerated())
-			return (0);
+			return 0;
 		ChunkStorage *storage = getStorage(y / 16);
 		if (!storage)
-			return (0);
-		return (storage->getBlockLight(x, y - storage->getId() * 16, z));
+			return 0;
+		return storage->getBlockLight(x, y - storage->getId() * 16, z);
 	}
 
 	void Chunk::setTopBlock(int32_t x, int32_t z, uint8_t top)
@@ -522,8 +547,8 @@ endNearTop:
 	uint8_t Chunk::getTopBlock(int32_t x, int32_t z)
 	{
 		if (!isGenerated())
-			return (CHUNK_HEIGHT);
-		return (this->NBT.HeightMap->getValues()[getXZId(x, z)]);
+			return CHUNK_HEIGHT;
+		return this->NBT.HeightMap->getValues()[getXZId(x, z)];
 	}
 
 	void Chunk::setBiome(int32_t x, int32_t z, uint8_t biome)
@@ -533,7 +558,7 @@ endNearTop:
 
 	uint8_t Chunk::getBiome(int32_t x, int32_t z)
 	{
-		return (this->NBT.Biomes->getValues()[getXZId(x, z)]);
+		return this->NBT.Biomes->getValues()[getXZId(x, z)];
 	}
 
 	void Chunk::destroyBlock(int32_t x, int32_t y, int32_t z)
@@ -603,19 +628,19 @@ endNearTop:
 
 	ChunkStorage *Chunk::getStorage(uint8_t id)
 	{
-		return (this->storages[id]);
+		return this->storages[id];
 	}
 
 	ChunkStorage *Chunk::createStorage(uint8_t id)
 	{
 		if (this->storages[id])
-			return (this->storages[id]);
-		NBTTagCompound *NBT = NULL;
+			return this->storages[id];
+		NBTTagCompound *NBT = nullptr;
 		this->storages[id] = new ChunkStorage(id);
-		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
+		for (size_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
 		{
 			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(this->NBT.Sections->getValues()[i]);
-			for (uint32_t i = 0; i < section->getTags().size(); ++i)
+			for (size_t i = 0; i < section->getTags().size(); ++i)
 			{
 				NBTTag *tag = section->getTags()[i];
 				if (tag->getName().compare("Y") || tag->getType() != NBT_TAG_BYTE)
@@ -631,7 +656,7 @@ endNearTop:
 		this->NBT.Sections->addValue(NBT);
 found:
 		this->storages[id]->initNBT(NBT);
-		return (this->storages[id]);
+		return this->storages[id];
 	}
 
 	void Chunk::initNBT(NBTTagCompound *NBT)
@@ -670,14 +695,14 @@ found:
 			this->NBT.HeightMap->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH, 0);
 		}
 		bool sectionAdded = false;
-		for (uint32_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
+		for (size_t i = 0; i < this->NBT.Sections->getValues().size(); ++i)
 		{
 			NBTTag *tmp = this->NBT.Sections->getValues()[i];
 			bool found = false;
 			NBTTagCompound *section = reinterpret_cast<NBTTagCompound*>(tmp);
 			if (tmp->getType() != NBT_TAG_COMPOUND)
 				goto erase3;
-			for (uint32_t j = 0; j < section->getTags().size(); ++j)
+			for (size_t j = 0; j < section->getTags().size(); ++j)
 			{
 				if (section->getTags()[j]->getName().compare("Y"))
 					continue;
@@ -712,7 +737,7 @@ erase3:
 
 	bool Chunk::isGenerated()
 	{
-		return (this->NBT.TerrainPopulated->getValue());
+		return this->NBT.TerrainPopulated->getValue();
 	}
 
 	void Chunk::setChunkXLess(Chunk *chunk)

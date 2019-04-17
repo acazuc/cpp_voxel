@@ -49,7 +49,7 @@ namespace voxel
 			 9,  9,  9, 10, 10, 10,  8,  8};
 		float perTemp = std::min(1.f, std::max(0.f, temp));
 		float perRain = std::min(1.f, std::max(0.f, rain)) * perTemp;
-		return (tab[(int32_t)(std::round(perRain * 7) * 8 + std::round(perTemp * 7))]);
+		return tab[(int32_t)(std::round(perRain * 7) * 8 + std::round(perTemp * 7))];
 	}
 
 }

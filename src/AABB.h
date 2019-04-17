@@ -27,8 +27,8 @@ namespace voxel
 		float collideZ(AABB &other, float z);
 		bool intersect(AABB &other);
 		bool intersect(Vec3 pos, Vec3 dir, float &t);
-		inline Vec3 &getP0() {return (this->p0);};
-		inline Vec3 &getP1() {return (this->p1);};
+		inline Vec3 &getP0() {return this->p0;};
+		inline Vec3 &getP1() {return this->p1;};
 
 	};
 

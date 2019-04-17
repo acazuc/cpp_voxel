@@ -14,8 +14,8 @@ namespace voxel
 		void readData(NBTStream *stream) {(void)stream;};
 		void writeData(NBTStream *stream) {(void)stream;};
 		void writeName(NBTStream *stream) {(void)stream;};
-		size_t getDataSize() {return (0);};
-		void printDebug();
+		size_t getDataSize() {return 0;};
+		void printDebug(size_t tab = 0);
 
 	};
 

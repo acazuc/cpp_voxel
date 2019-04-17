@@ -13,11 +13,11 @@ namespace voxel
 	{
 
 	private:
-		VertexBuffer texCoordsBuffer;
-		VertexBuffer vertexesBuffer;
-		VertexBuffer indicesBuffer;
-		VertexBuffer colorsBuffer;
-		uint64_t vertexNumber;
+		VertexBuffer positionBuffer;
+		VertexBuffer indiceBuffer;
+		VertexBuffer colorBuffer;
+		VertexBuffer uvBuffer;
+		uint64_t indicesNb;
 		int64_t created;
 		uint8_t number;
 		uint8_t type;

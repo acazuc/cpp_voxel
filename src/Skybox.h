@@ -16,15 +16,15 @@ namespace voxel
 	{
 
 	private:
-		VertexBuffer skyboxVertexesBuffer;
-		VertexBuffer moonTexCoordsBuffer;
-		VertexBuffer skyboxIndicesBuffer;
-		VertexBuffer sunTexCoordsBuffer;
-		VertexBuffer moonVertexesBuffer;
-		VertexBuffer skyboxColorsBuffer;
-		VertexBuffer sunVertexesBuffer;
-		VertexBuffer moonColorsBuffer;
-		VertexBuffer sunColorsBuffer;
+		VertexBuffer skyboxPositionBuffer;
+		VertexBuffer skyboxIndiceBuffer;
+		VertexBuffer moonPositionBuffer;
+		VertexBuffer sunPositionBuffer;
+		VertexBuffer skyboxColorBuffer;
+		VertexBuffer moonColorBuffer;
+		VertexBuffer sunColorBuffer;
+		VertexBuffer moonUVBuffer;
+		VertexBuffer sunUVBuffer;
 		Texture *moon;
 		Texture *sun;
 		World &world;

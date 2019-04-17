@@ -15,7 +15,7 @@ namespace voxel
 	public:
 		static void init();
 		static void clear();
-		static inline Block *getBlock(uint8_t id) {return (blocks[id]);};
+		static inline Block *getBlock(uint8_t id) {return blocks[id];};
 
 	};
 

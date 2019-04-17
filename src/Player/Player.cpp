@@ -14,7 +14,7 @@ namespace voxel
 {
 
 	Player::Player(World &world)
-	: Entity(world, NULL)
+	: Entity(world, nullptr)
 	, raycast(*this)
 	, oldMouseX(0)
 	, oldMouseY(0)
@@ -166,7 +166,7 @@ namespace voxel
 			fov -= 10;
 		if (Main::getWindow()->isKeyDown(GLFW_KEY_LEFT_CONTROL))
 			fov += 10;
-		this->projMat = Mat4::perspective(fov / 180. * M_PI, Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .019f, 1500.f);
+		this->projMat = Mat4::perspective(fov / 180. * M_PI, Main::getWindow()->getWidth() / static_cast<float>(Main::getWindow()->getHeight()), .05f, 1500.f);
 		this->viewMat = Mat4(1.);
 		//this->viewMat = Mat4::translate(this->viewMat, Vec3(std::cos(nanotime / 800000000. * M_PI * 2) * 0.02, 0, 0));
 		//this->viewMat = Mat4::rotateZ(this->viewMat, std::pow(std::cos(nanotime / 1600000000. * M_PI * 2) * 2, 2) / 4 * 0.010);

@@ -29,7 +29,7 @@ namespace voxel
 	{
 		this->chunkUpdater.stop();
 		this->chunkLoader.stop();
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			this->regions[i]->moveGLBuffersToWorld();
 			delete (this->regions[i]);
@@ -61,11 +61,11 @@ namespace voxel
 		if (nanotime - this->lastRegionCheck < 5000000000)
 			return;
 		this->lastRegionCheck = nanotime;
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			Chunk **chunks = region->getChunks();
-			for (uint32_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
+			for (size_t j = 0; j < REGION_WIDTH * REGION_WIDTH; ++j)
 			{
 				if (chunks[j])
 					goto nextRegion;
@@ -79,14 +79,14 @@ nextRegion:
 
 	void World::clearVBOToDelete()
 	{
-		for (uint32_t i = 0; i < this->VBOToDelete.size(); ++i)
+		for (size_t i = 0; i < this->VBOToDelete.size(); ++i)
 			delete (this->VBOToDelete[i]);
 		this->VBOToDelete.clear();
 	}
 
 	void World::clearVAOToDelete()
 	{
-		for (uint32_t i = 0; i < this->VAOToDelete.size(); ++i)
+		for (size_t i = 0; i < this->VAOToDelete.size(); ++i)
 			delete (this->VAOToDelete[i]);
 		this->VAOToDelete.clear();
 	}
@@ -95,58 +95,68 @@ nextRegion:
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->chunksMutex);
 		this->player.update();
+		Main::glErrors("World::draw 1");
 		Main::getBlocksShader().program->use();
-		Main::getBlocksShader().vLocation->setMat4f(this->player.getViewMat());
-		Main::getBlocksShader().mvpLocation->setMat4f(this->player.getViewProjMat());
-		Main::getBlocksShader().timeFactorLocation->setVec1f(nanotime / 1000000000.);
+		Main::getBlocksShader().vLocation.setMat4f(this->player.getViewMat());
+		Main::getBlocksShader().mvpLocation.setMat4f(this->player.getViewProjMat());
+		Main::getBlocksShader().timeFactorLocation.setVec1f(nanotime / 1000000000.);
 		if (this->player.isEyeInWater())
 		{
 			Vec4 color(0, 0, .05, 1);
 			Main::getBlocksShader().program->use();
-			Main::getBlocksShader().fogColorLocation->setVec4f(color);
-			Main::getBlocksShader().fogDistanceLocation->setVec1f(0);
-			Main::getBlocksShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+			Main::getBlocksShader().fogColorLocation.setVec4f(color);
+			Main::getBlocksShader().fogDistanceLocation.setVec1f(0);
+			Main::getBlocksShader().fogDensityLocation.setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
 			Main::getEntityShader().program->use();
-			Main::getEntityShader().fogColorLocation->setVec4f(color);
-			Main::getEntityShader().fogDistanceLocation->setVec1f(0);
-			Main::getEntityShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+			Main::getEntityShader().fogColorLocation.setVec4f(color);
+			Main::getEntityShader().fogDistanceLocation.setVec1f(0);
+			Main::getEntityShader().fogDensityLocation.setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
 			Main::getDroppedShader().program->use();
-			Main::getDroppedShader().fogColorLocation->setVec4f(color);
-			Main::getDroppedShader().fogDistanceLocation->setVec1f(0);
-			Main::getDroppedShader().fogDensityLocation->setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
+			Main::getDroppedShader().fogColorLocation.setVec4f(color);
+			Main::getDroppedShader().fogDistanceLocation.setVec1f(0);
+			Main::getDroppedShader().fogDensityLocation.setVec1f(.2 - .1 * (this->player.getEyeLight() / 15.));
 		}
 		else
 		{
 			Main::getBlocksShader().program->use();
-			Main::getBlocksShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getBlocksShader().fogDistanceLocation->setVec1f(16 * 14);
-			Main::getBlocksShader().fogDensityLocation->setVec1f(.1);
+			Main::getBlocksShader().fogColorLocation.setVec4f(Main::getSkyColor());
+			Main::getBlocksShader().fogDistanceLocation.setVec1f(16 * 14);
+			Main::getBlocksShader().fogDensityLocation.setVec1f(.1);
 			Main::getEntityShader().program->use();
-			Main::getEntityShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getEntityShader().fogDistanceLocation->setVec1f(16 * 14);
-			Main::getEntityShader().fogDensityLocation->setVec1f(.1);
+			Main::getEntityShader().fogColorLocation.setVec4f(Main::getSkyColor());
+			Main::getEntityShader().fogDistanceLocation.setVec1f(16 * 14);
+			Main::getEntityShader().fogDensityLocation.setVec1f(.1);
 			Main::getDroppedShader().program->use();
-			Main::getDroppedShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getDroppedShader().fogDistanceLocation->setVec1f(16 * 14);
-			Main::getDroppedShader().fogDensityLocation->setVec1f(.1);
+			Main::getDroppedShader().fogColorLocation.setVec4f(Main::getSkyColor());
+			Main::getDroppedShader().fogDistanceLocation.setVec1f(16 * 14);
+			Main::getDroppedShader().fogDensityLocation.setVec1f(.1);
 		}
+		Main::glErrors("World::draw 2");
 		Main::getTerrain()->bind();
 		Main::getBlocksShader().program->use();
+		Main::glErrors("World::draw 3");
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(0);
+		Main::glErrors("World::draw 4");
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(1);
+		Main::glErrors("World::draw 5");
 		this->player.draw();
+		Main::glErrors("World::draw 6");
 		this->skybox.draw();
+		Main::glErrors("World::draw 7");
 		this->clouds.draw();
+		Main::glErrors("World::draw 8");
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->drawEntities();
+		Main::glErrors("World::draw 9");
 		Main::getBlocksShader().program->use();
 		Main::getTerrain()->bind();
 		glDisable(GL_CULL_FACE);
 		for (std::vector<Region*>::iterator iter = this->regions.begin(); iter != this->regions.end(); ++iter)
 			(*iter)->draw(2);
 		glEnable(GL_CULL_FACE);
+		Main::glErrors("World::draw 10");
 	}
 
 	void World::getAABBs(AABB &aabb, std::vector<AABB> &aabbs)
@@ -228,7 +238,7 @@ nextRegion:
 	{
 		int32_t regionX = getRegionCoord(x);
 		int32_t regionZ = getRegionCoord(z);
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			if (region->getX() == regionX && region->getZ() == regionZ)
@@ -246,15 +256,15 @@ nextRegion:
 	{
 		int32_t regionX = getRegionCoord(x);
 		int32_t regionZ = getRegionCoord(z);
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			if (region->getX() == regionX && region->getZ() == regionZ)
-				return (region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
+				return region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH);
 		}
 		Region *region = new Region(*this, regionX, regionZ);
 		this->regions.push_back(region);
-		return (region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
+		return region->createChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH);
 	}
 
 	void World::addChunk(Chunk *chunk)
@@ -263,7 +273,7 @@ nextRegion:
 		int32_t z = chunk->getZ();
 		int32_t regionX = getRegionCoord(x);
 		int32_t regionZ = getRegionCoord(z);
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			if (region->getX() == regionX && region->getZ() == regionZ)
@@ -281,49 +291,49 @@ nextRegion:
 	{
 		int32_t regionX = getRegionCoord(x);
 		int32_t regionZ = getRegionCoord(z);
-		for (uint32_t i = 0; i < this->regions.size(); ++i)
+		for (size_t i = 0; i < this->regions.size(); ++i)
 		{
 			Region *region = this->regions[i];
 			if (region->getX() == regionX && region->getZ() == regionZ)
 			{
-				return (region->getChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH));
+				return region->getChunk((x - regionX) / CHUNK_WIDTH, (z - regionZ) / CHUNK_WIDTH);
 			}
 		}
-		return (NULL);
+		return nullptr;
 	}
 
 	ChunkBlock *World::getBlock(int32_t x, int32_t y, int32_t z)
 	{
 		if (y < 0 || y >= CHUNK_HEIGHT)
-			return (NULL);
+			return nullptr;
 		int32_t chunkX = getChunkCoord(x);
 		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
-			return (NULL);
-		return (chunk->getBlock(x - chunkX, y, z - chunkZ));
+			return nullptr;
+		return chunk->getBlock(x - chunkX, y, z - chunkZ);
 	}
 
 	uint8_t World::getLight(int32_t x, int32_t y, int32_t z)
 	{
 		if (y < 0 || y >= CHUNK_HEIGHT)
-			return (0);
+			return 0;
 		int32_t chunkX = getChunkCoord(x);
 		int32_t chunkZ = getChunkCoord(z);
 		Chunk *chunk = getChunk(chunkX, chunkZ);
 		if (!chunk)
-			return (0);
-		return (chunk->getLight(x - chunkX, y, z - chunkZ));
+			return 0;
+		return chunk->getLight(x - chunkX, y, z - chunkZ);
 	}
 
 	int32_t World::getChunkCoord(int32_t coord)
 	{
-		return (coord & (~(CHUNK_WIDTH - 1)));
+		return coord & (~(CHUNK_WIDTH - 1));
 	}
 
 	int32_t World::getRegionCoord(int32_t coord)
 	{
-		return (coord & (~(REGION_WIDTH * CHUNK_WIDTH - 1)));
+		return coord & (~(REGION_WIDTH * CHUNK_WIDTH - 1));
 	}
 
 }

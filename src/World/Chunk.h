@@ -43,13 +43,13 @@ namespace voxel
 	struct ChunkLayer
 	{
 		ChunkTessellator tessellator;
-		VertexBuffer *texCoordsBuffer;
-		VertexBuffer *vertexesBuffer;
-		VertexBuffer *indicesBuffer;
-		VertexBuffer *colorsBuffer;
+		VertexBuffer *positionBuffer;
+		VertexBuffer *indiceBuffer;
+		VertexBuffer *colorBuffer;
+		VertexBuffer *uvBuffer;
 		VertexArray *vertexArray;
-		uint32_t verticesNb;
-		ChunkLayer() : texCoordsBuffer(NULL), vertexesBuffer(NULL), indicesBuffer(NULL), colorsBuffer(NULL), vertexArray(NULL), verticesNb(0) {};
+		uint32_t indicesNb;
+		ChunkLayer() : positionBuffer(nullptr), indiceBuffer(nullptr), colorBuffer(nullptr), uvBuffer(nullptr), vertexArray(nullptr), indicesNb(0) {};
 	};
 
 	class Chunk
@@ -108,34 +108,34 @@ namespace voxel
 		uint8_t getBiome(int32_t x, int32_t z);
 		void destroyBlock(int32_t x, int32_t y, int32_t z);
 		inline void setChunkXLess(Chunk *chunk);
-		inline Chunk *getChunkXLess() {return (this->chunkXLess);};
+		inline Chunk *getChunkXLess() {return this->chunkXLess;};
 		inline void setChunkXMore(Chunk *chunk);
-		inline Chunk *getChunkXMore() {return (this->chunkXMore);};
+		inline Chunk *getChunkXMore() {return this->chunkXMore;};
 		inline void setChunkZLess(Chunk *chunk);
-		inline Chunk *getChunkZLess() {return (this->chunkZLess);};
+		inline Chunk *getChunkZLess() {return this->chunkZLess;};
 		inline void setChunkZMore(Chunk *chunk);
-		inline Chunk *getChunkZMore() {return (this->chunkZMore);};
-		inline World &getWorld() {return (this->world);};
-		inline int32_t getX() {return (this->x);};
-		inline int32_t getZ() {return (this->z);};
+		inline Chunk *getChunkZMore() {return this->chunkZMore;};
+		inline World &getWorld() {return this->world;};
+		inline int32_t getX() {return this->x;};
+		inline int32_t getZ() {return this->z;};
 		void setGenerated(bool generated);
 		bool isGenerated();
 		inline void setDeleted(bool deleted) {this->deleted = deleted;};
-		inline bool isDeleted() {return (this->deleted);};
+		inline bool isDeleted() {return this->deleted;};
 		inline void setChanged(bool changed) {this->changed = changed;};
-		inline bool isChanged() {return (this->changed);};
+		inline bool isChanged() {return this->changed;};
 		void initNBT(NBTTagCompound *NBT);
-		inline NBTTagCompound *getNBT() {return (this->NBT.NBT);};
+		inline NBTTagCompound *getNBT() {return this->NBT.NBT;};
 		ChunkStorage *getStorage(uint8_t id);
 		ChunkStorage *createStorage(uint8_t id);
-		inline ChunkStorage **getStorages() {return (this->storages);};
-		inline ChunkLayer &getLayer(uint8_t layer) {return (this->layers[layer]);};
-		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return ((x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z);};
-		inline int32_t getXZId(int32_t x, int32_t z) {return (x * CHUNK_WIDTH + z);};
-		inline bool isMustGenerateLightMap() {return (this->mustGenerateLightMap);};
-		inline bool isMustGenerateBuffers() {return (this->mustGenerateBuffers);};
-		inline ParticlesManager &getParticlesManager() {return (this->particlesManager);};
-		inline EntitiesManager &getEntitiesManager() {return (this->entitiesManager);};
+		inline ChunkStorage **getStorages() {return this->storages;};
+		inline ChunkLayer &getLayer(uint8_t layer) {return this->layers[layer];};
+		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return (x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z;};
+		inline int32_t getXZId(int32_t x, int32_t z) {return x * CHUNK_WIDTH + z;};
+		inline bool isMustGenerateLightMap() {return this->mustGenerateLightMap;};
+		inline bool isMustGenerateBuffers() {return this->mustGenerateBuffers;};
+		inline ParticlesManager &getParticlesManager() {return this->particlesManager;};
+		inline EntitiesManager &getEntitiesManager() {return this->entitiesManager;};
 
 	};
 

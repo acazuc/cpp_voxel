@@ -17,13 +17,13 @@ namespace voxel
 	private:
 		std::vector<Particle*> particles;
 		std::vector<GLuint> indices;
-		std::vector<Vec2> texCoords;
-		std::vector<Vec3> vertexes;
+		std::vector<Vec3> positions;
 		std::vector<Vec3> colors;
-		VertexBuffer *texCoordsBuffer;
-		VertexBuffer *vertexesBuffer;
-		VertexBuffer *indicesBuffer;
-		VertexBuffer *colorsBuffer;
+		std::vector<Vec2> uvs;
+		VertexBuffer *positionBuffer;
+		VertexBuffer *indiceBuffer;
+		VertexBuffer *colorBuffer;
+		VertexBuffer *uvBuffer;
 		Chunk &chunk;
 		bool initialized;
 

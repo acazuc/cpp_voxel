@@ -64,17 +64,17 @@ namespace voxel
 		uint8_t getLight(int32_t x, int32_t y, int32_t z);
 		static int32_t getChunkCoord(int32_t coord);
 		static int32_t getRegionCoord(int32_t coord);
-		inline std::vector<VertexBuffer*> &getVBOToDelete() {return (this->VBOToDelete);};
-		inline std::vector<VertexArray*> &getVAOToDelete() {return (this->VAOToDelete);};
-		inline std::recursive_mutex &getChunksMutex() {return (this->chunksMutex);};
-		inline std::vector<Region*> &getRegions() {return (this->regions);};
-		inline std::list<Chunk*> &getChunksToUpdate() {return (this->chunksToUpdate);};
-		inline std::minstd_rand &getRandom() {return (this->random);};
-		inline SimplexNoise &getBiomeTempNoise() {return (this->biomeTempNoise);};
-		inline SimplexNoise &getBiomeRainNoise() {return (this->biomeRainNoise);};
-		inline SimplexNoise &getNoise() {return (this->noise);};
-		inline Frustum &getFrustum() {return (this->frustum);};
-		inline Player &getPlayer() {return (this->player);};
+		inline std::vector<VertexBuffer*> &getVBOToDelete() {return this->VBOToDelete;};
+		inline std::vector<VertexArray*> &getVAOToDelete() {return this->VAOToDelete;};
+		inline std::recursive_mutex &getChunksMutex() {return this->chunksMutex;};
+		inline std::vector<Region*> &getRegions() {return this->regions;};
+		inline std::list<Chunk*> &getChunksToUpdate() {return this->chunksToUpdate;};
+		inline std::minstd_rand &getRandom() {return this->random;};
+		inline SimplexNoise &getBiomeTempNoise() {return this->biomeTempNoise;};
+		inline SimplexNoise &getBiomeRainNoise() {return this->biomeRainNoise;};
+		inline SimplexNoise &getNoise() {return this->noise;};
+		inline Frustum &getFrustum() {return this->frustum;};
+		inline Player &getPlayer() {return this->player;};
 
 	};
 

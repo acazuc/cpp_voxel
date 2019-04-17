@@ -16,7 +16,7 @@ namespace voxel
 
 	void GuiCross::draw()
 	{
-		//glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 		this->sprite.setPos((Main::getWindow()->getWidth() - 15 * Main::getGuiScale()) / 2, (Main::getWindow()->getHeight() - 15 * Main::getGuiScale()) / 2);
 		this->sprite.draw(Gui::getMat());
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

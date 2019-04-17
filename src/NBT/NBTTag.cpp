@@ -23,12 +23,10 @@ namespace voxel
 	: typeId(type)
 	, name(name)
 	{
-		//Empty
 	}
 
 	NBTTag::~NBTTag()
 	{
-		//Empty
 	}
 
 	void NBTTag::writeId(NBTStream *stream)
@@ -52,25 +50,20 @@ namespace voxel
 
 	size_t NBTTag::getHeaderSize()
 	{
-		return (1 + 2 + this->name.length());
-	}
-
-	void NBTTag::printDebug()
-	{
-		//Empty
+		return 1 + 2 + this->name.length();
 	}
 
 	NBTTag *NBTTag::readTag(NBTStream *stream)
 	{
 		int8_t id;
 		if (!stream->readInt8(&id))
-			return (NULL);
+			return nullptr;
 		std::string name;
 		if (id)
 			name = readTagName(stream);
 		NBTTag *tag = getTagOfType(static_cast<enum NBTTagType>(id), name);
 		tag->readData(stream);
-		return (tag);
+		return tag;
 	}
 
 	std::string NBTTag::readTagName(NBTStream *stream)
@@ -79,11 +72,11 @@ namespace voxel
 		if (!stream->readInt16((int16_t*)&length))
 			throw NBTException("Can't read name len");
 		if (!length)
-			return ("");
+			return "";
 		std::string result(length, '\0');
 		if (!stream->read(const_cast<char*>(result.data()), (size_t)length))
 			throw NBTException("Can't read name");
-		return (result);
+		return result;
 	}
 
 	NBTTag *NBTTag::getTagOfType(enum NBTTagType type, std::string name)
@@ -91,31 +84,31 @@ namespace voxel
 		switch (type)
 		{
 			case NBT_TAG_END:
-				return (new NBTTagEnd());
+				return new NBTTagEnd();
 			case NBT_TAG_BYTE:
-				return (new NBTTagByte(name));
+				return new NBTTagByte(name);
 			case NBT_TAG_SHORT:
-				return (new NBTTagShort(name));
+				return new NBTTagShort(name);
 			case NBT_TAG_INT:
-				return (new NBTTagInt(name));
+				return new NBTTagInt(name);
 			case NBT_TAG_LONG:
-				return (new NBTTagLong(name));
+				return new NBTTagLong(name);
 			case NBT_TAG_FLOAT:
-				return (new NBTTagFloat(name));
+				return new NBTTagFloat(name);
 			case NBT_TAG_DOUBLE:
-				return (new NBTTagDouble(name));
+				return new NBTTagDouble(name);
 			case NBT_TAG_BYTE_ARRAY:
-				return (new NBTTagByteArray(name));
+				return new NBTTagByteArray(name);
 			case NBT_TAG_STRING:
-				return (new NBTTagString(name));
+				return new NBTTagString(name);
 			case NBT_TAG_LIST:
-				return (new NBTTagList(name));
+				return new NBTTagList(name);
 			case NBT_TAG_COMPOUND:
-				return (new NBTTagCompound(name));
+				return new NBTTagCompound(name);
 			case NBT_TAG_INT_ARRAY:
-				return (new NBTTagIntArray(name));
+				return new NBTTagIntArray(name);
 			case NBT_TAG_LONG_ARRAY:
-				return (new NBTTagLongArray(name));
+				return new NBTTagLongArray(name);
 			default:
 				throw NBTException("Invalid NBTTag ID (" + std::to_string((int)type) + ")");
 		}

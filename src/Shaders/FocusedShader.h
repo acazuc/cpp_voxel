@@ -1,27 +1,17 @@
 #ifndef FOCUSED_SHADER_H
 # define FOCUSED_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class FocusedShader
+	class FocusedShader : public Shader
 	{
 
 	public:
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *mvpLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		FocusedShader();
-		~FocusedShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation mvpLocation;
 		void load();
 
 	};

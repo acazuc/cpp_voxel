@@ -83,18 +83,17 @@ namespace voxel
 	EntitiesManager::EntitiesManager(Chunk &chunk)
 	: chunk(chunk)
 	{
-		//Empty
 	}
 
 	EntitiesManager::~EntitiesManager()
 	{
-		for (uint32_t i = 0; i < this->entities.size(); ++i)
+		for (size_t i = 0; i < this->entities.size(); ++i)
 			delete (this->entities[i]);
 	}
 
 	void EntitiesManager::tick()
 	{
-		for (uint32_t i = 0; i < this->entities.size(); ++i)
+		for (size_t i = 0; i < this->entities.size(); ++i)
 		{
 			this->entities[i]->tick();
 			if (this->entities[i]->isDeleted())
@@ -150,7 +149,7 @@ namespace voxel
 		}
 		glDisable(GL_CULL_FACE);
 		Main::getEntityShader().program->use();
-		for (uint32_t i = 0; i < this->entities.size(); ++i)
+		for (size_t i = 0; i < this->entities.size(); ++i)
 			this->entities[i]->draw();
 		glEnable(GL_CULL_FACE);
 	}

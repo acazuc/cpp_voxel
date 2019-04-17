@@ -22,7 +22,7 @@ namespace voxel
 	bool GuiMultiplayerEntry::mouseDown(MouseEvent &event)
 	{
 		(void)event;
-		return (false);
+		return false;
 	}
 
 }

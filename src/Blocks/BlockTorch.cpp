@@ -6,7 +6,6 @@ namespace voxel
 	BlockTorch::BlockTorch(uint8_t id)
 	: Block(id)
 	{
-		//Empty
 	}
 
 	void BlockTorch::draw(Chunk *chunk, Vec3 pos, ChunkTessellator &tessellator, uint8_t visibleFaces, float *lights)
@@ -22,19 +21,19 @@ namespace voxel
 	{
 		setTexX(texX);
 		setTexY(texY);
-		return (this);
+		return this;
 	}
 
 	BlockTorch *BlockTorch::setTexX(float texX)
 	{
 		this->texX = texX;
-		return (this);
+		return this;
 	}
 
 	BlockTorch *BlockTorch::setTexY(float texY)
 	{
 		this->texY = texY;
-		return (this);
+		return this;
 	}
 
 }

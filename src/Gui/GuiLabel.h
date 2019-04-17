@@ -24,11 +24,11 @@ namespace voxel
 		void setPos(int32_t x, int32_t y);
 		void setColor(char color);
 		void setShadow(bool shadow);
-		inline int32_t getX() {return (this->x);};
-		inline int32_t getY() {return (this->y);};
-		inline int32_t getWidth() {return (this->text.getWidth());};
-		inline int32_t getHeight() {return (this->text.getHeight());};
-		inline int32_t getLineHeight() {return (this->text.getLineHeight());};
+		inline int32_t getX() {return this->x;};
+		inline int32_t getY() {return this->y;};
+		inline int32_t getWidth() {return this->text.getWidth();};
+		inline int32_t getHeight() {return this->text.getHeight();};
+		inline int32_t getLineHeight() {return this->text.getLineHeight();};
 
 	};
 

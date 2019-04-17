@@ -1,30 +1,20 @@
 #ifndef SUN_MOON_SHADER_H
 # define SUN_MOON_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class SunMoonShader
+	class SunMoonShader : public Shader
 	{
-	
+
 	public:
-		ProgramLocation *texCoordsLocation;
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *colorsLocation;
-		ProgramLocation *mvpLocation;
-		ProgramLocation *texLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		SunMoonShader();
-		~SunMoonShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation vertexColorLocation;
+		ProgramLocation vertexUVLocation;
+		ProgramLocation mvpLocation;
+		ProgramLocation texLocation;
 		void load();
 
 	};

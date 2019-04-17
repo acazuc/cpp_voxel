@@ -10,7 +10,6 @@ namespace voxel
 	NBTFile::NBTFile(std::string name)
 	: name(name)
 	{
-		//Empty
 	}
 
 	void NBTFile::load()
@@ -33,27 +32,27 @@ namespace voxel
 		this->ostream.open(this->name, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 		if (!this->ostream.is_open())
 			throw NBTException("Failed to open file " + this->name);
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		for (size_t i = 0; i < this->tags.size(); ++i)
 			this->tags[i]->writeData(this);
 		this->ostream.close();
 	}
 
 	void NBTFile::printDebug()
 	{
-		for (uint32_t i = 0; i < this->tags.size(); ++i)
+		for (size_t i = 0; i < this->tags.size(); ++i)
 			this->tags[i]->printDebug();
 	}
 
 	bool NBTFile::read(void *data, size_t len)
 	{
 		this->istream.read(reinterpret_cast<char*>(data), len);
-		return (this->istream.fail());
+		return this->istream.fail();
 	}
 
 	bool NBTFile::write(void *data, size_t len)
 	{
 		this->ostream.write(reinterpret_cast<char*>(data), len);
-		return (this->ostream.fail());
+		return this->ostream.fail();
 	}
 
 }

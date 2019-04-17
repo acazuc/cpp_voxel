@@ -7,7 +7,7 @@ namespace voxel
 	std::string readfile(std::string name)
 	{
 		std::ifstream ifs(name);
-		return (std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>()));
+		return std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
 	}
 
 }

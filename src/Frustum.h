@@ -4,6 +4,8 @@
 # include "AABB.h"
 # include <librender/Mat/Mat4.h>
 # include <librender/Vec/Vec4.h>
+# include <vector>
+# include <cmath>
 
 using librender::Mat4;
 using librender::Vec4;
@@ -17,7 +19,7 @@ namespace voxel
 	{
 
 	private:
-		Vec4 data[6];
+		std::vector<Vec4> planes;
 
 	public:
 		void update(Mat4 &vp);

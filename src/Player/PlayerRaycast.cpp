@@ -51,8 +51,8 @@ namespace voxel
 			vertexes[21] = Vec3(BLOCK_SIZE,             -BREAK_OFFSET, 0         );
 			vertexes[22] = Vec3(BLOCK_SIZE,             -BREAK_OFFSET, BLOCK_SIZE);
 			vertexes[23] = Vec3(0         ,             -BREAK_OFFSET, BLOCK_SIZE);
-			this->breakVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
-			GLuint indices[36];
+			this->breakPositionBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_STATIC_DRAW);
+			GLubyte indices[36];
 			//Front
 			indices[0]  = 0 * 4 + 0;
 			indices[1]  = 0 * 4 + 1;
@@ -95,13 +95,12 @@ namespace voxel
 			indices[27] = 4 * 4 + 2;
 			indices[28] = 4 * 4 + 1;
 			indices[29] = 4 * 4 + 3;
-			this->breakIndicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices, sizeof(indices), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
+			this->breakIndiceBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices, sizeof(indices), GL_STATIC_DRAW);
 		}
 	}
 
 	PlayerRaycast::~PlayerRaycast()
 	{
-		//
 	}
 
 	void PlayerRaycast::tick()
@@ -119,8 +118,8 @@ namespace voxel
 		Main::getFocusedShader().program->use();
 		Mat4 model = Mat4::translate(Mat4(1), this->pos);
 		Mat4 mvp = this->player.getViewProjMat() * model;
-		Main::getFocusedShader().mvpLocation->setMat4f(mvp);
-		Main::getFocusedShader().vertexesLocation->setVertexBuffer(this->hoverVertexesBuffer);
+		Main::getFocusedShader().mvpLocation.setMat4f(mvp);
+		Main::getFocusedShader().vertexPositionLocation.setVertexBuffer(this->hoverPositionBuffer, 3, GL_FLOAT);
 		glLineWidth(2);
 		glDrawArrays(GL_LINES, 0, 24);
 		if (this->found && this->doneTicks != 0)
@@ -129,17 +128,17 @@ namespace voxel
 			Main::getBreakShader().program->use();
 			Mat4 model = Mat4::translate(Mat4(1), this->pos);
 			Mat4 mvp = this->player.getViewProjMat() * model;
-			Main::getBreakShader().mvpLocation->setMat4f(mvp);
-			Main::getBreakShader().mLocation->setMat4f(model);
-			Main::getBreakShader().vLocation->setMat4f(this->player.getViewMat());
-			Main::getBreakShader().fogColorLocation->setVec4f(Main::getSkyColor());
-			Main::getBreakShader().texCoordsLocation->setVertexBuffer(this->breakTexCoordsBuffer);
-			Main::getBreakShader().vertexesLocation->setVertexBuffer(this->breakVertexesBuffer);
-			this->breakIndicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+			Main::getBreakShader().mvpLocation.setMat4f(mvp);
+			Main::getBreakShader().mLocation.setMat4f(model);
+			Main::getBreakShader().vLocation.setMat4f(this->player.getViewMat());
+			Main::getBreakShader().fogColorLocation.setVec4f(Main::getSkyColor());
+			Main::getBreakShader().vertexUVLocation.setVertexBuffer(this->breakUVBuffer, 2, GL_FLOAT);
+			Main::getBreakShader().vertexPositionLocation.setVertexBuffer(this->breakPositionBuffer, 3, GL_FLOAT);
+			this->breakIndiceBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_DST_COLOR, GL_SRC_COLOR);
 			glBlendEquation(GL_FUNC_ADD);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, NULL);
+			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, nullptr);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 		glDepthFunc(GL_LESS);
@@ -148,23 +147,23 @@ namespace voxel
 	static float signum(float val)
 	{
 		if (val < 0)
-			return (-1);
+			return -1;
 		if (val > 0)
-			return (1);
-		return (0);
+			return 1;
+		return 0;
 	}
 
 	static float intbound(float pos, float dir)
 	{
 		if (dir < 0 && dir == std::round(dir))
-			return (0);
+			return 0;
 		if (dir > 0)
 		{
 			if (pos == 0)
-				return (1 / dir);
-			return ((std::ceil(pos) - pos) / dir);
+				return 1 / dir;
+			return (std::ceil(pos) - pos) / dir;
 		}
-		return ((pos - std::floor(pos)) / (-dir));
+		return (pos - std::floor(pos)) / (-dir);
 	}
 
 	void PlayerRaycast::raycast()
@@ -181,7 +180,7 @@ namespace voxel
 		uint8_t face = 0;
 		int32_t oldChunkX = -1;
 		int32_t oldChunkZ = -1;
-		Chunk *chunk = NULL;
+		Chunk *chunk = nullptr;
 		while (true)
 		{
 			if (pos.y >= 0 && pos.y < CHUNK_HEIGHT)
@@ -308,7 +307,7 @@ nextStep:
 		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y + 1, pos.z));
 		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y, pos.z - 1));
 		light = std::max(light, chunk->getWorld().getLight(pos.x, pos.y, pos.z + 1));
-		if (this->doneTicks > 20 * blockModel->getHardness())
+		if (this->doneTicks > 0)//20 * blockModel->getHardness())
 		{
 			this->found = false;
 			float texX = blockModel->getDestroyTexX();
@@ -333,7 +332,7 @@ nextStep:
 						dir.x += (std::rand() * 2. / RAND_MAX - 1.);
 						dir.y += (std::rand() * 2. / RAND_MAX - 1.);
 						dir.z += (std::rand() * 2. / RAND_MAX - 1.);
-						dir.normalize();
+						dir = normalize(dir);
 						dir *= (std::rand() / (float)RAND_MAX + std::rand() / (float)RAND_MAX + 1) * .3 * .4 * .4;
 						dir.y += .1f;
 						Vec2 uv(texX, texY);
@@ -402,72 +401,72 @@ nextStep:
 
 	void PlayerRaycast::buildBreakTexCoords()
 	{
-		Vec2 texCoords[24];
+		Vec2 UVs[24];
 		uint8_t pos = this->doneTicks * 9. / this->todoTicks;
 		Vec2 org(pos / 16., 15. / 16);
 		Vec2 dst(org);
 		dst += 1. / 16;
 		//Front
-		texCoords[0]  = Vec2(org.x, dst.y);
-		texCoords[1]  = Vec2(dst.x, dst.y);
-		texCoords[2]  = Vec2(dst.x, org.y);
-		texCoords[3]  = Vec2(org.x, org.y);
+		UVs[0]  = Vec2(org.x, dst.y);
+		UVs[1]  = Vec2(dst.x, dst.y);
+		UVs[2]  = Vec2(dst.x, org.y);
+		UVs[3]  = Vec2(org.x, org.y);
 		//Back
-		texCoords[4]  = Vec2(dst.x, dst.y);
-		texCoords[5]  = Vec2(org.x, dst.y);
-		texCoords[6]  = Vec2(org.x, org.y);
-		texCoords[7]  = Vec2(dst.x, org.y);
+		UVs[4]  = Vec2(dst.x, dst.y);
+		UVs[5]  = Vec2(org.x, dst.y);
+		UVs[6]  = Vec2(org.x, org.y);
+		UVs[7]  = Vec2(dst.x, org.y);
 		//Left
-		texCoords[8]  = Vec2(org.x, dst.y);
-		texCoords[9]  = Vec2(org.x, org.y);
-		texCoords[10] = Vec2(dst.x, org.y);
-		texCoords[11] = Vec2(dst.x, dst.y);
+		UVs[8]  = Vec2(org.x, dst.y);
+		UVs[9]  = Vec2(org.x, org.y);
+		UVs[10] = Vec2(dst.x, org.y);
+		UVs[11] = Vec2(dst.x, dst.y);
 		//Right
-		texCoords[12] = Vec2(dst.x, dst.y);
-		texCoords[13] = Vec2(dst.x, org.y);
-		texCoords[14] = Vec2(org.x, org.y);
-		texCoords[15] = Vec2(org.x, dst.y);
+		UVs[12] = Vec2(dst.x, dst.y);
+		UVs[13] = Vec2(dst.x, org.y);
+		UVs[14] = Vec2(org.x, org.y);
+		UVs[15] = Vec2(org.x, dst.y);
 		//Up
-		texCoords[16] = Vec2(org.x, dst.y);
-		texCoords[17] = Vec2(dst.x, dst.y);
-		texCoords[18] = Vec2(dst.x, org.y);
-		texCoords[19] = Vec2(org.x, org.y);
+		UVs[16] = Vec2(org.x, dst.y);
+		UVs[17] = Vec2(dst.x, dst.y);
+		UVs[18] = Vec2(dst.x, org.y);
+		UVs[19] = Vec2(org.x, org.y);
 		//Down
-		texCoords[20] = Vec2(org.x, org.y);
-		texCoords[21] = Vec2(dst.x, org.y);
-		texCoords[22] = Vec2(dst.x, dst.y);
-		texCoords[23] = Vec2(org.x, dst.y);
-		this->breakTexCoordsBuffer.setData(GL_ARRAY_BUFFER, texCoords, sizeof(texCoords), GL_FLOAT, 2, GL_DYNAMIC_DRAW);
+		UVs[20] = Vec2(org.x, org.y);
+		UVs[21] = Vec2(dst.x, org.y);
+		UVs[22] = Vec2(dst.x, dst.y);
+		UVs[23] = Vec2(org.x, dst.y);
+		this->breakUVBuffer.setData(GL_ARRAY_BUFFER, UVs, sizeof(UVs), GL_DYNAMIC_DRAW);
 	}
 
 	void PlayerRaycast::buildHoverVertexes(AABB aabb)
 	{
-		Vec3 vertexes[24];
-		vertexes[0]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[1]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[2]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[3]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[4]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[5]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[6]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[7]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[8]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[9]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[10] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[11] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[12] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[13] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[14] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[15] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[16] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[17] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[18] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[19] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[20] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[21] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		vertexes[22] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
-		vertexes[23] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
-		this->hoverVertexesBuffer.setData(GL_ARRAY_BUFFER, vertexes, sizeof(vertexes), GL_FLOAT, 3, GL_STATIC_DRAW);
+		Vec3 positions[24];
+		positions[0]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[1]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[2]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[3]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[4]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[5]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[6]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[7]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[8]  = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		positions[9]  = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		positions[10] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[11] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[12] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[13] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		positions[14] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[15] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		positions[16] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[17] = Vec3(aabb.getP0().x - OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[18] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP1().z + OFFSET);
+		positions[19] = Vec3(aabb.getP1().x + OFFSET, aabb.getP0().y - OFFSET, aabb.getP0().z - OFFSET);
+		positions[20] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[21] = Vec3(aabb.getP0().x - OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		positions[22] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP1().z + OFFSET);
+		positions[23] = Vec3(aabb.getP1().x + OFFSET, aabb.getP1().y + OFFSET, aabb.getP0().z - OFFSET);
+		this->hoverPositionBuffer.setData(GL_ARRAY_BUFFER, positions, sizeof(positions), GL_STATIC_DRAW);
 	}
 
 }

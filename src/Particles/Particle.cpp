@@ -67,7 +67,7 @@ namespace voxel
 		int32_t chunkZ = World::getChunkCoord(this->pos.z);
 		if (!this->chunk || (this->chunk->getX() != chunkX && this->chunk->getZ() != chunkZ))
 		{
-			Chunk *chunk = NULL;
+			Chunk *chunk = nullptr;
 			if (!(chunk = this->world.getChunk(chunkX, chunkZ)))
 			{
 				this->deleted = true;

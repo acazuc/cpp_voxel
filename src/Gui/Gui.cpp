@@ -104,15 +104,15 @@ namespace voxel
 		textColors[14] = new Color(1.00, 1.00, .333);
 		textColors[15] = new Color(1.00, 1.00, 1.00);
 		shaderSpriteProgram.program = Main::getGuiShader().program;
-		shaderSpriteProgram.texCoordsLocation = Main::getGuiShader().texCoordsLocation;
-		shaderSpriteProgram.vertexesLocation = Main::getGuiShader().vertexesLocation;
-		shaderSpriteProgram.colorsLocation = Main::getGuiShader().colorsLocation;
-		shaderSpriteProgram.mvpLocation = Main::getGuiShader().mvpLocation;
+		shaderSpriteProgram.vertexesLocation = &Main::getGuiShader().vertexPositionLocation;
+		shaderSpriteProgram.colorsLocation = &Main::getGuiShader().vertexColorLocation;
+		shaderSpriteProgram.texCoordsLocation = &Main::getGuiShader().vertexUVLocation;
+		shaderSpriteProgram.mvpLocation = &Main::getGuiShader().mvpLocation;
 		shaderTextProgram.program = Main::getGuiShader().program;
-		shaderTextProgram.texCoordsLocation = Main::getGuiShader().texCoordsLocation;
-		shaderTextProgram.vertexesLocation = Main::getGuiShader().vertexesLocation;
-		shaderTextProgram.colorsLocation = Main::getGuiShader().colorsLocation;
-		shaderTextProgram.mvpLocation = Main::getGuiShader().mvpLocation;
+		shaderTextProgram.vertexesLocation = &Main::getGuiShader().vertexPositionLocation;
+		shaderTextProgram.colorsLocation = &Main::getGuiShader().vertexColorLocation;
+		shaderTextProgram.texCoordsLocation = &Main::getGuiShader().vertexUVLocation;
+		shaderTextProgram.mvpLocation = &Main::getGuiShader().mvpLocation;
 	}
 
 	void Gui::clear()
@@ -132,17 +132,14 @@ namespace voxel
 
 	Gui::Gui()
 	{
-		//
 	}
 
 	Gui::~Gui()
 	{
-		//
 	}
 
 	void Gui::draw()
 	{
-		//
 	}
 
 	void Gui::updateMat()
@@ -155,10 +152,10 @@ namespace voxel
 		if (i >= 'A' && i <= 'F')
 			i -= 'A' - 'a';
 		if (i >= '0' && i <= '9')
-			return (*textColors[i - '0']);
+			return *textColors[i - '0'];
 		if (i >= 'a' && i <= 'f')
-			return (*textColors[10 + i - 'a']);
-		return (*textColors[15]);
+			return *textColors[10 + i - 'a'];
+		return *textColors[15];
 	}
 
 	Color &Gui::getTextShadowColor(char i)
@@ -166,10 +163,10 @@ namespace voxel
 		if (i >= 'A' && i <= 'F')
 			i -= 'A' - 'a';
 		if (i >= '0' && i <= '9')
-			return (*textShadowColors[i - '0']);
+			return *textShadowColors[i - '0'];
 		if (i >= 'a' && i <= 'f')
-			return (*textShadowColors[10 + i - 'a']);
-		return (*textShadowColors[15]);
+			return *textShadowColors[10 + i - 'a'];
+		return *textShadowColors[15];
 	}
 
 }

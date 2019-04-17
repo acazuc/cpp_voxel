@@ -91,15 +91,15 @@ namespace voxel
 		uint8_t calcLightLevel(Chunk *chunk, Vec3 &pos, int8_t x, int8_t y, int8_t z);
 		void calcAmbientOcclusion(Vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent);
 		void calcVisibleFaces(Chunk *chunk, Vec3 &pos, uint8_t &visibleFaces);
-		void smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blockLights);
-		void initLightsLevels(BlockLightsLevels &levels, uint8_t visibleFaces, int8_t *blocksLights);
+		void smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, uint8_t *blockLights);
+		void initLightsLevels(BlockLightsLevels &levels, uint8_t visibleFaces, uint8_t *blocksLights);
 
 	public:
 		void fillBuffers(Chunk *chunk, Vec3 &pos, ChunkTessellator &tessellator, uint8_t layer);
 		bool isTransparent();
 		inline void setType(uint8_t type) {this->type = type;};
-		inline uint8_t getType() {return (this->type);};
-		static float getLightValue(int8_t light);
+		inline uint8_t getType() {return this->type;};
+		static float getLightValue(uint8_t light);
 
 	};
 

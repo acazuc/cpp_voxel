@@ -1,28 +1,18 @@
 #ifndef SKYBOX_SHADER_H
 # define SKYBOX_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class SkyboxShader
+	class SkyboxShader : public Shader
 	{
-	
+
 	public:
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *colorsLocation;
-		ProgramLocation *mvpLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		SkyboxShader();
-		~SkyboxShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation vertexColorLocation;
+		ProgramLocation mvpLocation;
 		void load();
 
 	};

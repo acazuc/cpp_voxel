@@ -56,11 +56,11 @@ namespace voxel
 		model = Mat4::rotateY(model, this->rot.y);
 		model = Mat4::rotateX(model, this->rot.x);
 		model = Mat4::scale(model, Vec3(.06, .06, .06));
-		Main::getEntityShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
+		Main::getEntityShader().vLocation.setMat4f(this->world.getPlayer().getViewMat());
 		Vec4 col(1, 1, 1, 1);
 		col *= ChunkBlock::getLightValue(this->world.getLight(pos.x, pos.y, pos.z));
 		col.a = 1;
-		Main::getEntityShader().colorLocation->setVec4f(col);
+		Main::getEntityShader().colorLocation.setVec4f(col);
 		head->draw(&this->world, model);
 		body->draw(&this->world, model);
 		legFL->draw(&this->world, model);

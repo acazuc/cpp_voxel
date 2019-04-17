@@ -1,35 +1,25 @@
 #ifndef ENTITY_SHADER_H
 # define ENTITY_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class EntityShader
+	class EntityShader : public Shader
 	{
 
 	public:
-		ProgramLocation *fogDistanceLocation;
-		ProgramLocation *fogDensityLocation;
-		ProgramLocation *texCoordsLocation;
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *fogColorLocation;
-		ProgramLocation *colorLocation;
-		ProgramLocation *mvpLocation;
-		ProgramLocation *texLocation;
-		ProgramLocation *mLocation;
-		ProgramLocation *vLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		EntityShader();
-		~EntityShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation fogDistanceLocation;
+		ProgramLocation fogDensityLocation;
+		ProgramLocation vertexUVLocation;
+		ProgramLocation fogColorLocation;
+		ProgramLocation colorLocation;
+		ProgramLocation mvpLocation;
+		ProgramLocation texLocation;
+		ProgramLocation mLocation;
+		ProgramLocation vLocation;
 		void load();
 
 	};

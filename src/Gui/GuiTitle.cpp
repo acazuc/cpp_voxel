@@ -18,11 +18,11 @@ namespace voxel
 		this->logo.setSize(256 * Main::getGuiScale(), 48 * Main::getGuiScale());
 		this->logo.setTexSize(1, .1875);
 		this->logo.setTexPos(0, 0);
-		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback, NULL);
-		this->multiplayer.setCallback(&GuiTitle::multiplayerCallback, NULL);
-		this->texturePack.setCallback(&GuiTitle::texturePackCallback, NULL);
-		this->options.setCallback(&GuiTitle::optionsCallback, NULL);
-		this->quit.setCallback(&GuiTitle::quitCallback, NULL);
+		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback, nullptr);
+		this->multiplayer.setCallback(&GuiTitle::multiplayerCallback, nullptr);
+		this->texturePack.setCallback(&GuiTitle::texturePackCallback, nullptr);
+		this->options.setCallback(&GuiTitle::optionsCallback, nullptr);
+		this->quit.setCallback(&GuiTitle::quitCallback, nullptr);
 		this->options.setSize(98, 20);
 		this->quit.setSize(98, 20);
 	}
@@ -87,22 +87,22 @@ namespace voxel
 	bool GuiTitle::mouseDown(MouseEvent &event)
 	{
 		if (this->singleplayer.mouseDown(event))
-			return (true);
+			return true;
 		if (this->multiplayer.mouseDown(event))
-			return (true);
+			return true;
 		if (this->texturePack.mouseDown(event))
-			return (true);
+			return true;
 		if (this->options.mouseDown(event))
-			return (true);
+			return true;
 		if (this->quit.mouseDown(event))
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 	bool GuiTitle::mouseUp(MouseEvent &event)
 	{
 		(void)event;
-		return (false);
+		return false;
 	}
 
 }

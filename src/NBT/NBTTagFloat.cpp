@@ -1,7 +1,6 @@
 #include "NBTTagFloat.h"
 #include "NBTException.h"
-#include "NBTFile.h"
-#include "Debug.h"
+#include <iostream>
 
 namespace voxel
 {
@@ -10,7 +9,6 @@ namespace voxel
 	: NBTTag(NBT_TAG_FLOAT, name)
 	, value(0)
 	{
-		//Empty
 	}
 
 	void NBTTagFloat::readData(NBTStream *stream)
@@ -27,12 +25,14 @@ namespace voxel
 
 	size_t NBTTagFloat::getDataSize()
 	{
-		return (4);
+		return 4;
 	}
 
-	void NBTTagFloat::printDebug()
+	void NBTTagFloat::printDebug(size_t tab)
 	{
-		LOG("NBTTag_Float(\"" << this->name << "\") : " << this->value);
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "NBTTag_Float(\"" << this->name << "\") : " << this->value << std::endl;
 	}
 
 }

@@ -19,9 +19,9 @@ namespace voxel
 		void readData(NBTStream *stream);
 		void writeData(NBTStream *stream);
 		size_t getDataSize();
-		void printDebug();
+		void printDebug(size_t tab = 0);
 		inline void addTag(NBTTag *tag) {this->tags.push_back(tag);};
-		inline std::vector<NBTTag*> &getTags() {return (this->tags);};
+		inline std::vector<NBTTag*> &getTags() {return this->tags;};
 
 	};
 

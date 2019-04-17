@@ -5,9 +5,9 @@
 
 #define LIGHT_MIN .125
 #define LIGHT_RANGE .7
-#define SSAO_FACTOR 2
+#define AO_FACTOR 1
 
-#define LIGHT_SSAO_TEST(light, ssao) if (light < ssao) {light = 0;} else {light -= ssao;}
+#define LIGHT_AO_TEST(light, ambientOcclusion) if (light < ambientOcclusion) {light = 0;} else {light -= ambientOcclusion;}
 
 namespace voxel
 {
@@ -30,7 +30,7 @@ namespace voxel
 		if (!visibleFaces)
 			return;
 		bool blocksTransparent[27];
-		int8_t blocksLights[27];
+		uint8_t blocksLights[27];
 		{
 			int8_t i = 0;
 			for (int8_t x = -1; x <= 1; ++x)
@@ -63,16 +63,16 @@ namespace voxel
 	bool ChunkBlock::shouldRenderFaceNear(ChunkBlock *block)
 	{
 		if (!block)
-			return (true);
+			return true;
 		if (!block->isTransparent())
-			return (false);
+			return false;
 		if (block->getType() == this->type)
 		{
 			Block *blockModel = Blocks::getBlock(this->type);
 			if (!blockModel || !blockModel->isRenderSameNeighbor())
-				return (false);
+				return false;
 		}
-		return (true);
+		return true;
 	}
 
 	void ChunkBlock::calcVisibleFaces(Chunk *chunk, Vec3 &pos, uint8_t &visibleFaces)
@@ -135,7 +135,7 @@ namespace voxel
 	uint8_t ChunkBlock::calcLightLevel(Chunk *chunk, Vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
-			return (15);
+			return 15;
 		int32_t newX = pos.x - chunk->getX() + addX;
 		int32_t newY = pos.y + addY;
 		int32_t newZ = pos.z - chunk->getZ() + addZ;
@@ -143,33 +143,33 @@ namespace voxel
 		{
 			newX += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXLess()))
-				return (15);
+				return 15;
 		}
 		else if (newX >= CHUNK_WIDTH)
 		{
 			newX -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXMore()))
-				return (15);
+				return 15;
 		}
 		if (newZ < 0)
 		{
 			newZ += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZLess()))
-				return (15);
+				return 15;
 		}
 		else if (newZ >= CHUNK_WIDTH)
 		{
 			newZ -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZMore()))
-				return (15);
+				return 15;
 		}
-		return (chunk->getLight(newX, newY, newZ));
+		return chunk->getLight(newX, newY, newZ);
 	}
 
 	bool ChunkBlock::calcTransparent(Chunk *chunk, Vec3 &pos, int8_t addX, int8_t addY, int8_t addZ)
 	{
 		if (pos.y + addY < 0 || pos.y + addY >= CHUNK_HEIGHT)
-			return (true);
+			return true;
 		int32_t newX = pos.x - chunk->getX() + addX;
 		int32_t newY = pos.y + addY;
 		int32_t newZ = pos.z - chunk->getZ() + addZ;
@@ -177,39 +177,39 @@ namespace voxel
 		{
 			newX += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXLess()))
-				return (true);
+				return true;
 		}
 		else if (newX >= CHUNK_WIDTH)
 		{
 			newX -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkXMore()))
-				return (true);
+				return true;
 		}
 		if (newZ < 0)
 		{
 			newZ += CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZLess()))
-				return (true);
+				return true;
 		}
 		else if (newZ >= CHUNK_WIDTH)
 		{
 			newZ -= CHUNK_WIDTH;
 			if (!(chunk = chunk->getChunkZMore()))
-				return (true);
+				return true;
 		}
 		ChunkBlock *block = chunk->getBlock(newX, newY, newZ);
 		if (!block)
-			return (true);
+			return true;
 		if (!Blocks::getBlock(block->getType()))
-			return (true);
-		return (block->isTransparent());
+			return true;
+		return block->isTransparent();
 	}
 
-	void ChunkBlock::initLightsLevels(BlockLightsLevels &lights, uint8_t visibleFaces, int8_t *blocksLights)
+	void ChunkBlock::initLightsLevels(BlockLightsLevels &lights, uint8_t visibleFaces, uint8_t *blocksLights)
 	{
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
-			int8_t value = blocksLights[(1 * 3 + 1) * 3 + 2];
+			uint8_t value = blocksLights[(1 * 3 + 1) * 3 + 2];
 			lights.f1p1 = value;
 			lights.f1p2 = value;
 			lights.f1p3 = value;
@@ -217,7 +217,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
-			int8_t value = blocksLights[(1 * 3 + 1) * 3 + 0];
+			uint8_t value = blocksLights[(1 * 3 + 1) * 3 + 0];
 			lights.f2p1 = value;
 			lights.f2p2 = value;
 			lights.f2p3 = value;
@@ -225,7 +225,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
-			int8_t value = blocksLights[(0 * 3 + 1) * 3 + 1];
+			uint8_t value = blocksLights[(0 * 3 + 1) * 3 + 1];
 			lights.f3p1 = value;
 			lights.f3p2 = value;
 			lights.f3p3 = value;
@@ -233,7 +233,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
-			int8_t value = blocksLights[(2 * 3 + 1) * 3 + 1];
+			uint8_t value = blocksLights[(2 * 3 + 1) * 3 + 1];
 			lights.f4p1 = value;
 			lights.f4p2 = value;
 			lights.f4p3 = value;
@@ -241,7 +241,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_UP)
 		{
-			int8_t value = blocksLights[(1 * 3 + 2) * 3 + 1];
+			uint8_t value = blocksLights[(1 * 3 + 2) * 3 + 1];
 			lights.f5p1 = value;
 			lights.f5p2 = value;
 			lights.f5p3 = value;
@@ -249,7 +249,7 @@ namespace voxel
 		}
 		if (visibleFaces & BLOCK_FACE_DOWN)
 		{
-			int8_t value = blocksLights[(1 * 3 + 0) * 3 + 1];
+			uint8_t value = blocksLights[(1 * 3 + 0) * 3 + 1];
 			lights.f6p1 = value;
 			lights.f6p2 = value;
 			lights.f6p3 = value;
@@ -259,221 +259,221 @@ namespace voxel
 
 	void ChunkBlock::calcAmbientOcclusion(Vec3 &pos, BlockLightsLevels &lights, uint8_t visibleFaces, bool *blocksTransparent)
 	{
-		BlockLightsLevels ssao;
-		std::memset(&ssao, 0x00, sizeof(ssao));
+		BlockLightsLevels ambientOcclusion;
+		std::memset(&ambientOcclusion, 0x00, sizeof(ambientOcclusion));
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
-				ssao.f1p4 += SSAO_FACTOR;
+				ambientOcclusion.f1p4 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
 			{
-				ssao.f1p4 += SSAO_FACTOR;
-				ssao.f1p1 += SSAO_FACTOR;
+				ambientOcclusion.f1p4 += AO_FACTOR;
+				ambientOcclusion.f1p1 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
-				ssao.f1p1 += SSAO_FACTOR;
+				ambientOcclusion.f1p1 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
-				ssao.f1p2 += SSAO_FACTOR;
+				ambientOcclusion.f1p2 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
 			{
-				ssao.f1p2 += SSAO_FACTOR;
-				ssao.f1p3 += SSAO_FACTOR;
+				ambientOcclusion.f1p2 += AO_FACTOR;
+				ambientOcclusion.f1p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
-				ssao.f1p3 += SSAO_FACTOR;
+				ambientOcclusion.f1p3 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 1) * 3 + 2])
 			{
-				ssao.f1p3 += SSAO_FACTOR;
-				ssao.f1p4 += SSAO_FACTOR;
+				ambientOcclusion.f1p3 += AO_FACTOR;
+				ambientOcclusion.f1p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 1) * 3 + 2])
 			{
-				ssao.f1p1 += SSAO_FACTOR;
-				ssao.f1p2 += SSAO_FACTOR;
+				ambientOcclusion.f1p1 += AO_FACTOR;
+				ambientOcclusion.f1p2 += AO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
-				ssao.f2p4 += SSAO_FACTOR;
+				ambientOcclusion.f2p4 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
 			{
-				ssao.f2p4 += SSAO_FACTOR;
-				ssao.f2p1 += SSAO_FACTOR;
+				ambientOcclusion.f2p4 += AO_FACTOR;
+				ambientOcclusion.f2p1 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
-				ssao.f2p1 += SSAO_FACTOR;
+				ambientOcclusion.f2p1 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
-				ssao.f2p2 += SSAO_FACTOR;
+				ambientOcclusion.f2p2 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
 			{
-				ssao.f2p2 += SSAO_FACTOR;
-				ssao.f2p3 += SSAO_FACTOR;
+				ambientOcclusion.f2p2 += AO_FACTOR;
+				ambientOcclusion.f2p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
-				ssao.f2p3 += SSAO_FACTOR;
+				ambientOcclusion.f2p3 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 1) * 3 + 0])
 			{
-				ssao.f2p3 += SSAO_FACTOR;
-				ssao.f2p4 += SSAO_FACTOR;
+				ambientOcclusion.f2p3 += AO_FACTOR;
+				ambientOcclusion.f2p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 1) * 3 + 0])
 			{
-				ssao.f2p1 += SSAO_FACTOR;
-				ssao.f2p2 += SSAO_FACTOR;
+				ambientOcclusion.f2p1 += AO_FACTOR;
+				ambientOcclusion.f2p2 += AO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
-				ssao.f3p4 += SSAO_FACTOR;
+				ambientOcclusion.f3p4 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
 			{
-				ssao.f3p4 += SSAO_FACTOR;
-				ssao.f3p1 += SSAO_FACTOR;
+				ambientOcclusion.f3p4 += AO_FACTOR;
+				ambientOcclusion.f3p1 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
-				ssao.f3p1 += SSAO_FACTOR;
+				ambientOcclusion.f3p1 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
-				ssao.f3p2 += SSAO_FACTOR;
+				ambientOcclusion.f3p2 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
 			{
-				ssao.f3p2 += SSAO_FACTOR;
-				ssao.f3p3 += SSAO_FACTOR;
+				ambientOcclusion.f3p2 += AO_FACTOR;
+				ambientOcclusion.f3p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
-				ssao.f3p3 += SSAO_FACTOR;
+				ambientOcclusion.f3p3 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 1) * 3 + 2])
 			{
-				ssao.f3p3 += SSAO_FACTOR;
-				ssao.f3p4 += SSAO_FACTOR;
+				ambientOcclusion.f3p3 += AO_FACTOR;
+				ambientOcclusion.f3p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 1) * 3 + 0])
 			{
-				ssao.f3p1 += SSAO_FACTOR;
-				ssao.f3p2 += SSAO_FACTOR;
+				ambientOcclusion.f3p1 += AO_FACTOR;
+				ambientOcclusion.f3p2 += AO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
-				ssao.f4p4 += SSAO_FACTOR;
+				ambientOcclusion.f4p4 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
 			{
-				ssao.f4p4 += SSAO_FACTOR;
-				ssao.f4p1 += SSAO_FACTOR;
+				ambientOcclusion.f4p4 += AO_FACTOR;
+				ambientOcclusion.f4p1 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
-				ssao.f4p1 += SSAO_FACTOR;
+				ambientOcclusion.f4p1 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
-				ssao.f4p2 += SSAO_FACTOR;
+				ambientOcclusion.f4p2 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
 			{
-				ssao.f4p2 += SSAO_FACTOR;
-				ssao.f4p3 += SSAO_FACTOR;
+				ambientOcclusion.f4p2 += AO_FACTOR;
+				ambientOcclusion.f4p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
-				ssao.f4p3 += SSAO_FACTOR;
+				ambientOcclusion.f4p3 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 1) * 3 + 2])
 			{
-				ssao.f4p3 += SSAO_FACTOR;
-				ssao.f4p4 += SSAO_FACTOR;
+				ambientOcclusion.f4p3 += AO_FACTOR;
+				ambientOcclusion.f4p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 1) * 3 + 0])
 			{
-				ssao.f4p1 += SSAO_FACTOR;
-				ssao.f4p2 += SSAO_FACTOR;
+				ambientOcclusion.f4p1 += AO_FACTOR;
+				ambientOcclusion.f4p2 += AO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_UP && pos.y < CHUNK_HEIGHT - 1)
 		{
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 0])
-				ssao.f5p2 += SSAO_FACTOR;
+				ambientOcclusion.f5p2 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 1])
 			{
-				ssao.f5p1 += SSAO_FACTOR;
-				ssao.f5p2 += SSAO_FACTOR;
+				ambientOcclusion.f5p1 += AO_FACTOR;
+				ambientOcclusion.f5p2 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 2) * 3 + 2])
-				ssao.f5p1 += SSAO_FACTOR;
+				ambientOcclusion.f5p1 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 0])
-				ssao.f5p3 += SSAO_FACTOR;
+				ambientOcclusion.f5p3 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 1])
 			{
-				ssao.f5p3 += SSAO_FACTOR;
-				ssao.f5p4 += SSAO_FACTOR;
+				ambientOcclusion.f5p3 += AO_FACTOR;
+				ambientOcclusion.f5p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 2) * 3 + 2])
-				ssao.f5p4 += SSAO_FACTOR;
+				ambientOcclusion.f5p4 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 2) * 3 + 0])
 			{
-				ssao.f5p2 += SSAO_FACTOR;
-				ssao.f5p3 += SSAO_FACTOR;
+				ambientOcclusion.f5p2 += AO_FACTOR;
+				ambientOcclusion.f5p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(1 * 3 + 2) * 3 + 2])
 			{
-				ssao.f5p4 += SSAO_FACTOR;
-				ssao.f5p1 += SSAO_FACTOR;
+				ambientOcclusion.f5p4 += AO_FACTOR;
+				ambientOcclusion.f5p1 += AO_FACTOR;
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_DOWN && pos.y > 0)
 		{
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 2])
-				ssao.f6p1 += SSAO_FACTOR;
+				ambientOcclusion.f6p1 += AO_FACTOR;
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 1])
 			{
-				ssao.f6p1 += SSAO_FACTOR;
-				ssao.f6p2 += SSAO_FACTOR;
+				ambientOcclusion.f6p1 += AO_FACTOR;
+				ambientOcclusion.f6p2 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(0 * 3 + 0) * 3 + 0])
-				ssao.f6p2 += SSAO_FACTOR;
+				ambientOcclusion.f6p2 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 0])
-				ssao.f6p3 += SSAO_FACTOR;
+				ambientOcclusion.f6p3 += AO_FACTOR;
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 1])
 			{
-				ssao.f6p3 += SSAO_FACTOR;
-				ssao.f6p4 += SSAO_FACTOR;
+				ambientOcclusion.f6p3 += AO_FACTOR;
+				ambientOcclusion.f6p4 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(2 * 3 + 0) * 3 + 2])
-				ssao.f6p4 += SSAO_FACTOR;
+				ambientOcclusion.f6p4 += AO_FACTOR;
 			if (!blocksTransparent[(1 * 3 + 0) * 3 + 0])
 			{
-				ssao.f6p2 += SSAO_FACTOR;
-				ssao.f6p3 += SSAO_FACTOR;
+				ambientOcclusion.f6p2 += AO_FACTOR;
+				ambientOcclusion.f6p3 += AO_FACTOR;
 			}
 			if (!blocksTransparent[(1 * 3 + 0) * 3 + 2])
 			{
-				ssao.f6p4 += SSAO_FACTOR;
-				ssao.f6p1 += SSAO_FACTOR;
+				ambientOcclusion.f6p4 += AO_FACTOR;
+				ambientOcclusion.f6p1 += AO_FACTOR;
 			}
 		}
-		LIGHT_SSAO_TEST(lights.f1p1, ssao.f1p1);
-		LIGHT_SSAO_TEST(lights.f1p2, ssao.f1p2);
-		LIGHT_SSAO_TEST(lights.f1p3, ssao.f1p3);
-		LIGHT_SSAO_TEST(lights.f1p4, ssao.f1p4);
-		LIGHT_SSAO_TEST(lights.f2p1, ssao.f2p1);
-		LIGHT_SSAO_TEST(lights.f2p2, ssao.f2p2);
-		LIGHT_SSAO_TEST(lights.f2p3, ssao.f2p3);
-		LIGHT_SSAO_TEST(lights.f2p4, ssao.f2p4);
-		LIGHT_SSAO_TEST(lights.f3p1, ssao.f3p1);
-		LIGHT_SSAO_TEST(lights.f3p2, ssao.f3p2);
-		LIGHT_SSAO_TEST(lights.f3p3, ssao.f3p3);
-		LIGHT_SSAO_TEST(lights.f3p4, ssao.f3p4);
-		LIGHT_SSAO_TEST(lights.f4p1, ssao.f4p1);
-		LIGHT_SSAO_TEST(lights.f4p2, ssao.f4p2);
-		LIGHT_SSAO_TEST(lights.f4p3, ssao.f4p3);
-		LIGHT_SSAO_TEST(lights.f4p4, ssao.f4p4);
-		LIGHT_SSAO_TEST(lights.f5p1, ssao.f5p1);
-		LIGHT_SSAO_TEST(lights.f5p2, ssao.f5p2);
-		LIGHT_SSAO_TEST(lights.f5p3, ssao.f5p3);
-		LIGHT_SSAO_TEST(lights.f5p4, ssao.f5p4);
-		LIGHT_SSAO_TEST(lights.f6p1, ssao.f6p1);
-		LIGHT_SSAO_TEST(lights.f6p2, ssao.f6p2);
-		LIGHT_SSAO_TEST(lights.f6p3, ssao.f6p3);
-		LIGHT_SSAO_TEST(lights.f6p4, ssao.f6p4);
+		LIGHT_AO_TEST(lights.f1p1, ambientOcclusion.f1p1);
+		LIGHT_AO_TEST(lights.f1p2, ambientOcclusion.f1p2);
+		LIGHT_AO_TEST(lights.f1p3, ambientOcclusion.f1p3);
+		LIGHT_AO_TEST(lights.f1p4, ambientOcclusion.f1p4);
+		LIGHT_AO_TEST(lights.f2p1, ambientOcclusion.f2p1);
+		LIGHT_AO_TEST(lights.f2p2, ambientOcclusion.f2p2);
+		LIGHT_AO_TEST(lights.f2p3, ambientOcclusion.f2p3);
+		LIGHT_AO_TEST(lights.f2p4, ambientOcclusion.f2p4);
+		LIGHT_AO_TEST(lights.f3p1, ambientOcclusion.f3p1);
+		LIGHT_AO_TEST(lights.f3p2, ambientOcclusion.f3p2);
+		LIGHT_AO_TEST(lights.f3p3, ambientOcclusion.f3p3);
+		LIGHT_AO_TEST(lights.f3p4, ambientOcclusion.f3p4);
+		LIGHT_AO_TEST(lights.f4p1, ambientOcclusion.f4p1);
+		LIGHT_AO_TEST(lights.f4p2, ambientOcclusion.f4p2);
+		LIGHT_AO_TEST(lights.f4p3, ambientOcclusion.f4p3);
+		LIGHT_AO_TEST(lights.f4p4, ambientOcclusion.f4p4);
+		LIGHT_AO_TEST(lights.f5p1, ambientOcclusion.f5p1);
+		LIGHT_AO_TEST(lights.f5p2, ambientOcclusion.f5p2);
+		LIGHT_AO_TEST(lights.f5p3, ambientOcclusion.f5p3);
+		LIGHT_AO_TEST(lights.f5p4, ambientOcclusion.f5p4);
+		LIGHT_AO_TEST(lights.f6p1, ambientOcclusion.f6p1);
+		LIGHT_AO_TEST(lights.f6p2, ambientOcclusion.f6p2);
+		LIGHT_AO_TEST(lights.f6p3, ambientOcclusion.f6p3);
+		LIGHT_AO_TEST(lights.f6p4, ambientOcclusion.f6p4);
 	}
 
-	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, int8_t *blocksLights)
+	void ChunkBlock::smoothLights(float *lights, uint8_t visibleFaces, BlockLightsLevels &lightsLevels, bool *blocksTransparent, uint8_t *blocksLights)
 	{
 		Block *blockModel = Blocks::getBlock(this->type);
 		if (!Main::getSmooth() || !blockModel->isFullCube() || isTransparent())
@@ -507,11 +507,11 @@ namespace voxel
 		if (visibleFaces & BLOCK_FACE_FRONT)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t y = 0; y <= 1; ++y)
+					for (uint8_t y = 0; y <= 1; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -520,16 +520,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p1 - blocksLights[(1 * 3 + 1) * 3 + 2]);
-				lights[F1P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F1P1] = getLightValue(average + lightsLevels.f1p1 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t y = 0; y <= 1; ++y)
+					for (uint8_t y = 0; y <= 1; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -538,16 +537,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p4 - blocksLights[(1 * 3 + 1) * 3 + 2]);
-				lights[F1P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F1P4] = getLightValue(average + lightsLevels.f1p4 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t y = 1; y <= 2; ++y)
+					for (uint8_t y = 1; y <= 2; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -556,16 +554,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p3 - blocksLights[(1 * 3 + 1) * 3 + 2]);
-				lights[F1P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F1P3] = getLightValue(average + lightsLevels.f1p3 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t y = 1; y <= 2; ++y)
+					for (uint8_t y = 1; y <= 2; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 2] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -574,19 +571,18 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f1p2 - blocksLights[(1 * 3 + 1) * 3 + 2]);
-				lights[F1P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F1P2] = getLightValue(average + lightsLevels.f1p2 - blocksLights[(1 * 3 + 1) * 3 + 2]);
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_BACK)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t y = 0; y <= 1; ++y)
+					for (uint8_t y = 0; y <= 1; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -595,16 +591,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p1 - blocksLights[(1 * 3 + 1) * 3 + 0]);
-				lights[F2P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F2P1] = getLightValue(average + lightsLevels.f2p1 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t y = 0; y <= 1; ++y)
+					for (uint8_t y = 0; y <= 1; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -613,16 +608,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p4 - blocksLights[(1 * 3 + 1) * 3 + 0]);
-				lights[F2P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F2P4] = getLightValue(average + lightsLevels.f2p4 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t y = 1; y <= 2; ++y)
+					for (uint8_t y = 1; y <= 2; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -631,16 +625,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p3 - blocksLights[(1 * 3 + 1) * 3 + 0]);
-				lights[F2P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F2P3] = getLightValue(average + lightsLevels.f2p3 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t y = 1; y <= 2; ++y)
+					for (uint8_t y = 1; y <= 2; ++y)
 					{
 						if ((x == 1 && y == 1) || (blocksTransparent[(x * 3 + y) * 3 + 0] && !blocksTransparent[(x * 3 + y) * 3 + 1]))
 						{
@@ -649,19 +642,18 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f2p2 - blocksLights[(1 * 3 + 1) * 3 + 0]);
-				lights[F2P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F2P2] = getLightValue(average + lightsLevels.f2p2 - blocksLights[(1 * 3 + 1) * 3 + 0]);
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_LEFT)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 0; y <= 1; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 0; y <= 1; ++y)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -670,16 +662,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p1 - blocksLights[(0 * 3 + 1) * 3 + 1]);
-				lights[F3P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F3P1] = getLightValue(average + lightsLevels.f3p1 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 1; y <= 2; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 1; y <= 2; ++y)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -688,16 +679,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p2 - blocksLights[(0 * 3 + 1) * 3 + 1]);
-				lights[F3P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F3P2] = getLightValue(average + lightsLevels.f3p2 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 1; y <= 2; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 1; y <= 2; ++y)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -706,16 +696,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p3 - blocksLights[(0 * 3 + 1) * 3 + 1]);
-				lights[F3P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F3P3] = getLightValue(average + lightsLevels.f3p3 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 0; y <= 1; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 0; y <= 1; ++y)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(0 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -724,19 +713,18 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f3p4 - blocksLights[(0 * 3 + 1) * 3 + 1]);
-				lights[F3P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F3P4] = getLightValue(average + lightsLevels.f3p4 - blocksLights[(0 * 3 + 1) * 3 + 1]);
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_RIGHT)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 0; y <= 1; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 0; y <= 1; ++y)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -745,16 +733,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p1 - blocksLights[(2 * 3 + 1) * 3 + 1]);
-				lights[F4P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F4P1] = getLightValue(average + lightsLevels.f4p1 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 1; y <= 2; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 1; y <= 2; ++y)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -763,16 +750,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p2 - blocksLights[(2 * 3 + 1) * 3 + 1]);
-				lights[F4P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F4P2] = getLightValue(average + lightsLevels.f4p2 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 1; y <= 2; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 1; y <= 2; ++y)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -781,16 +767,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p3 - blocksLights[(2 * 3 + 1) * 3 + 1]);
-				lights[F4P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F4P3] = getLightValue(average + lightsLevels.f4p3 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t y = 0; y <= 1; ++y)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t y = 0; y <= 1; ++y)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((z == 1 && y == 1) || (blocksTransparent[(2 * 3 + y) * 3 + z] && !blocksTransparent[(1 * 3 + y) * 3 + z]))
 						{
@@ -799,19 +784,18 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f4p4 - blocksLights[(2 * 3 + 1) * 3 + 1]);
-				lights[F4P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F4P4] = getLightValue(average + lightsLevels.f4p4 - blocksLights[(2 * 3 + 1) * 3 + 1]);
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_UP)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -820,16 +804,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p2 - blocksLights[(1 * 3 + 2) * 3 + 1]);
-				lights[F5P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F5P2] = getLightValue(average + lightsLevels.f5p2 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -838,16 +821,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p3 - blocksLights[(1 * 3 + 2) * 3 + 1]);
-				lights[F5P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F5P3] = getLightValue(average + lightsLevels.f5p3 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -856,16 +838,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p4 - blocksLights[(1 * 3 + 2) * 3 + 1]);
-				lights[F5P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F5P4] = getLightValue(average + lightsLevels.f5p4 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 2) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -874,19 +855,18 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f5p1 - blocksLights[(1 * 3 + 2) * 3 + 1]);
-				lights[F5P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F5P1] = getLightValue(average + lightsLevels.f5p1 - blocksLights[(1 * 3 + 2) * 3 + 1]);
 			}
 		}
 		if (visibleFaces & BLOCK_FACE_DOWN)
 		{
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -895,16 +875,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p2 - blocksLights[(1 * 3 + 0) * 3 + 1]);
-				lights[F6P2] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F6P2] = getLightValue(average + lightsLevels.f6p2 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t z = 0; z <= 1; ++z)
+					for (uint8_t z = 0; z <= 1; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -913,16 +892,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p3 - blocksLights[(1 * 3 + 0) * 3 + 1]);
-				lights[F6P3] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F6P3] = getLightValue(average + lightsLevels.f6p3 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 1; x <= 2; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 1; x <= 2; ++x)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -931,16 +909,15 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p4 - blocksLights[(1 * 3 + 0) * 3 + 1]);
-				lights[F6P4] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F6P4] = getLightValue(average + lightsLevels.f6p4 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 			}
 			{
-				int8_t totalLight = 0;
-				int8_t lightsPoints = 0;
-				for (int8_t x = 0; x <= 1; ++x)
+				uint8_t totalLight = 0;
+				uint8_t lightsPoints = 0;
+				for (uint8_t x = 0; x <= 1; ++x)
 				{
-					for (int8_t z = 1; z <= 2; ++z)
+					for (uint8_t z = 1; z <= 2; ++z)
 					{
 						if ((x == 1 && z == 1) || (blocksTransparent[(x * 3 + 0) * 3 + z] && !blocksTransparent[(x * 3 + 1) * 3 + z]))
 						{
@@ -949,29 +926,28 @@ namespace voxel
 						}
 					}
 				}
-				int8_t average = totalLight / lightsPoints;
-				float result = getLightValue(average + lightsLevels.f6p1 - blocksLights[(1 * 3 + 0) * 3 + 1]);
-				lights[F6P1] = result;
+				uint8_t average = totalLight / lightsPoints;
+				lights[F6P1] = getLightValue(average + lightsLevels.f6p1 - blocksLights[(1 * 3 + 0) * 3 + 1]);
 			}
 		}
 	}
 
-	float ChunkBlock::getLightValue(int8_t level)
+	float ChunkBlock::getLightValue(uint8_t level)
 	{
-		level = std::max((int8_t)0, std::min((int8_t)15, level));
-		return (lightsLevelsValues[level] * LIGHT_RANGE + LIGHT_MIN);
+		level = std::max((uint8_t)0, std::min((uint8_t)15, level));
+		return lightsLevelsValues[level] * LIGHT_RANGE + LIGHT_MIN;
 	}
 
 	bool ChunkBlock::isTransparent()
 	{
 		if (this->type == 0)
-			return (true);
+			return true;
 		Block *block = Blocks::getBlock(this->type);
 		if (!block)
-			return (true);
+			return true;
 		if (block->isTransparent())
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 }

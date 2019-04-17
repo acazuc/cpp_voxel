@@ -41,9 +41,9 @@ namespace voxel
 		void setChunk(int32_t x, int32_t z, Chunk *chunk);
 		Chunk *getChunk(int32_t x, int32_t z);
 		uint32_t getXZId(int32_t x, int32_t z);
-		inline Chunk **getChunks() {return (this->chunks);};
-		inline int32_t getX() {return (this->x);};
-		inline int32_t getZ() {return (this->z);};
+		inline Chunk **getChunks() {return this->chunks;};
+		inline int32_t getX() {return this->x;};
+		inline int32_t getZ() {return this->z;};
 
 	};
 

@@ -11,6 +11,7 @@ namespace voxel
 	{
 		this->text.setFont(Main::getFont());
 		this->text.setProgram(Gui::getShaderTextProgram());
+		this->text.getProgram().program = Main::getGuiTextShader().program;
 		this->text.setShadowSize(1);
 		this->text.setShadowPos(Main::getGuiScale(), Main::getGuiScale());
 		this->text.setText(text);

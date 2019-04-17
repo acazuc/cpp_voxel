@@ -74,6 +74,7 @@ namespace voxel
 		sanitizer.addEntry(new NBTCompoundSanitizerEntryCompound("GameRules", &this->NBT.GameRules));
 		sanitizer.addEntry(new NBTCompoundSanitizerEntryCompound("Version", &this->NBT.Version));
 		sanitizer.sanitize();
+		this->NBT.NBT->printDebug();
 	}
 
 }

@@ -7,62 +7,41 @@ namespace voxel
 	void Frustum::update(Mat4 &vp)
 	{
 		const float *clip = reinterpret_cast<float*>(&vp[0][0]);
-		this->data[0][0] = clip[3] - clip[0];
-		this->data[0][1] = clip[7] - clip[4];
-		this->data[0][2] = clip[11] - clip[8];
-		this->data[0][3] = clip[15] - clip[12];
-		this->data[0].normalize();
-		this->data[1][0] = clip[3] + clip[0];
-		this->data[1][1] = clip[7] + clip[4];
-		this->data[1][2] = clip[11] + clip[8];
-		this->data[1][3] = clip[15] + clip[12];
-		this->data[1].normalize();
-		this->data[2][0] = clip[3] + clip[1];
-		this->data[2][1] = clip[7] + clip[5];
-		this->data[2][2] = clip[11] + clip[9];
-		this->data[2][3] = clip[15] + clip[13];
-		this->data[2].normalize();
-		this->data[3][0] = clip[3] - clip[1];
-		this->data[3][1] = clip[7] - clip[5];
-		this->data[3][2] = clip[11] - clip[9];
-		this->data[3][3] = clip[15] - clip[13];
-		this->data[3].normalize();
-		this->data[4][0] = clip[3] - clip[2];
-		this->data[4][1] = clip[7] - clip[6];
-		this->data[4][2] = clip[11] - clip[10];
-		this->data[4][3] = clip[15] - clip[14];
-		this->data[4].normalize();
-		this->data[5][0] = clip[3] + clip[2];
-		this->data[5][1] = clip[7] + clip[6];
-		this->data[5][2] = clip[11] + clip[10];
-		this->data[5][3] = clip[15] + clip[14];
-		this->data[5].normalize();
+		this->planes.resize(6);
+		this->planes[0] = normalize(Vec4(clip[3] - clip[0], clip[7] - clip[4], clip[11] - clip[8], clip[15] - clip[12]));
+		this->planes[1] = normalize(Vec4(clip[3] + clip[0], clip[7] + clip[4], clip[11] + clip[8], clip[15] + clip[12]));
+		this->planes[2] = normalize(Vec4(clip[3] + clip[1], clip[7] + clip[5], clip[11] + clip[9], clip[15] + clip[13]));
+		this->planes[3] = normalize(Vec4(clip[3] - clip[1], clip[7] - clip[5], clip[11] - clip[9], clip[15] - clip[13]));
+		this->planes[4] = normalize(Vec4(clip[3] - clip[2], clip[7] - clip[6], clip[11] - clip[10], clip[15] - clip[14]));
+		this->planes[5] = normalize(Vec4(clip[3] + clip[2], clip[7] + clip[6], clip[11] + clip[10], clip[15] + clip[14]));
 	}
 
 	bool Frustum::check(AABB &aabb)
 	{
-		for (uint8_t i = 0; i < 6; ++i)
+		Vec4 points[8] = {
+			Vec4(aabb.getP0().x, aabb.getP0().y, aabb.getP0().z, 1),
+			Vec4(aabb.getP1().x, aabb.getP0().y, aabb.getP0().z, 1),
+			Vec4(aabb.getP0().x, aabb.getP1().y, aabb.getP0().z, 1),
+			Vec4(aabb.getP1().x, aabb.getP1().y, aabb.getP0().z, 1),
+			Vec4(aabb.getP0().x, aabb.getP0().y, aabb.getP1().z, 1),
+			Vec4(aabb.getP1().x, aabb.getP0().y, aabb.getP1().z, 1),
+			Vec4(aabb.getP0().x, aabb.getP1().y, aabb.getP1().z, 1),
+			Vec4(aabb.getP1().x, aabb.getP1().y, aabb.getP1().z, 1)};
+		for (size_t i = 0; i < this->planes.size(); ++i)
 		{
-			Vec4 data(this->data[i]);
-			if (data.x * aabb.getP0().x + data.y * aabb.getP0().y + data.z * aabb.getP0().z + data.w > 0)
+			Vec4 data(this->planes[i]);
+			if (dot(data, points[0]) > 0
+			 || dot(data, points[1]) > 0
+			 || dot(data, points[2]) > 0
+			 || dot(data, points[3]) > 0
+			 || dot(data, points[4]) > 0
+			 || dot(data, points[5]) > 0
+			 || dot(data, points[6]) > 0
+			 || dot(data, points[7]) > 0)
 				continue;
-			if (data.x * aabb.getP1().x + data.y * aabb.getP0().y + data.z * aabb.getP0().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP0().x + data.y * aabb.getP1().y + data.z * aabb.getP0().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP1().x + data.y * aabb.getP1().y + data.z * aabb.getP0().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP0().x + data.y * aabb.getP0().y + data.z * aabb.getP1().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP1().x + data.y * aabb.getP0().y + data.z * aabb.getP1().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP0().x + data.y * aabb.getP1().y + data.z * aabb.getP1().z + data.w > 0)
-				continue;
-			if (data.x * aabb.getP1().x + data.y * aabb.getP1().y + data.z * aabb.getP1().z + data.w > 0)
-				continue;
-			return (false);
+			return false;
 		}
-		return (true);
+		return true;
 	}
 
 }

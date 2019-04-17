@@ -11,7 +11,13 @@ namespace voxel
 	Entity::Entity(World &world, Chunk *chunk)
 	: world(world)
 	, chunk(chunk)
-	, aabb()
+	, sliperness(0)
+	, posOrg(0)
+	, posDst(0)
+	, size(1)
+	, pos(0)
+	, rot(0)
+	, aabb(Vec3(0), Vec3(0))
 	, gravity(.08)
 	, isOnFloor(false)
 	, deleted(false)
@@ -22,7 +28,6 @@ namespace voxel
 
 	Entity::~Entity()
 	{
-		//Empty
 	}
 
 	void Entity::tick()
@@ -34,18 +39,21 @@ namespace voxel
 			this->posDst.y -= this->gravity;
 		move(this->posDst);
 		this->posDst *= this->sliperness;
-		if (this->flying || this->isOnFloor)
+		if (this->flying)
 		{
 			this->posDst.x *= .7;
+			this->posDst.y *= .7;
 			this->posDst.z *= .7;
 		}
-		if (this->flying)
-			this->posDst.y *= .7;
+		else if (this->isOnFloor)
+		{
+			this->posDst.x *= .8;
+			this->posDst.z *= .8;
+		}
 	}
 
 	void Entity::draw()
 	{
-		//Empty
 	}
 
 	void Entity::jump()
@@ -130,7 +138,7 @@ namespace voxel
 
 	Vec3 Entity::getRealPos()
 	{
-		return (this->posOrg + ((this->pos - this->posOrg) * TickManager::getDelta()));
+		return this->posOrg + ((this->pos - this->posOrg) * TickManager::getDelta());
 	}
 
 	void Entity::updateParentChunk()
@@ -141,7 +149,7 @@ namespace voxel
 		int32_t chunkZ = World::getChunkCoord(this->pos.z);
 		if (!this->chunk || (this->chunk->getX() != chunkX && this->chunk->getZ() != chunkZ))
 		{
-			Chunk *chunk = NULL;
+			Chunk *chunk = nullptr;
 			if (!(chunk = this->world.getChunk(chunkX, chunkZ)))
 			{
 				this->deleted = true;

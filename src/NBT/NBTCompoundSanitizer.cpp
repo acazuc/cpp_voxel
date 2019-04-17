@@ -8,7 +8,6 @@ namespace voxel
 	NBTCompoundSanitizer::NBTCompoundSanitizer(NBTTagCompound *tag)
 	: tag(tag)
 	{
-		//Empty
 	}
 
 	NBTCompoundSanitizer::~NBTCompoundSanitizer()
@@ -19,7 +18,7 @@ namespace voxel
 
 	void NBTCompoundSanitizer::sanitize()
 	{
-		for (uint32_t i = 0; i < this->tag->getTags().size(); ++i)
+		for (size_t i = 0; i < this->tag->getTags().size(); ++i)
 		{
 			NBTTag *tag = this->tag->getTags()[i];
 			std::unordered_map<std::string, NBTCompoundSanitizerEntry*>::iterator iter = this->entries.find(tag->getName());

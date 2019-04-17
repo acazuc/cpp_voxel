@@ -18,10 +18,10 @@ namespace voxel
 
 	private:
 		Player &player;
-		VertexBuffer breakTexCoordsBuffer;
-		VertexBuffer hoverVertexesBuffer;
-		VertexBuffer breakVertexesBuffer;
-		VertexBuffer breakIndicesBuffer;
+		VertexBuffer hoverPositionBuffer;
+		VertexBuffer breakPositionBuffer;
+		VertexBuffer breakIndiceBuffer;
+		VertexBuffer breakUVBuffer;
 		Vec3 pos;
 		uint32_t todoTicks;
 		uint32_t doneTicks;
@@ -38,8 +38,8 @@ namespace voxel
 		void tick();
 		void raycast();
 		void draw();
-		inline bool isFound() {return (this->found);};
-		inline Vec3 &getPos() {return (this->pos);};
+		inline bool isFound() {return this->found;};
+		inline Vec3 &getPos() {return this->pos;};
 
 	};
 

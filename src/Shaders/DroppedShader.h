@@ -1,35 +1,25 @@
 #ifndef DROPPED_SHADER_H
 # define DROPPED_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class DroppedShader
+	class DroppedShader : public Shader
 	{
 
 	public:
-		ProgramLocation *fogDistanceLocation;
-		ProgramLocation *fogDensityLocation;
-		ProgramLocation *texCoordsLocation;
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *fogColorLocation;
-		ProgramLocation *colorsLocation;
-		ProgramLocation *mvpLocation;
-		ProgramLocation *texLocation;
-		ProgramLocation *mLocation;
-		ProgramLocation *vLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		DroppedShader();
-		~DroppedShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation fogDistanceLocation;
+		ProgramLocation vertexColorLocation;
+		ProgramLocation fogDensityLocation;
+		ProgramLocation vertexUVLocation;
+		ProgramLocation fogColorLocation;
+		ProgramLocation mvpLocation;
+		ProgramLocation texLocation;
+		ProgramLocation mLocation;
+		ProgramLocation vLocation;
 		void load();
 
 	};

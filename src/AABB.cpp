@@ -8,14 +8,12 @@ namespace voxel
 	: p0(0)
 	, p1(0)
 	{
-		//Empty
 	}
 
 	AABB::AABB(Vec3 p0, Vec3 p1)
 	: p0(p0)
 	, p1(p1)
 	{
-		//Empty
 	}
 
 	void AABB::set(Vec3 p0, Vec3 p1)
@@ -32,7 +30,7 @@ namespace voxel
 
 	AABB AABB::grow(Vec3 size)
 	{
-		return (AABB(this->p0 - size, this->p1 + size));
+		return AABB(this->p0 - size, this->p1 + size);
 	}
 
 	AABB AABB::expand(Vec3 size)
@@ -51,81 +49,81 @@ namespace voxel
 			p0.z += size.z;
 		else if (size.z > 0)
 			p1.z += size.z;
-		return (AABB(p0, p1));
+		return AABB(p0, p1);
 	}
 
 	float AABB::collideX(AABB &other, float x)
 	{
 		if (this->p1.y <= other.p0.y || this->p0.y >= other.p1.y)
-			return (x);
+			return x;
 		if (this->p1.z <= other.p0.z || this->p0.z >= other.p1.z)
-			return (x);
+			return x;
 		if (x > 0 && this->p0.x >= other.p1.x)
 		{
 			float max = this->p0.x - other.p1.x;
 			if (max < x)
-				return (max);
+				return max;
 		}
 		else if (x < 0 && this->p1.x <= other.p0.x)
 		{
 			float max = this->p1.x - other.p0.x;
 			if (max > x)
-				return (max);
+				return max;
 		}
-		return (x);
+		return x;
 	}
 
 	float AABB::collideY(AABB &other, float y)
 	{
 		if (this->p1.x <= other.p0.x || this->p0.x >= other.p1.x)
-			return (y);
+			return y;
 		if (this->p1.z <= other.p0.z || this->p0.z >= other.p1.z)
-			return (y);
+			return y;
 		if (y > 0 && this->p0.y >= other.p1.y)
 		{
 			float max = this->p0.y - other.p1.y;
 			if (max < y)
-				return (max);
+				return max;
 		}
 		else if (y < 0 && this->p1.y <= other.p0.y)
 		{
 			float max = this->p1.y - other.p0.y;
 			if (max > y)
-				return (max);
+				return max;
 		}
-		return (y);
+		return y;
 	}
 
 	float AABB::collideZ(AABB &other, float z)
 	{
 		if (this->p1.x <= other.p0.x || this->p0.x >= other.p1.x)
-			return (z);
+			return z;
 		if (this->p1.y <= other.p0.y || this->p0.y >= other.p1.y)
-			return (z);
+			return z;
 		if (z > 0 && this->p0.z >= other.p1.z)
 		{
 			float max = this->p0.z - other.p1.z;
 			if (max < z)
-				return (max);
+				return max;
 		}
 		else if (z < 0 && this->p1.z <= other.p0.z)
 		{
 			float max = this->p1.z - other.p0.z;
 			if (max > z)
-				return (max);
+				return max;
 		}
-		return (z);
+		return z;
 	}
 
 	bool AABB::intersect(AABB &other)
 	{
 		if (this->p1.x <= other.p0.x || this->p0.x >= other.p1.x)
-			return (false);
+			return false;
 		if (this->p1.y <= other.p0.y || this->p0.y >= other.p1.y)
-			return (false);
+			return false;
 		if (this->p1.z <= other.p0.z || this->p0.z >= other.p1.z)
-			return (false);
-		return (true);
+			return false;
+		return true;
 	}
 
 	bool AABB::intersect(Vec3 pos, Vec3 dir, float &t)
@@ -139,11 +137,11 @@ namespace voxel
 		float tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
 		float tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
 		if (tmax < 0)
-			return (false);
+			return false;
 		if (tmin > tmax)
-			return (false);
+			return false;
 		t = tmin;
-		return (true);
+		return true;
 	}
 
 }

@@ -100,10 +100,10 @@ namespace voxel
 			this->per = std::min(1.f, std::max(0.f, ((Main::getWindow()->getMouseX() - this->x) / Main::getGuiScale() - 4) / (float)(this->width - 8)));
 			if (this->callback)
 				this->callback(this->per, this->callbackData);
-			return (true);
+			return true;
 		}
 		this->clicked = false;
-		return (false);
+		return false;
 	}
 
 	bool GuiSlider::mouseUp(MouseEvent &event)
@@ -112,9 +112,9 @@ namespace voxel
 		if (this->clicked || this->hover)
 		{
 			this->clicked = false;
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 	void GuiSlider::setText(std::string text)

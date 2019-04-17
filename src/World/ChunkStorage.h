@@ -41,7 +41,7 @@ namespace voxel
 		void setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light);
 		uint8_t getBlockLight(int32_t x, int32_t y, int32_t z);
 		uint32_t getXYZId(int8_t x, int8_t y, int8_t z);
-		inline uint8_t getId() {return (this->id);};
+		inline uint8_t getId() {return this->id;};
 
 	};
 

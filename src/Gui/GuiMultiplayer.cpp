@@ -27,25 +27,25 @@ namespace voxel
 		Color color(0, 1);
 		this->topGradient.setTopColor(color);
 		this->botGradient.setBotColor(color);
-		color.set(0, 0);
+		color = Color(0, 0);
 		this->topGradient.setBotColor(color);
 		this->botGradient.setTopColor(color);
-		color.set(.25 * .5);
+		color = Color(.25 * .5);
 		this->bgDarker.setColor(color);
 		this->join.setSize(100, 20);
-		this->join.setCallback(&GuiMultiplayer::joinCallback, NULL);
+		this->join.setCallback(&GuiMultiplayer::joinCallback, nullptr);
 		this->direct.setSize(100, 20);
-		this->direct.setCallback(&GuiMultiplayer::directCallback, NULL);
+		this->direct.setCallback(&GuiMultiplayer::directCallback, nullptr);
 		this->add.setSize(100, 20);
-		this->add.setCallback(&GuiMultiplayer::addCallback, NULL);
+		this->add.setCallback(&GuiMultiplayer::addCallback, nullptr);
 		this->edit.setSize(70, 20);
-		this->edit.setCallback(&GuiMultiplayer::editCallback, NULL);
+		this->edit.setCallback(&GuiMultiplayer::editCallback, nullptr);
 		this->remove.setSize(70, 20);
-		this->remove.setCallback(&GuiMultiplayer::removeCallback, NULL);
+		this->remove.setCallback(&GuiMultiplayer::removeCallback, nullptr);
 		this->refresh.setSize(70, 20);
-		this->refresh.setCallback(&GuiMultiplayer::refreshCallback, NULL);
+		this->refresh.setCallback(&GuiMultiplayer::refreshCallback, nullptr);
 		this->cancel.setSize(74, 20);
-		this->cancel.setCallback(&GuiMultiplayer::cancelCallback, NULL);
+		this->cancel.setCallback(&GuiMultiplayer::cancelCallback, nullptr);
 	}
 
 	void GuiMultiplayer::joinCallback(void *data)
@@ -132,26 +132,26 @@ namespace voxel
 	bool GuiMultiplayer::mouseDown(MouseEvent &event)
 	{
 		if (this->join.mouseDown(event))
-			return (true);
+			return true;
 		if (this->direct.mouseDown(event))
-			return (true);
+			return true;
 		if (this->add.mouseDown(event))
-			return (true);
+			return true;
 		if (this->edit.mouseDown(event))
-			return (true);
+			return true;
 		if (this->remove.mouseDown(event))
-			return (true);
+			return true;
 		if (this->refresh.mouseDown(event))
-			return (true);
+			return true;
 		if (this->cancel.mouseDown(event))
-			return (true);
-		return (false);
+			return true;
+		return false;
 	}
 
 	bool GuiMultiplayer::mouseUp(MouseEvent &event)
 	{
 		(void)event;
-		return (false);
+		return false;
 	}
 
 	bool GuiMultiplayer::keyDown(KeyEvent &event)
@@ -159,9 +159,9 @@ namespace voxel
 		if (event.key == GLFW_KEY_ESCAPE)
 		{
 			TitleScreen::setMode(TITLE_SCREEN_TITLE);
-			return (true);
+			return true;
 		}
-		return (false);
+		return false;
 	}
 
 }

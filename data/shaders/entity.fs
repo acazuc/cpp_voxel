@@ -1,7 +1,9 @@
-#version 120
+#version 330
 
-centroid varying vec2 UV;
-centroid varying vec3 viewSpace;
+in vec2 UV;
+in vec3 viewSpace;
+
+out vec4 output;
 
 uniform sampler2D tex;
 uniform float fogDistance;
@@ -18,5 +20,5 @@ void main()
 	float dist = length(viewSpace);
 	float tmp = max(0, dist - fogDistance);
 	float fog = clamp(exp(-tmp * fogDensity), 0, 1);
-	gl_FragColor = mix(col, fogColor, 1 - fog);
+	output = mix(col, fogColor, 1 - fog);
 }

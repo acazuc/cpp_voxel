@@ -17,9 +17,8 @@ namespace voxel
 	private:
 		static float values[512];
 		static uint32_t pos;
-		VertexBuffer texCoordsBuffer;
-		VertexBuffer vertexesBuffer;
-		VertexBuffer colorsBuffer;
+		VertexBuffer positionBuffer;
+		VertexBuffer colorBuffer;
 		ShaderSprite background;
 
 	public:

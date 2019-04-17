@@ -1,37 +1,27 @@
 #ifndef BLOCKS_SHADER_H
 # define BLOCKS_SHADER_H
 
-# include <librender/Shader/Program.h>
-
-using librender::ProgramLocation;
-using librender::FragmentShader;
-using librender::VertexShader;
-using librender::Program;
+# include "./Shader.h"
 
 namespace voxel
 {
 
-	class BlocksShader
+	class BlocksShader : public Shader
 	{
 
 	public:
-		ProgramLocation *fogDistanceLocation;
-		ProgramLocation *timeFactorLocation;
-		ProgramLocation *disableTexLocation;
-		ProgramLocation *fogDensityLocation;
-		ProgramLocation *texCoordsLocation;
-		ProgramLocation *vertexesLocation;
-		ProgramLocation *fogColorLocation;
-		ProgramLocation *colorsLocation;
-		ProgramLocation *mvpLocation;
-		ProgramLocation *texLocation;
-		ProgramLocation *mLocation;
-		ProgramLocation *vLocation;
-		FragmentShader *fShad;
-		VertexShader *vShad;
-		Program *program;
-		BlocksShader();
-		~BlocksShader();
+		ProgramLocation vertexPositionLocation;
+		ProgramLocation fogDistanceLocation;
+		ProgramLocation vertexColorLocation;
+		ProgramLocation timeFactorLocation;
+		ProgramLocation disableTexLocation;
+		ProgramLocation fogDensityLocation;
+		ProgramLocation fogColorLocation;
+		ProgramLocation vertexUVLocation;
+		ProgramLocation mvpLocation;
+		ProgramLocation texLocation;
+		ProgramLocation mLocation;
+		ProgramLocation vLocation;
 		void load();
 
 	};

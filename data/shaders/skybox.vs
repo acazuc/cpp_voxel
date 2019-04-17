@@ -1,9 +1,9 @@
-#version 120
+#version 330
 
-attribute vec3 vertexPosition;
-attribute vec3 vertexColor;
+in vec3 vertexPosition;
+in vec3 vertexColor;
 
-centroid varying vec3 color;
+out vec3 color;
 
 uniform mat4 MVP;
 

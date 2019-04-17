@@ -17,8 +17,8 @@ namespace voxel
 	{
 		(void)chunk;
 		Vec3 color(1);
-		std::vector<Vec2> &texCoords = tessellator.texCoords;
-		std::vector<Vec3> &vertexes = tessellator.vertexes;
+		std::vector<Vec2> &uvs = tessellator.uvs;
+		std::vector<Vec3> &positions = tessellator.positions;
 		std::vector<Vec3> &colors = tessellator.colors;
 		std::vector<GLuint> &indices = tessellator.indices;
 		Vec3 org(pos);
@@ -28,19 +28,19 @@ namespace voxel
 			Vec2 texOrg(this->texFrontX, this->texFrontY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * FRONT_COLOR_FACTOR;
-			vertexes.push_back(Vec3(org.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(org.x, org.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F1P1]);
-			vertexes.push_back(Vec3(org.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(org.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F1P2]);
-			vertexes.push_back(Vec3(dst.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F1P3]);
-			vertexes.push_back(Vec3(dst.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(dst.x, org.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F1P4]);
 			if (lights[F1P2] + lights[F1P4] > lights[F1P1] + lights[F1P3])
 			{
@@ -66,19 +66,19 @@ namespace voxel
 			Vec2 texOrg(this->texLeftX, this->texLeftY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * BACK_COLOR_FACTOR;
-			vertexes.push_back(Vec3(org.x, org.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(org.x, org.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F2P1]);
-			vertexes.push_back(Vec3(org.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(org.x, dst.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F2P2]);
-			vertexes.push_back(Vec3(dst.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, dst.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F2P3]);
-			vertexes.push_back(Vec3(dst.x, org.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(dst.x, org.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F2P4]);
 			if (lights[F2P2] + lights[F2P4] <= lights[F2P1] + lights[F2P3])
 			{
@@ -104,19 +104,19 @@ namespace voxel
 			Vec2 texOrg(this->texLeftX, this->texLeftY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * LEFT_COLOR_FACTOR;
-			vertexes.push_back(Vec3(org.x, org.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(org.x, org.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F3P1]);
-			vertexes.push_back(Vec3(org.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(org.x, dst.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F3P2]);
-			vertexes.push_back(Vec3(org.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(org.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F3P3]);
-			vertexes.push_back(Vec3(org.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(org.x, org.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F3P4]);
 			if (lights[F3P2] + lights[F3P4] > lights[F3P1] + lights[F3P3])
 			{
@@ -142,19 +142,19 @@ namespace voxel
 			Vec2 texOrg(this->texRightX, this->texRightY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * RIGHT_COLOR_FACTOR;
-			vertexes.push_back(Vec3(dst.x, org.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(dst.x, org.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F4P1]);
-			vertexes.push_back(Vec3(dst.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, dst.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F4P2]);
-			vertexes.push_back(Vec3(dst.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F4P3]);
-			vertexes.push_back(Vec3(dst.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(dst.x, org.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F4P4]);
 			if (lights[F4P2] + lights[F4P4] < lights[F4P1] + lights[F4P3])
 			{
@@ -180,19 +180,19 @@ namespace voxel
 			Vec2 texOrg(this->texTopX, this->texTopY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * UP_COLOR_FACTOR;
-			vertexes.push_back(Vec3(org.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(org.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F5P1]);
-			vertexes.push_back(Vec3(org.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(org.x, dst.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F5P2]);
-			vertexes.push_back(Vec3(dst.x, dst.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(dst.x, dst.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F5P3]);
-			vertexes.push_back(Vec3(dst.x, dst.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, dst.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F5P4]);
 			if (lights[F5P2] + lights[F5P4] > lights[F5P1] + lights[F5P3])
 			{
@@ -218,19 +218,19 @@ namespace voxel
 			Vec2 texOrg(this->texBotX, this->texBotY);
 			Vec2 texDst(texOrg);
 			texDst += texSize;
-			GLuint currentIndice = vertexes.size();
+			GLuint currentIndice = positions.size();
 			Vec3 col = color * DOWN_COLOR_FACTOR;
-			vertexes.push_back(Vec3(org.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texOrg.x, texOrg.y));
+			positions.push_back(Vec3(org.x, org.y, dst.z));
+			uvs.push_back(Vec2(texOrg.x, texOrg.y));
 			colors.push_back(col * lights[F6P1]);
-			vertexes.push_back(Vec3(org.x, org.y, org.z));
-			texCoords.push_back(Vec2(texOrg.x, texDst.y));
+			positions.push_back(Vec3(org.x, org.y, org.z));
+			uvs.push_back(Vec2(texOrg.x, texDst.y));
 			colors.push_back(col * lights[F6P2]);
-			vertexes.push_back(Vec3(dst.x, org.y, org.z));
-			texCoords.push_back(Vec2(texDst.x, texDst.y));
+			positions.push_back(Vec3(dst.x, org.y, org.z));
+			uvs.push_back(Vec2(texDst.x, texDst.y));
 			colors.push_back(col * lights[F6P3]);
-			vertexes.push_back(Vec3(dst.x, org.y, dst.z));
-			texCoords.push_back(Vec2(texDst.x, texOrg.y));
+			positions.push_back(Vec3(dst.x, org.y, dst.z));
+			uvs.push_back(Vec2(texDst.x, texOrg.y));
 			colors.push_back(col * lights[F6P4]);
 			if (lights[F6P2] + lights[F6P4] < lights[F6P1] + lights[F6P3])
 			{
@@ -257,39 +257,39 @@ namespace voxel
 	{
 		uint8_t nb = rand() / (RAND_MAX / 6.);
 		if (nb == 0)
-			return (this->texLeftX);
+			return this->texLeftX;
 		if (nb == 1)
-			return (this->texRightX);
+			return this->texRightX;
 		if (nb == 3)
-			return (this->texFrontX);
+			return this->texFrontX;
 		if (nb == 4)
-			return (this->texBackX);
+			return this->texBackX;
 		if (nb == 5)
-			return (this->texTopX);
-		return (this->texBotX);
+			return this->texTopX;
+		return this->texBotX;
 	}
 
 	float BlockBase::getDestroyTexY()
 	{
 		uint8_t nb = rand() / (RAND_MAX / 6.);
 		if (nb == 0)
-			return (this->texLeftY);
+			return this->texLeftY;
 		if (nb == 1)
-			return (this->texRightY);
+			return this->texRightY;
 		if (nb == 3)
-			return (this->texFrontY);
+			return this->texFrontY;
 		if (nb == 4)
-			return (this->texBackY);
+			return this->texBackY;
 		if (nb == 5)
-			return (this->texTopY);
-		return (this->texBotY);
+			return this->texTopY;
+		return this->texBotY;
 	}
 
 	BlockBase *BlockBase::setTexSide(float texSideX, float texSideY)
 	{
 		setTexSideX(texSideX);
 		setTexSideY(texSideY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexSideX(float texSideX)
@@ -298,7 +298,7 @@ namespace voxel
 		setTexRightX(texSideX);
 		setTexBackX(texSideX);
 		setTexLeftX(texSideX);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexSideY(float texSideY)
@@ -307,128 +307,128 @@ namespace voxel
 		setTexRightY(texSideY);
 		setTexBackY(texSideY);
 		setTexLeftY(texSideY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexFront(float texFrontX, float texFrontY)
 	{
 		setTexFrontX(texFrontX);
 		setTexFrontY(texFrontY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexFrontX(float texFrontX)
 	{
 		this->texFrontX = texFrontX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexFrontY(float texFrontY)
 	{
 		this->texFrontY = texFrontY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexRight(float texRightX, float texRightY)
 	{
 		setTexRightX(texRightX);
 		setTexRightY(texRightY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexRightX(float texRightX)
 	{
 		this->texRightX = texRightX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexRightY(float texRightY)
 	{
 		this->texRightY = texRightY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBack(float texBackX, float texBackY)
 	{
 		setTexBackX(texBackX);
 		setTexBackY(texBackY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBackX(float texBackX)
 	{
 		this->texBackX = texBackX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBackY(float texBackY)
 	{
 		this->texBackY = texBackY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexLeft(float texLeftX, float texLeftY)
 	{
 		setTexLeftX(texLeftX);
 		setTexLeftY(texLeftY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexLeftX(float texLeftX)
 	{
 		this->texLeftX = texLeftX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexLeftY(float texLeftY)
 	{
 		this->texLeftY = texLeftY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexTop(float texTopX, float texTopY)
 	{
 		setTexTopX(texTopX);
 		setTexTopY(texTopY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexTopX(float texTopX)
 	{
 		this->texTopX = texTopX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexTopY(float texTopY)
 	{
 		this->texTopY = texTopY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBot(float texBotX, float texBotY)
 	{
 		setTexBotX(texBotX);
 		setTexBotY(texBotY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBotX(float texBotX)
 	{
 		this->texBotX = texBotX;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexBotY(float texBotY)
 	{
 		this->texBotY = texBotY;
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTex(float texX, float texY)
 	{
 		setTexX(texX);
 		setTexY(texY);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexX(float texX)
@@ -436,7 +436,7 @@ namespace voxel
 		setTexSideX(texX);
 		setTexTopX(texX);
 		setTexBotX(texX);
-		return (this);
+		return this;
 	}
 
 	BlockBase *BlockBase::setTexY(float texY)
@@ -444,7 +444,7 @@ namespace voxel
 		setTexSideY(texY);
 		setTexTopY(texY);
 		setTexBotY(texY);
-		return (this);
+		return this;
 	}
 
 }

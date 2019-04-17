@@ -43,7 +43,7 @@ namespace voxel
 		bool mouseDown(MouseEvent &event);
 		bool mouseUp(MouseEvent &event);
 		bool keyDown(KeyEvent &event);
-		inline int32_t getSelected() {return (this->selected);};
+		inline int32_t getSelected() {return this->selected;};
 		inline void setSelected(int32_t selected) {this->selected = selected;};
 
 	};

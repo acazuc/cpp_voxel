@@ -1,7 +1,6 @@
 #include "NBTTagString.h"
 #include "NBTException.h"
-#include "NBTFile.h"
-#include "Debug.h"
+#include <iostream>
 
 namespace voxel
 {
@@ -9,7 +8,6 @@ namespace voxel
 	NBTTagString::NBTTagString(std::string name)
 	: NBTTag(NBT_TAG_STRING, name)
 	{
-		//Empty
 	}
 
 	void NBTTagString::readData(NBTStream *stream)
@@ -38,12 +36,14 @@ namespace voxel
 
 	size_t NBTTagString::getDataSize()
 	{
-		return (2 + this->value.size());
+		return 2 + this->value.size();
 	}
 
-	void NBTTagString::printDebug()
+	void NBTTagString::printDebug(size_t tab)
 	{
-		LOG("NBTTag_String(\"" << this->name << "\") : " << this->value);
+		for (size_t i = 0; i < tab; ++i)
+			std::cout << "\t";
+		std::cout << "NBTTag_String(\"" << this->name << "\") : " << this->value << std::endl;
 	}
 
 }

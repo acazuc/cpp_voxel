@@ -42,7 +42,7 @@ namespace voxel
 				}
 			}
 		}
-		for (uint8_t i = 0; i < 10; ++i)
+		for (size_t i = 0; i < 10; ++i)
 		{
 			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
 			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
@@ -52,7 +52,7 @@ namespace voxel
 				this->ironOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, .2f) - 2, z);
 			}
 		}
-		for (uint8_t i = 0; i < 10; ++i)
+		for (size_t i = 0; i < 10; ++i)
 		{
 			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
 			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
@@ -62,7 +62,7 @@ namespace voxel
 				this->coalOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, 5.f) - 5, z);
 			}
 		}
-		for (uint8_t i = 0; i < 5; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
 			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
@@ -72,7 +72,7 @@ namespace voxel
 				this->goldOreGenerator.generate(chunk, x, std::max(chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * top, 2.f) - 2, z);
 			}
 		}
-		for (uint8_t i = 0; i < 4; ++i)
+		for (size_t i = 0; i < 4; ++i)
 		{
 			int32_t x = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
 			int32_t z = chunk.getWorld().getRandom()() / (float)chunk.getWorld().getRandom().max() * CHUNK_WIDTH * 2;
@@ -87,7 +87,7 @@ namespace voxel
 	Biome *Biome::setName(std::string name)
 	{
 		this->name = name;
-		return (this);
+		return this;
 	}
 
 }

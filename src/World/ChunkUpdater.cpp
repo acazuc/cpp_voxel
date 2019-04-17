@@ -11,15 +11,13 @@ namespace voxel
 	bool ChunkUpdater::running = false;
 
 	ChunkUpdater::ChunkUpdater(World *world)
-	: thread(NULL)
+	: thread(nullptr)
 	, world(world)
 	{
-		//Empty
 	}
 
 	ChunkUpdater::~ChunkUpdater()
 	{
-		//Empty
 	}
 
 	void ChunkUpdater::start()
@@ -35,7 +33,7 @@ namespace voxel
 		{
 			this->thread->join();
 			delete (this->thread);
-			this->thread = NULL;
+			this->thread = nullptr;
 		}
 	}
 
@@ -75,7 +73,7 @@ namespace voxel
 			std::this_thread::sleep_for(std::chrono::microseconds(5));
 			continue;
 		wait:
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(20));
 		}
 	}
 

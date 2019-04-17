@@ -1,7 +1,9 @@
-#version 120
+#version 330
 
-centroid varying vec2 UV;
-centroid varying vec3 color;
+in vec2 UV;
+in vec3 color;
+
+out vec4 output;
 
 uniform sampler2D tex;
 
@@ -9,5 +11,5 @@ void main()
 {
 	vec4 texCol = texture2D(tex, UV);
 	vec4 col = texCol * vec4(color, 1);
-	gl_FragColor = col;
+	output = col;
 }

@@ -33,7 +33,7 @@ namespace voxel
 		double result = 0;
 		for (uint32_t i = 0; i < this->octavesNumber; ++i)
 			result += this->octaves[i].get2(x / this->frequencies[i], y / this->frequencies[i]) * this->amplitudes[i];
-		return (result);
+		return result;
 	}
 
 	double SimplexNoise::get3(double x, double y, double z)
@@ -41,7 +41,7 @@ namespace voxel
 		double result = 0;
 		for (uint32_t i = 0 ; i < this->octavesNumber; ++i)
 			result += this->octaves[i].get3(x / this->frequencies[i], y / this->frequencies[i], z / this->frequencies[i]) * this->amplitudes[i];
-		return (result);
+		return result;
 	}
 
 	double SimplexNoise::get4(double x, double y, double z, double w)
@@ -49,7 +49,7 @@ namespace voxel
 		double result = 0;
 		for (uint32_t i = 0; i < this->octavesNumber; ++i)
 			result += this->octaves[i].get4(x / this->frequencies[i], y / this->frequencies[i], z / this->frequencies[i], w / this->frequencies[i]) * this->amplitudes[i];
-		return (result);
+		return result;
 	}
 
 }

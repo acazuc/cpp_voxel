@@ -1,23 +1,25 @@
 NAME = cpp_voxel
 
-CC = g++
-#CC = x86_64-w64-mingw32-g++
+CXX = g++
+#CXX = x86_64-w64-mingw32-g++
 
-CFLAGS = -Wall -Wextra -O3 -g -march=native -flto=8
-#CFLAGS+= -fsanitize=address
-#CFLAGS+= -fsanitize=thread
-#CFLAGS+= -fsanitize=leak
-#CFLAGS+= -fsanitize=undefined
-#CLFAGS+= -Wl,-subsystem,windows
+CXXFLAGS = -Wall -Wextra -Ofast -g -march=native
+#CXXFLAGS+= -fsanitize=address
+#CXXFLAGS+= -fsanitize=thread
+#CXXFLAGS+= -fsanitize=leak
+#CXXFLAGS+= -fsanitize=undefined
+#CXXLFAGS+= -Wl,-subsystem,windows
 
-INCLUDES_PATH = include
-INCLUDES_PATH+= -I lib/glfw/include
-INCLUDES_PATH+= -I lib/glad/include
-INCLUDES_PATH+= -I lib/librender/include
-INCLUDES_PATH+= -I lib/libformat/include
-INCLUDES_PATH+= -I lib/libgzip/include
-INCLUDES_PATH+= -I lib/glm
-INCLUDES_PATH+= -I lib
+LDFLAGS = -flto=6
+
+INCLUDES = -I include
+INCLUDES+= -I lib/glfw/include
+INCLUDES+= -I lib/glad/include
+INCLUDES+= -I lib/librender/include
+INCLUDES+= -I lib/libformat/include
+INCLUDES+= -I lib/libgzip/include
+INCLUDES+= -I lib/freetype/include
+INCLUDES+= -I lib
 
 SRCS_PATH = src/
 
@@ -60,6 +62,8 @@ SRCS_NAME = Main.cpp \
 	    Shaders/SunMoonShader.cpp \
 	    Shaders/GuiShader.cpp \
 	    Shaders/DroppedShader.cpp \
+	    Shaders/GuiTextShader.cpp \
+	    Shaders/Shader.cpp \
 	    Entities/BodyPart.cpp \
 	    Entities/Human.cpp \
 	    Entities/Creeper.cpp \
@@ -140,18 +144,17 @@ OBJS_NAME = $(SRCS_NAME:.cpp=.o)
 
 OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 
-LIBRARY = -L lib/glfw -l:libglfw3.a
-LIBRARY+= -L lib/glad -l:libglad.a
-LIBRARY+= -L lib/librender -l:librender.a
-LIBRARY+= -L lib/libformat -l:libformat.a
-LIBRARY+= -L lib/libgzip -l:libgzip.a
-LIBRARY+= -L lib/freetype -l:libfreetype.a
-LIBRARY+= -L lib/libpng -l:libpng16.a
-LIBRARY+= -L lib/zlib -l:libz.a
-LIBRARY+= -L lib/harfbuzz -l:libharfbuzz.a
-LIBRARY+= -lGL -lGLU -lX11 -lXrandr -lXinerama -lXcursor -lXxf86vm
-LIBRARY+= -ldl -lrt -lm -lpthread
-#LIBRARY+= -lws2_32 -lwsock32 -lwinmm -lgdi32 -static-libstdc++ -static-libgcc -lopengl32 -lm
+LIBRARIES = -L lib/glfw -l:libglfw3.a
+LIBRARIES+= -L lib/glad -l:libglad.a
+LIBRARIES+= -L lib/librender -l:librender.a
+LIBRARIES+= -L lib/libformat -l:libformat.a
+LIBRARIES+= -L lib/libgzip -l:libgzip.a
+LIBRARIES+= -L lib/freetype -l:libfreetype.a
+LIBRARIES+= -L lib/libpng -l:libpng16.a
+LIBRARIES+= -L lib/zlib -l:libz.a
+LIBRARIES+= -lGL -lX11 -lXrandr -lXinerama -lXcursor -lXxf86vm
+LIBRARIES+= -ldl -lrt -lm -lpthread
+#LIBRARIES+= -lws2_32 -lwsock32 -lwinmm -lgdi32 -static-libstdc++ -static-libgcc -lopengl32 -lm
 
 all: odir $(NAME)
 
@@ -159,12 +162,12 @@ size:
 	@wc `find $(SRCS_PATH) -type f`
 
 $(NAME): $(OBJS)
-	@echo " - Making $(NAME)"
-	@$(CC) $(CFLAGS) -o $(NAME) $^ $(LIBRARY)
+	@echo "LD $(NAME)"
+	@$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(NAME) $^ $(LIBRARIES)
 
 $(OBJS_PATH)%.o: $(SRCS_PATH)%.cpp
-	@echo " - Compiling $<"
-	@$(CC) $(CFLAGS) -o $@ -c $< -I$(INCLUDES_PATH)
+	@echo "CXX $<"
+	@$(CXX) $(CXXFLAGS) -o $@ -c $< $(INCLUDES)
 
 odir:
 	@mkdir -p $(OBJS_PATH)
@@ -185,13 +188,9 @@ odir:
 	@mkdir -p $(OBJS_PATH)/NBT
 
 clean:
-	@echo " - Cleaning objs"
 	@rm -f $(OBJS)
-
-fclean: clean
-	@echo " - Cleaning executable"
 	@rm -f $(NAME)
 
-re: fclean all
+re: clean all
 
-.PHONY: clean fclean re odir
+.PHONY: clean re odir

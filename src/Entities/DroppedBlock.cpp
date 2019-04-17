@@ -33,11 +33,11 @@ namespace voxel
 		for (uint8_t i = 0; i < 24; ++i)
 			tmp[i] = ChunkBlock::getLightValue(0xf);
 		block->draw(this->chunk, Vec3(0, 0, 0), tessellator, 0xff, tmp);
-		this->texCoordsBuffer.setData(GL_ARRAY_BUFFER, tessellator.texCoords.data(), sizeof(Vec2) * tessellator.texCoords.size(), GL_FLOAT, 2, GL_STATIC_DRAW);
-		this->vertexesBuffer.setData(GL_ARRAY_BUFFER, tessellator.vertexes.data(), sizeof(Vec3) * tessellator.vertexes.size(), GL_FLOAT, 3, GL_STATIC_DRAW);
-		this->indicesBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, tessellator.indices.data(), sizeof(GLuint) * tessellator.indices.size(), GL_UNSIGNED_INT, 1, GL_STATIC_DRAW);
-		this->colorsBuffer.setData(GL_ARRAY_BUFFER, tessellator.colors.data(), sizeof(Vec3) * tessellator.colors.size(), GL_FLOAT, 3, GL_STATIC_DRAW);
-		this->vertexNumber = tessellator.indices.size();
+		this->positionBuffer.setData(GL_ARRAY_BUFFER, tessellator.positions.data(), sizeof(Vec3) * tessellator.positions.size(), GL_STATIC_DRAW);
+		this->indiceBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, tessellator.indices.data(), sizeof(GLuint) * tessellator.indices.size(), GL_STATIC_DRAW);
+		this->colorBuffer.setData(GL_ARRAY_BUFFER, tessellator.colors.data(), sizeof(Vec3) * tessellator.colors.size(), GL_STATIC_DRAW);
+		this->uvBuffer.setData(GL_ARRAY_BUFFER, tessellator.uvs.data(), sizeof(Vec2) * tessellator.uvs.size(), GL_STATIC_DRAW);
+		this->indicesNb = tessellator.indices.size();
 		this->created = nanotime;
 	}
 
@@ -52,15 +52,15 @@ namespace voxel
 		model = Mat4::rotateY(model, (nanotime + this->created) / 1000000000.);
 		model = Mat4::translate(model, Vec3(-.5, -.5, -.5));
 		Mat4 mvp = this->world.getPlayer().getViewProjMat() * model;
-		Main::getDroppedShader().vLocation->setMat4f(this->world.getPlayer().getViewMat());
-		Main::getDroppedShader().mLocation->setMat4f(model);
-		Main::getDroppedShader().mvpLocation->setMat4f(mvp);
-		Main::getDroppedShader().texCoordsLocation->setVertexBuffer(this->texCoordsBuffer);
-		Main::getDroppedShader().vertexesLocation->setVertexBuffer(this->vertexesBuffer);
-		Main::getDroppedShader().colorsLocation->setVertexBuffer(this->colorsBuffer);
-		this->indicesBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		Main::getDroppedShader().vLocation.setMat4f(this->world.getPlayer().getViewMat());
+		Main::getDroppedShader().mLocation.setMat4f(model);
+		Main::getDroppedShader().mvpLocation.setMat4f(mvp);
+		Main::getDroppedShader().vertexUVLocation.setVertexBuffer(this->uvBuffer, 2, GL_FLOAT);
+		Main::getDroppedShader().vertexColorLocation.setVertexBuffer(this->colorBuffer, 3, GL_FLOAT);
+		Main::getDroppedShader().vertexPositionLocation.setVertexBuffer(this->positionBuffer, 3, GL_FLOAT);
+		this->indiceBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
 		glEnable(GL_CULL_FACE);
-		glDrawElements(GL_TRIANGLES, this->vertexNumber, GL_UNSIGNED_INT, NULL);
+		glDrawElements(GL_TRIANGLES, this->indicesNb, GL_UNSIGNED_INT, nullptr);
 	}
 
 }

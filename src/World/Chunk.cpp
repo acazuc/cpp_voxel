@@ -39,12 +39,12 @@ namespace voxel
 			this->chunkZLess->setChunkZMore(this);
 		if ((this->chunkZMore = this->world.getChunk(this->x, this->z + CHUNK_WIDTH)))
 			this->chunkZMore->setChunkZLess(this);
-		std::memset(this->storages, 0, sizeof(this->storages));
+		std::fill(std::begin(this->storages), std::end(this->storages), nullptr);
 	}
 
 	Chunk::~Chunk()
 	{
-		for (size_t i = 0; i < 16; ++i)
+		for (size_t i = 0; i < this->storages.size(); ++i)
 			delete (this->storages[i]);
 		delete (this->NBT.NBT);
 		if (this->chunkXLess)
@@ -71,7 +71,7 @@ namespace voxel
 
 	void Chunk::moveGLBuffersToWorld()
 	{
-		for (size_t i = 0; i < 3; ++i)
+		for (size_t i = 0; i < this->layers.size(); ++i)
 		{
 			ChunkLayer &layer = this->layers[i];
 			if (layer.positionBuffer)
@@ -161,31 +161,23 @@ namespace voxel
 
 	void Chunk::draw(uint8_t layer)
 	{
-		Main::glErrors("Chunk::draw 1");
 		if (!isGenerated())
 			return;
-		Main::glErrors("Chunk::draw 2");
 		if (layer == 0)
 			this->visible = this->world.getFrustum().check(this->aabb);
-		Main::glErrors("Chunk::draw 3");
 		if (!this->visible)
 			return;
-		Main::glErrors("Chunk::draw 4");
 		if (layer == 0)
 		{
 			if (this->mustUpdateBuffers)
 				updateGLBuffers();
 		}
-		Main::glErrors("Chunk::draw 5");
 		if (!this->layers[layer].indicesNb)
 			return;
-		Main::glErrors("Chunk::draw 6");
 		//if (layer == 3)
 		//	updateGLBuffer(3);
 		this->layers[layer].vertexArray->bind();
-		Main::glErrors("Chunk::draw 7");
 		glDrawElements(GL_TRIANGLES, this->layers[layer].indicesNb, GL_UNSIGNED_INT, nullptr);
-		Main::glErrors("Chunk::draw 8, indices: " + std::to_string(this->layers[layer].indicesNb));
 		glBindVertexArray(0);
 	}
 
@@ -333,9 +325,9 @@ endNearTop:
 	void Chunk::generateLightMap()
 	{
 		this->mustGenerateLightMap = false;
-		for (size_t i = 0; i < 16; ++i)
+		for (size_t i = 0; i < this->storages.size(); ++i)
 		{
-			ChunkStorage *storage = getStorage(i);
+			ChunkStorage *storage = this->storages[i];
 			if (!storage)
 				continue;
 			storage->resetLights();
@@ -365,11 +357,11 @@ endNearTop:
 	void Chunk::generateBuffers()
 	{
 		this->mustGenerateBuffers = false;
-		for (uint8_t layer = 0; layer < 3; ++layer)
+		for (uint8_t layer = 0; layer < this->layers.size(); ++layer)
 		{
-			for (uint8_t i = 0; i < 16; ++i)
+			for (uint8_t i = 0; i < this->storages.size(); ++i)
 			{
-				ChunkStorage *storage = getStorage(i);
+				ChunkStorage *storage = this->storages[i];
 				if (!storage)
 					continue;
 				storage->fillBuffers(this, this->layers[layer].tessellator, layer);
@@ -401,16 +393,14 @@ endNearTop:
 			this->layers[layer].indiceBuffer->bind(GL_ELEMENT_ARRAY_BUFFER);
 			glBindVertexArray(0);
 		}
-		Main::glErrors("setData_before");
 		std::vector<Vec3> &positions = this->layers[layer].tessellator.positions;
 		std::vector<Vec3> &colors = this->layers[layer].tessellator.colors;
 		std::vector<Vec2> &uvs = this->layers[layer].tessellator.uvs;
 		std::vector<GLuint> &indices = this->layers[layer].tessellator.indices;
-		this->layers[layer].positionBuffer->setData(GL_ARRAY_BUFFER, positions.data(), positions.size() * sizeof(*positions.data()), GL_DYNAMIC_DRAW);
-		this->layers[layer].colorBuffer->setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(*colors.data()), GL_DYNAMIC_DRAW);
-		this->layers[layer].uvBuffer->setData(GL_ARRAY_BUFFER, uvs.data(), uvs.size() * sizeof(*uvs.data()), GL_DYNAMIC_DRAW);
-		this->layers[layer].indiceBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(*indices.data()), GL_DYNAMIC_DRAW);
-		Main::glErrors("setData_after");
+		this->layers[layer].positionBuffer->setData(GL_ARRAY_BUFFER, positions.data(), positions.size() * sizeof(*positions.data()), GL_STATIC_DRAW);
+		this->layers[layer].colorBuffer->setData(GL_ARRAY_BUFFER, colors.data(), colors.size() * sizeof(*colors.data()), GL_STATIC_DRAW);
+		this->layers[layer].uvBuffer->setData(GL_ARRAY_BUFFER, uvs.data(), uvs.size() * sizeof(*uvs.data()), GL_STATIC_DRAW);
+		this->layers[layer].indiceBuffer->setData(GL_ELEMENT_ARRAY_BUFFER, indices.data(), indices.size() * sizeof(*indices.data()), GL_STATIC_DRAW);
 		this->layers[layer].indicesNb = this->layers[layer].tessellator.indices.size();
 		std::vector<Vec2> emptyUVs;
 		std::vector<Vec3> emptyColors;
@@ -425,7 +415,7 @@ endNearTop:
 	void Chunk::updateGLBuffers()
 	{
 		this->mustUpdateBuffers = false;
-		for (size_t layer = 0; layer < 3; ++layer)
+		for (size_t layer = 0; layer < this->layers.size(); ++layer)
 			updateGLBuffer(layer);
 	}
 
@@ -449,14 +439,14 @@ endNearTop:
 			if (y > top)
 				setTopBlock(x, z, y);
 		}
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 		{
 			if (!type)
 				return;
-			storage = createStorage(y / 16);
+			storage = createStorage(y / CHUNK_STORAGE_HEIGHT);
 		}
-		storage->setBlock(x, y - storage->getId() * 16, z, type);
+		storage->setBlock(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z, type);
 		this->changed = true;
 		regenerateLightMap();
 		if (x == 0)
@@ -471,10 +461,10 @@ endNearTop:
 
 	ChunkBlock *Chunk::getBlock(int32_t x, int32_t y, int32_t z)
 	{
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return nullptr;
-		return storage->getBlock(x, y - storage->getId() * 16, z);
+		return storage->getBlock(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z);
 	}
 
 	uint8_t Chunk::getLight(int32_t x, int32_t y, int32_t z)
@@ -483,18 +473,18 @@ endNearTop:
 			return 0;
 		if (y > getTopBlock(x, z))
 			return 15;
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return 15;
-		return storage->getLight(x, y - storage->getId() * 16, z);
+		return storage->getLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z);
 	}
 
 	void Chunk::setSkyLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
-			storage = createStorage(y / 16);
-		storage->setSkyLight(x, y - storage->getId() * 16, z, light);
+			storage = createStorage(y / CHUNK_STORAGE_HEIGHT);
+		storage->setSkyLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z, light);
 		this->changed = true;
 	}
 
@@ -502,10 +492,10 @@ endNearTop:
 	{
 		if (!isGenerated())
 			return 0;
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return 0;
-		return storage->getSkyLight(x, y - storage->getId() * 16, z);
+		return storage->getSkyLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z);
 	}
 
 	uint8_t Chunk::getSkyLight(int32_t x, int32_t y, int32_t z)
@@ -514,18 +504,18 @@ endNearTop:
 			return 0;
 		if (y > getTopBlock(x, z))
 			return 15;
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return 15;
-		return storage->getSkyLight(x, y - storage->getId() * 16, z);
+		return storage->getSkyLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z);
 	}
 
 	void Chunk::setBlockLight(int32_t x, int32_t y, int32_t z, uint8_t light)
 	{
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return;
-		storage->setSkyLight(x, y - storage->getId() * 16, z, light);
+		storage->setSkyLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z, light);
 		this->changed = true;
 	}
 
@@ -533,10 +523,10 @@ endNearTop:
 	{
 		if (!isGenerated())
 			return 0;
-		ChunkStorage *storage = getStorage(y / 16);
+		ChunkStorage *storage = getStorage(y / CHUNK_STORAGE_HEIGHT);
 		if (!storage)
 			return 0;
-		return storage->getBlockLight(x, y - storage->getId() * 16, z);
+		return storage->getBlockLight(x, y - storage->getId() * CHUNK_STORAGE_HEIGHT, z);
 	}
 
 	void Chunk::setTopBlock(int32_t x, int32_t z, uint8_t top)

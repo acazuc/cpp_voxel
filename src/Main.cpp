@@ -162,8 +162,10 @@ namespace voxel
 		Blocks::init();
 		Biomes::init();
 		Gui::init();
+		if (ac > 1 && !strcmp(av[1], "--titlescreen"))
+			screen = new TitleScreen();
+		else
 		screen = new WorldScreen(new World());
-		//screen = new TitleScreen();
 		nanotime = System::nanotime();
 		int64_t fpsCount = 0;
 		int64_t lastFps = nanotime / 1000000000 * 1000000000;

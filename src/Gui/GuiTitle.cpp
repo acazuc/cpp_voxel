@@ -16,7 +16,7 @@ namespace voxel
 		this->logo.setTexture(Gui::getLogoTex());
 		this->logo.setProgram(Gui::getShaderSpriteProgram());
 		this->logo.setSize(256 * Main::getGuiScale(), 48 * Main::getGuiScale());
-		this->logo.setTexSize(1, .1875);
+		this->logo.setTexSize(1, .175);
 		this->logo.setTexPos(0, 0);
 		this->singleplayer.setCallback(&GuiTitle::singleplayerCallback, nullptr);
 		this->multiplayer.setCallback(&GuiTitle::multiplayerCallback, nullptr);

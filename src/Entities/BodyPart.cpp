@@ -5,41 +5,41 @@
 namespace voxel
 {
 
-	BodyPart::BodyPart(Vec3 pos, Vec3 size, Vec2 uv)
-	: pos(pos)
+	BodyPart::BodyPart(Vec3 org, Vec3 size, Vec2 uv)
+	: pos(0)
 	, rot(0)
 	{
 		Vec3 positions[24];
 		//Front
-		positions[0]  = Vec3(pos.x         , pos.y         , pos.z + size.z);
-		positions[1]  = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
-		positions[2]  = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[3]  = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
+		positions[0]  = Vec3(org.x         , org.y         , org.z + size.z);
+		positions[1]  = Vec3(org.x + size.x, org.y         , org.z + size.z);
+		positions[2]  = Vec3(org.x + size.x, org.y + size.y, org.z + size.z);
+		positions[3]  = Vec3(org.x         , org.y + size.y, org.z + size.z);
 		//Back
-		positions[4]  = Vec3(pos.x         , pos.y         , pos.z);
-		positions[5]  = Vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[6]  = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[7]  = Vec3(pos.x         , pos.y + size.y, pos.z);
+		positions[4]  = Vec3(org.x         , org.y         , org.z);
+		positions[5]  = Vec3(org.x + size.x, org.y         , org.z);
+		positions[6]  = Vec3(org.x + size.x, org.y + size.y, org.z);
+		positions[7]  = Vec3(org.x         , org.y + size.y, org.z);
 		//Left
-		positions[8]  = Vec3(pos.x         , pos.y         , pos.z);
-		positions[9]  = Vec3(pos.x         , pos.y + size.y, pos.z);
-		positions[10] = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
-		positions[11] = Vec3(pos.x         , pos.y         , pos.z + size.z);
+		positions[8]  = Vec3(org.x         , org.y         , org.z);
+		positions[9]  = Vec3(org.x         , org.y + size.y, org.z);
+		positions[10] = Vec3(org.x         , org.y + size.y, org.z + size.z);
+		positions[11] = Vec3(org.x         , org.y         , org.z + size.z);
 		//Right
-		positions[12] = Vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[13] = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[14] = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[15] = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
+		positions[12] = Vec3(org.x + size.x, org.y         , org.z);
+		positions[13] = Vec3(org.x + size.x, org.y + size.y, org.z);
+		positions[14] = Vec3(org.x + size.x, org.y + size.y, org.z + size.z);
+		positions[15] = Vec3(org.x + size.x, org.y         , org.z + size.z);
 		//Up
-		positions[16] = Vec3(pos.x         , pos.y + size.y, pos.z);
-		positions[17] = Vec3(pos.x + size.x, pos.y + size.y, pos.z);
-		positions[18] = Vec3(pos.x + size.x, pos.y + size.y, pos.z + size.z);
-		positions[19] = Vec3(pos.x         , pos.y + size.y, pos.z + size.z);
+		positions[16] = Vec3(org.x         , org.y + size.y, org.z);
+		positions[17] = Vec3(org.x + size.x, org.y + size.y, org.z);
+		positions[18] = Vec3(org.x + size.x, org.y + size.y, org.z + size.z);
+		positions[19] = Vec3(org.x         , org.y + size.y, org.z + size.z);
 		//Down
-		positions[20] = Vec3(pos.x         , pos.y         , pos.z);
-		positions[21] = Vec3(pos.x + size.x, pos.y         , pos.z);
-		positions[22] = Vec3(pos.x + size.x, pos.y         , pos.z + size.z);
-		positions[23] = Vec3(pos.x         , pos.y         , pos.z + size.z);
+		positions[20] = Vec3(org.x         , org.y         , org.z);
+		positions[21] = Vec3(org.x + size.x, org.y         , org.z);
+		positions[22] = Vec3(org.x + size.x, org.y         , org.z + size.z);
+		positions[23] = Vec3(org.x         , org.y         , org.z + size.z);
 		this->positionBuffer.setData(GL_ARRAY_BUFFER, positions, sizeof(positions), GL_STATIC_DRAW);
 		const Vec2 texSize(64, 32);
 		Vec2 uvs[24];
@@ -118,6 +118,12 @@ namespace voxel
 		indices[34] = 4 * 5 + 3;
 		indices[35] = 4 * 5 + 1;
 		this->indiceBuffer.setData(GL_ELEMENT_ARRAY_BUFFER, indices, sizeof(indices), GL_STATIC_DRAW);
+		this->vertexArray.bind();
+		Main::getEntityShader().program->use();
+		Main::getEntityShader().vertexPositionLocation.setVertexBuffer(this->positionBuffer, 3, GL_FLOAT);
+		Main::getEntityShader().vertexUVLocation.setVertexBuffer(this->uvBuffer, 2, GL_FLOAT);
+		this->indiceBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		glBindVertexArray(0);
 	}
 
 	void BodyPart::draw(World *world, Mat4 model)
@@ -130,10 +136,19 @@ namespace voxel
 		Mat4 mvp = world->getPlayer().getViewProjMat() * model;
 		Main::getEntityShader().mvpLocation.setMat4f(mvp);
 		Main::getEntityShader().mLocation.setMat4f(model);
-		Main::getEntityShader().vertexPositionLocation.setVertexBuffer(this->positionBuffer, 3, GL_FLOAT);
-		Main::getEntityShader().vertexUVLocation.setVertexBuffer(this->uvBuffer, 2, GL_FLOAT);
-		this->indiceBuffer.bind(GL_ELEMENT_ARRAY_BUFFER);
+		this->vertexArray.bind();
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, nullptr);
+		glBindVertexArray(0);
+	}
+
+	void BodyPart::setPos(Vec3 pos)
+	{
+		this->pos = pos;
+	}
+
+	void BodyPart::setRot(Vec3 rot)
+	{
+		this->rot = rot;
 	}
 
 }

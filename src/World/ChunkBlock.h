@@ -8,12 +8,6 @@
 # include <cstdint>
 # include <vector>
 
-# define BLOCK_FACE_FRONT	0x01
-# define BLOCK_FACE_BACK	0x02
-# define BLOCK_FACE_LEFT	0x04
-# define BLOCK_FACE_RIGHT	0x08
-# define BLOCK_FACE_UP		0x10
-# define BLOCK_FACE_DOWN	0x20
 # define BLOCK_SIZE 1
 
 # define FRONT_COLOR_FACTOR .787f
@@ -23,33 +17,46 @@
 # define UP_COLOR_FACTOR .985f
 # define DOWN_COLOR_FACTOR .496f
 
-# define F1P1 0
-# define F1P2 1
-# define F1P3 2
-# define F1P4 3
-# define F2P1 4
-# define F2P2 5
-# define F2P3 6
-# define F2P4 7
-# define F3P1 8
-# define F3P2 9
-# define F3P3 10
-# define F3P4 11
-# define F4P1 12
-# define F4P2 13
-# define F4P3 14
-# define F4P4 15
-# define F5P1 16
-# define F5P2 17
-# define F5P3 18
-# define F5P4 19
-# define F6P1 20
-# define F6P2 21
-# define F6P3 22
-# define F6P4 23
-
 namespace voxel
 {
+
+	enum BlockFaces
+	{
+		BLOCK_FACE_FRONT =	0x01,
+		BLOCK_FACE_BACK =	0x02,
+		BLOCK_FACE_LEFT =	0x04,
+		BLOCK_FACE_RIGHT =	0x08,
+		BLOCK_FACE_UP =		0x10,
+		BLOCK_FACE_DOWN =	0x20
+	};
+
+	enum BlockFacePoints
+	{
+		F1P1,
+		F1P2,
+		F1P3,
+		F1P4,
+		F2P1,
+		F2P2,
+		F2P3,
+		F2P4,
+		F3P1,
+		F3P2,
+		F3P3,
+		F3P4,
+		F4P1,
+		F4P2,
+		F4P3,
+		F4P4,
+		F5P1,
+		F5P2,
+		F5P3,
+		F5P4,
+		F6P1,
+		F6P2,
+		F6P3,
+		F6P4,
+	};
 
 	class Chunk;
 

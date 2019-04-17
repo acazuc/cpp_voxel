@@ -4,6 +4,8 @@
 # include "ChunkBlock.h"
 # include "NBT/NBT.h"
 
+# define CHUNK_STORAGE_HEIGHT 16
+
 namespace voxel
 {
 

@@ -24,36 +24,36 @@ namespace voxel
 			this->NBT.NBT = new NBTTagCompound("");
 		NBTCompoundSanitizer sanitizer(this->NBT.NBT);
 		sanitizer.addEntry(new NBTCompoundSanitizerEntryByte("Y", &this->NBT.Y, this->id));
-		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Blocks", &this->NBT.Blocks, CHUNK_WIDTH * CHUNK_WIDTH * 16));
-		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Add", &this->NBT.Add, CHUNK_WIDTH * CHUNK_WIDTH * 8));
-		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Data", &this->NBT.Data, CHUNK_WIDTH * CHUNK_WIDTH * 8));
-		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("BlockLight", &this->NBT.BlockLight, CHUNK_WIDTH * CHUNK_WIDTH * 8));
-		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("SkyLight", &this->NBT.SkyLight, CHUNK_WIDTH * CHUNK_WIDTH * 8));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Blocks", &this->NBT.Blocks, CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Add", &this->NBT.Add, CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("Data", &this->NBT.Data, CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("BlockLight", &this->NBT.BlockLight, CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2));
+		sanitizer.addEntry(new NBTCompoundSanitizerEntryByteArray("SkyLight", &this->NBT.SkyLight, CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2));
 		sanitizer.sanitize();
-		if (this->NBT.Blocks->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 16)
+		if (this->NBT.Blocks->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT)
 		{
 			this->NBT.Blocks->getValues().clear();
-			this->NBT.Blocks->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 16, 0);
+			this->NBT.Blocks->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT, 0);
 		}
-		if (this->NBT.Add->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
+		if (this->NBT.Add->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2)
 		{
 			this->NBT.Add->getValues().clear();
-			this->NBT.Add->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
+			this->NBT.Add->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2, 0);
 		}
-		if (this->NBT.Data->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
+		if (this->NBT.Data->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2)
 		{
 			this->NBT.Data->getValues().clear();
-			this->NBT.Data->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
+			this->NBT.Data->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2, 0);
 		}
-		if (this->NBT.BlockLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
+		if (this->NBT.BlockLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2)
 		{
 			this->NBT.BlockLight->getValues().clear();
-			this->NBT.BlockLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
+			this->NBT.BlockLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2, 0);
 		}
-		if (this->NBT.SkyLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * 8)
+		if (this->NBT.SkyLight->getValues().size() != CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2)
 		{
 			this->NBT.SkyLight->getValues().clear();
-			this->NBT.SkyLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * 8, 0);
+			this->NBT.SkyLight->getValues().resize(CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_STORAGE_HEIGHT / 2, 0);
 		}
 	}
 
@@ -61,11 +61,11 @@ namespace voxel
 	{
 		for (int32_t x = 0; x < CHUNK_WIDTH; ++x)
 		{
-			for (int32_t y = 0; y < 16; ++y)
+			for (int32_t y = 0; y < CHUNK_STORAGE_HEIGHT; ++y)
 			{
 				for (int32_t z = 0; z < CHUNK_WIDTH; ++z)
 				{
-					Vec3 pos(chunk->getX() + x, this->id * 16 + y, chunk->getZ() + z);
+					Vec3 pos(chunk->getX() + x, this->id * CHUNK_STORAGE_HEIGHT + y, chunk->getZ() + z);
 					ChunkBlock block;
 					block.setType(this->NBT.Blocks->getValues()[getXYZId(x, y, z)]);
 					block.fillBuffers(chunk, pos, tessellator, layer);

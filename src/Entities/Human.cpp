@@ -19,6 +19,7 @@ namespace voxel
 		head = new BodyPart(Vec3(-4, 0, -4), Vec3(8, 8, 8), Vec2(0, 0));
 		head->setPos(Vec3(0, 9, 0));
 		body = new BodyPart(Vec3(-4, -3, -2), Vec3(8, 12, 4), Vec2(16, 16));
+		//body->setPos(Vec3(0, -5, 0));
 		armL = new BodyPart(Vec3(0, -10, -2), Vec3(4, 12, 4), Vec2(40, 16));
 		armL->setPos(Vec3(4, 7, 0));
 		armR = new BodyPart(Vec3(-4, -10, -2), Vec3(4, 12, 4), Vec2(40, 16));
@@ -70,8 +71,8 @@ namespace voxel
 		col.a = 1;
 		Main::getEntityShader().colorLocation.setVec4f(col);
 		float time = nanotime / 1000000000.;
-		armL->setRotZ(std::sin(time * 1) * .05 + .05);
-		armR->setRotZ(-std::sin(time * 1) * .05 - .05);
+		armL->setRot(Vec3(0, 0, std::sin(time * 1) * .05 + .05));
+		armR->setRot(Vec3(0, 0, -std::sin(time * 1) * .05 - .05));
 		head->draw(&this->world, model);
 		body->draw(&this->world, model);
 		armL->draw(&this->world, model);

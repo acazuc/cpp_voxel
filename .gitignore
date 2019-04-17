@@ -2,3 +2,5 @@
 obj
 cpp_voxel
 saves
+callgrind.*
+massif.*

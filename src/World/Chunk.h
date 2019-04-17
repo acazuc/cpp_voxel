@@ -8,6 +8,7 @@
 # include "AABB.h"
 # include <librender/Shader/VertexBuffer.h>
 # include <librender/Shader/VertexArray.h>
+# include <array>
 
 using librender::VertexBuffer;
 using librender::VertexArray;
@@ -56,10 +57,10 @@ namespace voxel
 	{
 
 	private:
+		std::array<ChunkStorage*, 16> storages;
+		std::array<ChunkLayer, 3> layers;
 		ParticlesManager particlesManager;
 		EntitiesManager entitiesManager;
-		ChunkStorage *storages[16];
-		ChunkLayer layers[3];
 		ChunkNBT NBT;
 		Chunk *chunkXLess;
 		Chunk *chunkXMore;
@@ -128,7 +129,7 @@ namespace voxel
 		inline NBTTagCompound *getNBT() {return this->NBT.NBT;};
 		ChunkStorage *getStorage(uint8_t id);
 		ChunkStorage *createStorage(uint8_t id);
-		inline ChunkStorage **getStorages() {return this->storages;};
+		inline std::array<ChunkStorage*, 16> &getStorages() {return this->storages;};
 		inline ChunkLayer &getLayer(uint8_t layer) {return this->layers[layer];};
 		inline int32_t getXYZId(int32_t x, int32_t y, int32_t z) {return (x * CHUNK_HEIGHT + y) * CHUNK_WIDTH + z;};
 		inline int32_t getXZId(int32_t x, int32_t z) {return x * CHUNK_WIDTH + z;};

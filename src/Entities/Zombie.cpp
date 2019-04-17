@@ -60,8 +60,8 @@ namespace voxel
 		col.a = 1;
 		Main::getEntityShader().colorLocation.setVec4f(col);
 		float time = nanotime / 1000000000.;
-		armL->setRotZ(std::sin(time * 1) * .05 + .05);
-		armR->setRotZ(-std::sin(time * 1) * .05 - .05);
+		armL->setRot(Vec3(0, 0, std::sin(time * 1) * .05 + .05));
+		armR->setRot(Vec3(0, 0, -std::sin(time * 1) * .05 - .05));
 		head->draw(&this->world, model);
 		body->draw(&this->world, model);
 		armL->draw(&this->world, model);
